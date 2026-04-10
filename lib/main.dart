@@ -43,9 +43,8 @@ class MyApp extends StatelessWidget {
           error: AppColors.errorRed,
         ),
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: AppColors.darkNavy),
-          bodyMedium: TextStyle(color: AppColors.greyBlue),
-        ),
+            bodyLarge: TextStyle(color: AppColors.darkNavy),
+            bodyMedium: TextStyle(color: AppColors.greyBlue)),
       ),
     );
   }
