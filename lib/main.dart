@@ -6,7 +6,7 @@ import 'package:tendering_du/app/routes/app_pages.dart';
 void main() {
   runApp(const MyApp());
 }
-
+// this is amazing
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
