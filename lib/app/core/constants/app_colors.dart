@@ -12,7 +12,15 @@ class AppColors {
   static const Color actionBlue = Color(0xFF2F80ED);
 
   static const Color errorRed = Color(0xFFEF382A);
-
+  static const Color lightText = Color(0xFFFFFFFF);
   static const Color white = Color(0xFFFFFFFF);
   static const Color background = Color(0xFFF5F5F5);
+  static const Gradient accentGradient = LinearGradient(
+    colors: [
+      Color.fromARGB(255, 241, 36, 0),
+      Color.fromARGB(255, 83, 152, 243),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

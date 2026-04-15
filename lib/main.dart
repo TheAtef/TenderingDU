@@ -1,12 +1,13 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tendering_du/app/core/constants/app_colors.dart';
+import 'package:tendering_du/app/core/constants/app_colors.dart'; // <-- updated import
 import 'package:tendering_du/app/routes/app_pages.dart';
 
 void main() {
   runApp(const MyApp());
 }
-// this is amazing
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -15,8 +16,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'TenderingDU',
       debugShowCheckedModeBanner: false,
+
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+
+      themeMode: ThemeMode.system,
       theme: ThemeData(
         useMaterial3: true,
         primaryColor: AppColors.primaryBlue,
@@ -36,15 +40,18 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
+
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primaryBlue,
           primary: AppColors.primaryBlue,
           secondary: AppColors.actionBlue,
           error: AppColors.errorRed,
         ),
+
         textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: AppColors.darkNavy),
-            bodyMedium: TextStyle(color: AppColors.greyBlue)),
+          bodyLarge: TextStyle(color: AppColors.darkNavy),
+          bodyMedium: TextStyle(color: AppColors.greyBlue),
+        ),
       ),
     );
   }
