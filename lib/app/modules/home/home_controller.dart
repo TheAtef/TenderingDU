@@ -1,7 +1,26 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
-import 'package:tendering_du/app/modules/home/home_model.dart';
+
+class Tender {
+  final int id;
+  final String title;
+  final String description;
+  final String deadline;
+  final String category;
+  final String status;
+  bool isFavourite;
+
+  Tender({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.deadline,
+    required this.category,
+    required this.status,
+    this.isFavourite = false,
+  });
+}
 
 class HomeController extends GetxController {
   static const _pageSize = 10;
@@ -14,16 +33,21 @@ class HomeController extends GetxController {
 
   var searchQuery = ''.obs;
   var activeFilters = <String, dynamic>{}.obs;
-
   var currentIndex = 0.obs;
 
   final ScrollController scrollCtrl = ScrollController();
+  final TextEditingController searchTextController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
 
   @override
   void onInit() {
     super.onInit();
     scrollCtrl.addListener(_onScroll);
-    ever(searchQuery, (_) => refreshAll());
+    debounce(
+      searchQuery,
+      (_) => refreshAll(),
+      time: const Duration(milliseconds: 500),
+    );
     ever(activeFilters, (_) => refreshAll());
     fetchNextPage();
   }
@@ -32,20 +56,28 @@ class HomeController extends GetxController {
   void onClose() {
     scrollCtrl.removeListener(_onScroll);
     scrollCtrl.dispose();
+    searchTextController.dispose();
+    searchFocusNode.dispose();
     super.onClose();
+  }
+
+  void clearSearch() {
+    searchTextController.clear();
+    searchQuery.value = '';
   }
 
   void changeTab(int index) {
     currentIndex.value = index;
-    switch (index) {
-      case 0:
-        break;
-      case 1:
-        break;
-      case 2:
-        break;
-      case 3:
-        break;
+
+    if (index == 1) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        searchFocusNode.requestFocus();
+      });
+    } else {
+      searchFocusNode.unfocus();
+      if (searchQuery.value.isNotEmpty) {
+        clearSearch();
+      }
     }
   }
 

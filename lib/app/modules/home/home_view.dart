@@ -13,7 +13,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
-      drawer: const _ModernDrawer(),
+      drawer: const _Drawer(),
       body: Stack(
         children: [
           const _StaticBackground(),
@@ -94,7 +94,7 @@ class _MainContent extends StatelessWidget {
         controller: controller.scrollCtrl,
         physics: const BouncingScrollPhysics(),
         slivers: [
-          const _HeroHeader(),
+          _HeroHeader(controller: controller),
           _QuickStatsSection(controller: controller),
           _CategoryChips(controller: controller),
           _TenderCardsSection(controller: controller),
@@ -106,7 +106,8 @@ class _MainContent extends StatelessWidget {
 }
 
 class _HeroHeader extends StatelessWidget {
-  const _HeroHeader();
+  final HomeController controller;
+  const _HeroHeader({required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +128,6 @@ class _HeroHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Row(
                   children: [
                     const SizedBox(width: 12),
@@ -142,7 +142,7 @@ class _HeroHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 32),
-            Text(
+            const Text(
               "Good Morning,",
               style: TextStyle(fontSize: 16, color: AppColors.greyBlue),
             ),
@@ -152,6 +152,15 @@ class _HeroHeader extends StatelessWidget {
                 fontSize: 32,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
+              ),
+            ),
+            Obx(
+              () => AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: controller.currentIndex.value == 1
+                    ? _SearchBar(controller: controller)
+                    : const SizedBox(width: double.infinity, height: 0),
               ),
             ),
           ],
@@ -291,9 +300,9 @@ class _TenderCardsSection extends StatelessWidget {
                     child: _AnimatedTap(
                       child: GestureDetector(
                         onTap: () {
-                          // Get.toNamed(Routes.TENDER_DETAILS, arguments: tender);
+                          Get.toNamed(Routes.TENDER_DETAILS, arguments: tender);
                         },
-                        child: _ModernTenderCard(
+                        child: _TenderCard(
                           title: tender.title,
                           category: tender.category,
                           deadline: tender.deadline,
@@ -367,14 +376,14 @@ class _CategoryChips extends StatelessWidget {
   }
 }
 
-class _ModernTenderCard extends StatelessWidget {
+class _TenderCard extends StatelessWidget {
   final String title;
   final String category;
   final String deadline;
   final bool isBookmarked;
   final VoidCallback onBookmark;
 
-  const _ModernTenderCard({
+  const _TenderCard({
     required this.title,
     required this.category,
     required this.deadline,
@@ -636,8 +645,8 @@ class _ShimmerCard extends StatelessWidget {
   );
 }
 
-class _ModernDrawer extends StatelessWidget {
-  const _ModernDrawer();
+class _Drawer extends StatelessWidget {
+  const _Drawer();
 
   @override
   Widget build(BuildContext context) {
@@ -752,6 +761,56 @@ class _DrawerItem extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchBar extends StatelessWidget {
+  final HomeController controller;
+  const _SearchBar({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 24),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Obx(
+        () => TextField(
+          controller: controller.searchTextController,
+          focusNode: controller.searchFocusNode,
+          onChanged: (val) => controller.searchQuery.value = val,
+          style: const TextStyle(color: Colors.white, fontSize: 15),
+          cursorColor: AppColors.actionBlue,
+          decoration: InputDecoration(
+            hintText: "Search tenders, categories...",
+            hintStyle: const TextStyle(color: AppColors.greyBlue, fontSize: 14),
+            prefixIcon: const Icon(
+              Icons.search_rounded,
+              color: AppColors.greyBlue,
+              size: 22,
+            ),
+            suffixIcon: controller.searchQuery.value.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.clear_rounded,
+                      color: AppColors.greyBlue,
+                      size: 18,
+                    ),
+                    onPressed: controller.clearSearch,
+                  )
+                : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 16,
+            ),
+          ),
         ),
       ),
     );

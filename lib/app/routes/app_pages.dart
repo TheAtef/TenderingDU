@@ -7,6 +7,8 @@ import 'package:tendering_du/app/modules/home/home_view.dart';
 import 'package:tendering_du/app/modules/home/home_binding.dart';
 import 'package:tendering_du/app/modules/notifications/notifications_view.dart';
 import 'package:tendering_du/app/modules/notifications/notifications_binding.dart';
+import 'package:tendering_du/app/modules/tender_details/tender_details_view.dart';
+import 'package:tendering_du/app/modules/tender_details/tender_details_binding.dart';
 
 class AppPages {
   AppPages._();
@@ -28,6 +30,13 @@ class AppPages {
       name: Routes.NOTIFICATIONS,
       page: () => const NotificationsView(),
       binding: NotificationsBinding(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: Routes.TENDER_DETAILS,
+      page: () => const TenderDetailsView(),
+      binding: TenderDetailsBinding(),
       transition: Transition.rightToLeftWithFade,
       transitionDuration: const Duration(milliseconds: 300),
     ),
