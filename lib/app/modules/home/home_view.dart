@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:tendering_du/app/modules/profile/profile_view.dart';
 import 'home_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
@@ -17,7 +18,13 @@ class HomeView extends GetView<HomeController> {
       body: Stack(
         children: [
           const _StaticBackground(),
-          _MainContent(controller: controller),
+          Obx(() {
+            if (controller.currentIndex.value != 3) {
+              return _MainContent(controller: controller);
+            } else {
+              return ProfileView();
+            }
+          }),
           Positioned(
             bottom: 30,
             left: 0,
