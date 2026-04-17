@@ -1,36 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:tendering_du/app/core/constants/app_colors.dart';
-import 'package:tendering_du/app/routes/app_routes.dart';
-
-class Tender {
-  final int id;
-  final String title;
-  final String description;
-  final String deadline;
-  bool isFavourite;
-
-  Tender({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.deadline,
-    this.isFavourite = false,
-  });
-
-  factory Tender.fromJson(Map<String, dynamic> json) => Tender(
-    id: json['id'] as int,
-    title: json['title'] ?? '',
-    description: json['description'] ?? '',
-    deadline: json['deadline'] ?? '',
-    isFavourite: json['is_favourite'] == true,
-  );
-}
+import 'package:tendering_du/app/modules/home/home_model.dart';
 
 class HomeController extends GetxController {
-  static const _pageSize = 20;
+  static const _pageSize = 10;
   int _currentPage = 1;
   var isLastPage = false.obs;
 
@@ -45,17 +19,12 @@ class HomeController extends GetxController {
 
   final ScrollController scrollCtrl = ScrollController();
 
-  static const _baseUrl = 'ddd';
-
   @override
   void onInit() {
     super.onInit();
-
     scrollCtrl.addListener(_onScroll);
-
     ever(searchQuery, (_) => refreshAll());
     ever(activeFilters, (_) => refreshAll());
-
     fetchNextPage();
   }
 
@@ -68,18 +37,14 @@ class HomeController extends GetxController {
 
   void changeTab(int index) {
     currentIndex.value = index;
-
     switch (index) {
       case 0:
         break;
       case 1:
-        // Get.offNamed(Routes.SEARCH);
         break;
       case 2:
-        // Get.offNamed(Routes.SAVED);
         break;
       case 3:
-        //Get.offNamed(Routes.PROFILE);
         break;
     }
   }
@@ -95,13 +60,10 @@ class HomeController extends GetxController {
 
   Future<void> refreshAll() async {
     isRefreshing.value = true;
-
     _currentPage = 1;
     isLastPage.value = false;
     tenderList.clear();
-
     await fetchNextPage();
-
     isRefreshing.value = false;
   }
 
@@ -110,29 +72,51 @@ class HomeController extends GetxController {
     String? query,
     Map<String, dynamic>? filters,
   }) async {
-    final uri = Uri.parse(_baseUrl).replace(
-      queryParameters: {
-        'page': page.toString(),
-        'page_size': _pageSize.toString(),
-        if (query != null && query.isNotEmpty) 'search': query,
-        if (filters != null)
-          ...filters.map((k, v) => MapEntry(k, v.toString())),
-      },
-    );
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-    final response = await http.get(uri);
+    final categories = ['Construction', 'IT', 'Healthcare'];
+    final statuses = ['active', 'applied', 'saved'];
 
-    if (response.statusCode != 200) {
-      throw Exception('Server error ${response.statusCode}');
+    List<Tender> mockDb = List.generate(45, (index) {
+      return Tender(
+        id: index,
+        title: 'Tender Project Title ${index + 1}',
+        description: 'Detailed description for tender ${index + 1}',
+        deadline: '${10 + (index % 15)} days left',
+        category: categories[index % categories.length],
+        status: statuses[index % statuses.length],
+        isFavourite: index % 4 == 0,
+      );
+    });
+
+    var filtered = mockDb;
+
+    if (query != null && query.isNotEmpty) {
+      filtered = filtered
+          .where((t) => t.title.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     }
 
-    final json = jsonDecode(response.body);
+    if (filters != null && filters.isNotEmpty) {
+      if (filters.containsKey('category')) {
+        filtered = filtered
+            .where((t) => t.category == filters['category'])
+            .toList();
+      }
+      if (filters.containsKey('status')) {
+        filtered = filtered
+            .where((t) => t.status == filters['status'])
+            .toList();
+      }
+    }
 
-    final List data = (json is Map && json['results'] != null)
-        ? json['results']
-        : json;
+    int startIndex = (page - 1) * _pageSize;
+    if (startIndex >= filtered.length) return [];
 
-    return data.map((e) => Tender.fromJson(e)).toList();
+    int endIndex = startIndex + _pageSize;
+    if (endIndex > filtered.length) endIndex = filtered.length;
+
+    return filtered.sublist(startIndex, endIndex);
   }
 
   Future<void> fetchNextPage() async {
@@ -167,10 +151,10 @@ class HomeController extends GetxController {
 
   void toggleFavourite(Tender tender) {
     tender.isFavourite = !tender.isFavourite;
-
     final idx = tenderList.indexWhere((t) => t.id == tender.id);
     if (idx != -1) {
       tenderList[idx] = tender;
+      tenderList.refresh();
     }
   }
 

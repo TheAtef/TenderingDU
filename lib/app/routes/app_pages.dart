@@ -5,6 +5,8 @@ import 'package:tendering_du/app/routes/app_routes.dart';
 // Import your dashboard or next view/binding here
 import 'package:tendering_du/app/modules/home/home_view.dart';
 import 'package:tendering_du/app/modules/home/home_binding.dart';
+import 'package:tendering_du/app/modules/notifications/notifications_view.dart';
+import 'package:tendering_du/app/modules/notifications/notifications_binding.dart';
 
 class AppPages {
   AppPages._();
@@ -22,10 +24,12 @@ class AppPages {
       page: () => const HomeView(),
       binding: HomeBinding(),
     ),
-    // GetPage(
-    //   name: Routes.NOTIFICATIONS,
-    //   page: () => const NoicationsView(),
-    //   binding: NotificationsBinding(),
-    // ),
+    GetPage(
+      name: Routes.NOTIFICATIONS,
+      page: () => const NotificationsView(),
+      binding: NotificationsBinding(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
   ];
 }

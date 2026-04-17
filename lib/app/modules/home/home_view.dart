@@ -295,6 +295,8 @@ class _TenderCardsSection extends StatelessWidget {
                         },
                         child: _ModernTenderCard(
                           title: tender.title,
+                          category: tender.category,
+                          deadline: tender.deadline,
                           isBookmarked: tender.isFavourite,
                           onBookmark: () => controller.toggleFavourite(tender),
                         ),
@@ -321,7 +323,8 @@ class _CategoryChips extends StatelessWidget {
 
     return SliverToBoxAdapter(
       child: Obx(() {
-        controller.activeFilters.length;
+        final activeCategory = controller.activeFilters["category"];
+
         return Container(
           height: 45,
           margin: const EdgeInsets.symmetric(vertical: 20),
@@ -331,8 +334,8 @@ class _CategoryChips extends StatelessWidget {
             itemCount: categories.length,
             itemBuilder: (context, i) {
               final isActive =
-                  controller.activeFilters["category"] == categories[i] ||
-                  (i == 0 && !controller.activeFilters.containsKey("category"));
+                  activeCategory == categories[i] ||
+                  (i == 0 && activeCategory == null);
 
               return GestureDetector(
                 onTap: () {
@@ -366,11 +369,15 @@ class _CategoryChips extends StatelessWidget {
 
 class _ModernTenderCard extends StatelessWidget {
   final String title;
+  final String category;
+  final String deadline;
   final bool isBookmarked;
   final VoidCallback onBookmark;
 
   const _ModernTenderCard({
     required this.title,
+    required this.category,
+    required this.deadline,
     required this.isBookmarked,
     required this.onBookmark,
   });
@@ -391,9 +398,9 @@ class _ModernTenderCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Construction",
-                style: TextStyle(
+              Text(
+                category,
+                style: const TextStyle(
                   color: AppColors.actionBlue,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -421,9 +428,9 @@ class _ModernTenderCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              _InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
+              const _InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
               const SizedBox(width: 12),
-              _InfoPill(icon: Icons.schedule, label: "15 days left"),
+              _InfoPill(icon: Icons.schedule, label: deadline),
             ],
           ),
         ],
