@@ -756,6 +756,14 @@ class _Drawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  icon: Icons.monetization_on_rounded,
+                  title: "My Bids",
+                  onTap: () {
+                    Get.back();
+                    Get.toNamed(Routes.MYBIDS);
+                  },
+                ),
+                _DrawerItem(
                   icon: Icons.settings_rounded,
                   title: "Settings",
                   onTap: () {
