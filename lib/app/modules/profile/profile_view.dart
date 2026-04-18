@@ -205,8 +205,18 @@ class _PersonalInfoCard extends StatelessWidget {
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: colorScheme.surface,
+                color: theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: theme.borderColor),
+                boxShadow: theme.isDarkMode
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
