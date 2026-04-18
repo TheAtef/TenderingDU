@@ -131,18 +131,7 @@ class SubmitBidView extends GetView<SubmitBidController> {
                           : const SizedBox.shrink(),
                     ),
                   ]),
-                  _buildSection("Compliance", [
-                    Obx(
-                      () => CheckboxListTile(
-                        title: const Text(
-                          "I confirm all info is accurate and accept terms.",
-                        ),
-                        value: controller.agreedTerms.value,
-                        onChanged: (v) => controller.agreedTerms.value = v!,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ]),
+
                   const SizedBox(height: 40),
                 ],
               ),
@@ -191,7 +180,9 @@ class SubmitBidView extends GetView<SubmitBidController> {
     padding: const EdgeInsets.all(24),
     decoration: BoxDecoration(
       color: colorScheme.surface,
-      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+      boxShadow: [
+        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+      ],
     ),
     child: Obx(
       () => ElevatedButton(
@@ -201,10 +192,26 @@ class SubmitBidView extends GetView<SubmitBidController> {
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 55),
           backgroundColor: colorScheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
         child: controller.isSubmitting.value
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text("SUBMIT PROPOSAL"),
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                "SUBMIT PROPOSAL",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
     ),
   );
