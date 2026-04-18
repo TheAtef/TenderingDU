@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/modules/settings/change_password_binding.dart';
+import 'package:tendering_du/app/modules/settings/change_password_view.dart';
 
 class SettingsController extends GetxController {
   ThemeController get themeController => Get.find<ThemeController>();
@@ -18,6 +20,7 @@ class SettingsController extends GetxController {
   void toggleDeadlineReminders(bool value) => deadlineReminders.value = value;
   void changeLanguage(String lang) => selectedLanguage.value = lang;
   void changePassword() {
-    Get.snackbar("Change Password", " كلنا منعرف اسرارك");
+    // We use Get.to with binding to keep the architecture clean
+    Get.to(() => const ChangePasswordView(), binding: ChangePasswordBinding());
   }
 }
