@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:tendering_du/app/modules/my_bids/my_bids_binding.dart';
+import 'package:tendering_du/app/modules/my_bids/my_bids_view.dart';
 import 'package:tendering_du/app/modules/settings/settings_binding.dart';
 import 'package:tendering_du/app/modules/settings/settings_view.dart';
 import 'package:tendering_du/app/modules/splash/splash_view.dart';
@@ -46,6 +48,11 @@ class AppPages {
       name: Routes.SETTINGS,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
+    ),
+    GetPage(
+      name: Routes.MYBIDS,
+      page: () => const BidsView(),
+      binding: BidsBinding(),
     ),
   ];
 }
