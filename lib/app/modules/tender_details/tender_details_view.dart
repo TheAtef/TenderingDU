@@ -219,9 +219,12 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: controller.isSubmitting.value
-                        ? null
-                        : controller.submitBid,
+                    onPressed: () {
+                      Get.toNamed(
+                        '/submit-bid',
+                        arguments: controller.tenderDetails.value,
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(

@@ -5,6 +5,8 @@ import 'package:tendering_du/app/modules/settings/settings_binding.dart';
 import 'package:tendering_du/app/modules/settings/settings_view.dart';
 import 'package:tendering_du/app/modules/splash/splash_view.dart';
 import 'package:tendering_du/app/modules/splash/splash_binding.dart';
+import 'package:tendering_du/app/modules/submit_bid/submit_bid_view.dart';
+import 'package:tendering_du/app/modules/submit_bid/sumbit_bid_binding.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 // Import your dashboard or next view/binding here
 import 'package:tendering_du/app/modules/home/home_view.dart';
@@ -53,6 +55,11 @@ class AppPages {
       name: Routes.MYBIDS,
       page: () => const BidsView(),
       binding: BidsBinding(),
+    ),
+    GetPage(
+      name: '/submit-bid',
+      page: () => const SubmitBidView(),
+      binding: SubmitBidBinding(),
     ),
   ];
 }

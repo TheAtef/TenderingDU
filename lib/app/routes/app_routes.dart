@@ -6,4 +6,5 @@ abstract class Routes {
   static const TENDER_DETAILS = '/tender-details';
   static const SETTINGS = '/settings';
   static const MYBIDS = '/my-bids';
+  static const SUMBITBID = '/submit-bid';
 }
