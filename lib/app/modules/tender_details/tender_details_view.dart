@@ -10,18 +10,19 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.darkNavy,
+      backgroundColor: colorScheme.background,
       extendBodyBehindAppBar: true,
       extendBody: true,
-
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Get.back(),
         ),
@@ -33,8 +34,8 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                     ? Icons.favorite
                     : Icons.favorite_border,
                 color: controller.isFavourite.value
-                    ? AppColors.errorRed
-                    : Colors.white,
+                    ? colorScheme.error
+                    : colorScheme.onSurface,
               ),
               onPressed: controller.toggleFavourite,
             ),
@@ -42,15 +43,13 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
           const SizedBox(width: 8),
         ],
       ),
-
       body: Stack(
         children: [
           const _StaticBackground(),
-
           Obx(() {
             if (controller.isLoading.value) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.actionBlue),
+              return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary),
               );
             }
 
@@ -75,13 +74,13 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.actionBlue.withOpacity(0.15),
+                          color: colorScheme.primary.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           data.category,
-                          style: const TextStyle(
-                            color: AppColors.actionBlue,
+                          style: TextStyle(
+                            color: colorScheme.primary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -90,10 +89,10 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                       const SizedBox(height: 16),
                       Text(
                         data.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: colorScheme.onSurface,
                           height: 1.3,
                         ),
                       ),
@@ -118,30 +117,30 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      const Text(
+                      Text(
                         "Description",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         data.description,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.7),
                           fontSize: 14,
                           height: 1.6,
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text(
+                      Text(
                         "Requirements",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -150,17 +149,21 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.check_circle,
-                                color: Colors.greenAccent,
+                                color: colorScheme.primary,
                                 size: 20,
                               ),
                               const SizedBox(width: 12),
-                              Text(
-                                req,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 15,
+                              Expanded(
+                                child: Text(
+                                  req,
+                                  style: TextStyle(
+                                    color: colorScheme.onSurface.withOpacity(
+                                      0.7,
+                                    ),
+                                    fontSize: 15,
+                                  ),
                                 ),
                               ),
                             ],
@@ -175,7 +178,6 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
           }),
         ],
       ),
-
       bottomNavigationBar: Obx(() {
         if (controller.isLoading.value) return const SizedBox.shrink();
 
@@ -185,9 +187,11 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
               decoration: BoxDecoration(
-                color: AppColors.darkNavy.withOpacity(0.7),
+                color: colorScheme.surface.withOpacity(0.7),
                 border: Border(
-                  top: BorderSide(color: Colors.white.withOpacity(0.1)),
+                  top: BorderSide(
+                    color: colorScheme.onSurface.withOpacity(0.1),
+                  ),
                 ),
               ),
               child: Row(
@@ -197,17 +201,17 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Est. Budget",
                         style: TextStyle(
-                          color: AppColors.greyBlue,
+                          color: colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 12,
                         ),
                       ),
                       Text(
                         controller.tenderDetails.value!.estimatedBudget,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
@@ -219,7 +223,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                         ? null
                         : controller.submitBid,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.actionBlue,
+                      backgroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 16,
@@ -228,7 +232,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 8,
-                      shadowColor: AppColors.actionBlue.withOpacity(0.5),
+                      shadowColor: colorScheme.primary.withOpacity(0.5),
                     ),
                     child: controller.isSubmitting.value
                         ? const SizedBox(
@@ -239,10 +243,10 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             "Submit Bid",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: colorScheme.onPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -269,27 +273,32 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: colorScheme.surface.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.greyBlue, size: 20),
+          Icon(icon, color: colorScheme.primary, size: 20),
           const SizedBox(height: 8),
           Text(
             title,
-            style: const TextStyle(color: AppColors.greyBlue, fontSize: 12),
+            style: TextStyle(
+              color: colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: colorScheme.onSurface,
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
@@ -304,12 +313,18 @@ class _StaticBackground extends StatelessWidget {
   const _StaticBackground();
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0D1B2A), Color(0xFF1B2846), Color(0xFF273557)],
+          colors: [
+            colorScheme.background,
+            colorScheme.surface,
+            colorScheme.surface.withOpacity(0.8),
+          ],
         ),
       ),
       child: Stack(
@@ -318,7 +333,7 @@ class _StaticBackground extends StatelessWidget {
             top: -50,
             right: -50,
             child: _Glow(
-              color: AppColors.actionBlue.withOpacity(0.2),
+              color: colorScheme.primary.withOpacity(0.2),
               size: 300,
             ),
           ),

@@ -1,10 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:tendering_du/app/core/constants/app_colors.dart';
-
+import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'notifications_controller.dart';
 import 'notifications_model.dart';
 
@@ -13,15 +12,18 @@ class NotificationsView extends GetView<NotificationsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      body: Stack(
-        children: [
-          const _StaticBackground(),
-          _MainContent(controller: controller),
-        ],
-      ),
-    );
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Scaffold(
+        backgroundColor: theme.backgroundColor,
+        body: Stack(
+          children: [
+            const _StaticBackground(),
+            _MainContent(controller: controller),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -31,23 +33,26 @@ class _MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: controller.refreshAll,
-      color: AppColors.actionBlue,
-      backgroundColor: AppColors.darkNavy,
-      child: CustomScrollView(
-        controller: controller.scrollCtrl,
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
+    return Obx(() {
+      final theme = ThemeController.to;
+      return RefreshIndicator(
+        onRefresh: controller.refreshAll,
+        color: AppColors.actionBlue,
+        backgroundColor: theme.backgroundColor,
+        child: CustomScrollView(
+          controller: controller.scrollCtrl,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          slivers: [
+            _HeroHeader(controller: controller),
+            _CategoryChips(controller: controller),
+            _NotificationCardsSection(controller: controller),
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ],
         ),
-        slivers: [
-          _HeroHeader(controller: controller),
-          _CategoryChips(controller: controller),
-          _NotificationCardsSection(controller: controller),
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
-        ],
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -56,32 +61,37 @@ class _StaticBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0D1B2A), Color(0xFF1B2846), Color(0xFF273557)],
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: theme.gradientColors,
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -50,
-            right: -50,
-            child: _Glow(
-              color: AppColors.actionBlue.withOpacity(0.2),
-              size: 300,
+        child: Stack(
+          children: [
+            Positioned(
+              top: -50,
+              right: -50,
+              child: _Glow(color: theme.glowBlue, size: 300),
             ),
-          ),
-          Positioned(
-            bottom: 100,
-            left: -50,
-            child: _Glow(color: AppColors.errorRed.withOpacity(0.1), size: 250),
-          ),
-        ],
-      ),
-    );
+            Positioned(
+              bottom: 100,
+              left: -50,
+              child: _Glow(
+                color: AppColors.errorRed.withOpacity(
+                  theme.isDarkMode ? 0.1 : 0.05,
+                ),
+                size: 250,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -112,98 +122,100 @@ class _HeroHeader extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 60, 24, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _AnimatedTap(
-                  child: _GlassIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Get.back(),
+        child: Obx(() {
+          final theme = ThemeController.to;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _AnimatedTap(
+                    child: _GlassIconButton(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      onTap: () => Get.back(),
+                    ),
                   ),
-                ),
-                _AnimatedTap(
-                  child: InkWell(
-                    onTap: controller.markAllAsRead,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.actionBlue.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.actionBlue.withOpacity(0.3),
+                  _AnimatedTap(
+                    child: InkWell(
+                      onTap: controller.markAllAsRead,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.actionBlue.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.actionBlue.withOpacity(0.3),
+                          ),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.done_all,
+                              color: AppColors.actionBlue,
+                              size: 18,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Mark all read",
+                              style: TextStyle(
+                                color: AppColors.actionBlue,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.done_all,
-                            color: AppColors.actionBlue,
-                            size: 18,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            "Mark all read",
-                            style: TextStyle(
-                              color: AppColors.actionBlue,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Notifications",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                ],
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Notifications",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: theme.textPrimary,
+                    ),
                   ),
-                ),
-                Obx(() {
-                  final unreadCount = controller.notificationsList
-                      .where((n) => !n.isRead)
-                      .length;
-                  if (unreadCount == 0) return const SizedBox.shrink();
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorRed,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      "$unreadCount New",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                  Obx(() {
+                    final unreadCount = controller.notificationsList
+                        .where((n) => !n.isRead)
+                        .length;
+                    if (unreadCount == 0) return const SizedBox.shrink();
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ],
-        ),
+                      decoration: BoxDecoration(
+                        color: AppColors.errorRed,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "$unreadCount New",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -219,6 +231,7 @@ class _CategoryChips extends StatelessWidget {
 
     return SliverToBoxAdapter(
       child: Obx(() {
+        final theme = ThemeController.to;
         final currentFilter = controller.activeFilter.value;
 
         return Container(
@@ -239,20 +252,18 @@ class _CategoryChips extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isActive
-                        ? AppColors.actionBlue
-                        : Colors.white.withOpacity(0.05),
+                    color: isActive ? AppColors.actionBlue : theme.cardColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isActive
                           ? AppColors.actionBlue
-                          : Colors.white.withOpacity(0.1),
+                          : theme.borderColor,
                     ),
                   ),
                   child: Text(
                     categories[i],
                     style: TextStyle(
-                      color: isActive ? Colors.white : AppColors.greyBlue,
+                      color: isActive ? Colors.white : theme.textSecondary,
                       fontSize: 14,
                       fontWeight: isActive
                           ? FontWeight.w600
@@ -276,12 +287,14 @@ class _NotificationCardsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final theme = ThemeController.to;
+
       if (controller.isLoading.value) {
         return SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
-              (_, _) => const _ShimmerCard(),
+              (_, __) => const _ShimmerCard(),
               childCount: 5,
             ),
           ),
@@ -291,21 +304,21 @@ class _NotificationCardsSection extends StatelessWidget {
       final filteredList = controller.filteredNotifications;
 
       if (filteredList.isEmpty) {
-        return const SliverToBoxAdapter(
+        return SliverToBoxAdapter(
           child: Center(
             child: Padding(
-              padding: EdgeInsets.all(40),
+              padding: const EdgeInsets.all(40),
               child: Column(
                 children: [
                   Icon(
                     Icons.notifications_off_outlined,
                     size: 60,
-                    color: AppColors.greyBlue,
+                    color: theme.textSecondary,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     "No notifications found",
-                    style: TextStyle(color: AppColors.greyBlue, fontSize: 16),
+                    style: TextStyle(color: theme.textSecondary, fontSize: 16),
                   ),
                 ],
               ),
@@ -374,7 +387,6 @@ class _ModernNotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine Icon and Color based on notification type
     IconData iconData;
     Color iconColor;
 
@@ -385,7 +397,7 @@ class _ModernNotificationCard extends StatelessWidget {
         break;
       case 'success':
         iconData = Icons.check_circle_outline;
-        iconColor = Colors.greenAccent;
+        iconColor = AppColors.successGreen;
         break;
       case 'alert':
         iconData = Icons.warning_amber_rounded;
@@ -397,105 +409,118 @@ class _ModernNotificationCard extends StatelessWidget {
         iconColor = AppColors.greyBlue;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: notification.isRead
-            ? Colors.white.withOpacity(0.02)
-            : Colors.white.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: notification.isRead
-              ? Colors.transparent
-              : Colors.white.withOpacity(0.15),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icon Container
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(iconData, color: iconColor, size: 24),
-          ),
-          const SizedBox(width: 16),
+    return Obx(() {
+      final theme = ThemeController.to;
 
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        notification.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: notification.isRead
-                              ? FontWeight.w600
-                              : FontWeight.bold,
-                          color: notification.isRead
-                              ? Colors.white70
-                              : Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (!notification.isRead)
-                      Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.only(left: 8),
-                        decoration: const BoxDecoration(
-                          color: AppColors.actionBlue,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  notification.message,
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.4,
-                    color: notification.isRead
-                        ? AppColors.greyBlue
-                        : Colors.white70,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      size: 14,
-                      color: AppColors.greyBlue,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      notification.timeAgo,
-                      style: const TextStyle(
-                        color: AppColors.greyBlue,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+      final unreadCardColor = theme.isDarkMode
+          ? Colors.white.withOpacity(0.08)
+          : AppColors.actionBlue.withOpacity(0.06);
+      final readCardColor = theme.isDarkMode
+          ? Colors.white.withOpacity(0.02)
+          : Colors.black.withOpacity(0.02);
+
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: notification.isRead ? readCardColor : unreadCardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: notification.isRead ? Colors.transparent : theme.borderColor,
           ),
-        ],
-      ),
-    );
+          boxShadow: theme.isDarkMode
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(iconData, color: iconColor, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          notification.title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: notification.isRead
+                                ? FontWeight.w600
+                                : FontWeight.bold,
+                            color: notification.isRead
+                                ? theme.textSecondary
+                                : theme.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (!notification.isRead)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.only(left: 8),
+                          decoration: const BoxDecoration(
+                            color: AppColors.actionBlue,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    notification.message,
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.4,
+                      color: notification.isRead
+                          ? theme.textSecondary
+                          : theme.textPrimary.withOpacity(0.8),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time_rounded,
+                        size: 14,
+                        color: theme.textSecondary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        notification.timeAgo,
+                        style: TextStyle(
+                          color: theme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -507,19 +532,25 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        width: 45,
-        height: 45,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+    return Obx(() {
+      final theme = ThemeController.to;
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: theme.isDarkMode
+                ? Colors.white.withOpacity(0.1)
+                : AppColors.actionBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.borderColor),
+          ),
+          child: Icon(icon, color: theme.textPrimary, size: 20),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -555,13 +586,20 @@ class _AnimatedTapState extends State<_AnimatedTap> {
 
 class _ShimmerCard extends StatelessWidget {
   const _ShimmerCard();
+
   @override
-  Widget build(BuildContext context) => Container(
-    height: 120,
-    margin: const EdgeInsets.only(bottom: 16),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(24),
-    ),
-  );
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        height: 120,
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.borderColor),
+        ),
+      );
+    });
+  }
 }

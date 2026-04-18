@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/modules/profile/profile_view.dart';
 import 'home_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
@@ -12,28 +13,31 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      drawer: const _Drawer(),
-      body: Stack(
-        children: [
-          const _StaticBackground(),
-          Obx(() {
-            if (controller.currentIndex.value != 3) {
-              return _MainContent(controller: controller);
-            } else {
-              return ProfileView();
-            }
-          }),
-          Positioned(
-            bottom: 30,
-            left: 0,
-            right: 0,
-            child: _FloatingActionHub(controller: controller),
-          ),
-        ],
-      ),
-    );
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Scaffold(
+        backgroundColor: theme.backgroundColor,
+        drawer: const _Drawer(),
+        body: Stack(
+          children: [
+            const _StaticBackground(),
+            Obx(() {
+              if (controller.currentIndex.value != 3) {
+                return _MainContent(controller: controller);
+              } else {
+                return ProfileView();
+              }
+            }),
+            Positioned(
+              bottom: 30,
+              left: 0,
+              right: 0,
+              child: _FloatingActionHub(controller: controller),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -42,32 +46,32 @@ class _StaticBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0D1B2A), Color(0xFF1B2846), Color(0xFF273557)],
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: theme.gradientColors,
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -50,
-            right: -50,
-            child: _Glow(
-              color: AppColors.actionBlue.withOpacity(0.2),
-              size: 300,
+        child: Stack(
+          children: [
+            Positioned(
+              top: -50,
+              right: -50,
+              child: _Glow(color: theme.glowBlue, size: 300),
             ),
-          ),
-          Positioned(
-            bottom: 100,
-            left: -50,
-            child: _Glow(color: Colors.purple.withOpacity(0.1), size: 250),
-          ),
-        ],
-      ),
-    );
+            Positioned(
+              bottom: 100,
+              left: -50,
+              child: _Glow(color: theme.glowPurple, size: 250),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -121,57 +125,60 @@ class _HeroHeader extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Builder(
-                  builder: (context) => _AnimatedTap(
-                    child: _GlassIconButton(
-                      icon: Icons.menu,
-                      onTap: () => Scaffold.of(context).openDrawer(),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    const SizedBox(width: 12),
-                    _AnimatedTap(
+        child: Obx(() {
+          final theme = ThemeController.to;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Builder(
+                    builder: (context) => _AnimatedTap(
                       child: _GlassIconButton(
-                        icon: Icons.notifications_rounded,
-                        onTap: () => Get.toNamed(Routes.NOTIFICATIONS),
+                        icon: Icons.menu,
+                        onTap: () => Scaffold.of(context).openDrawer(),
                       ),
                     ),
-                  ],
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 12),
+                      _AnimatedTap(
+                        child: _GlassIconButton(
+                          icon: Icons.notifications_rounded,
+                          onTap: () => Get.toNamed(Routes.NOTIFICATIONS),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Text(
+                "Good Morning,",
+                style: TextStyle(fontSize: 16, color: theme.textSecondary),
+              ),
+              Text(
+                "Discover Tenders",
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                  color: theme.textPrimary,
                 ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            const Text(
-              "Good Morning,",
-              style: TextStyle(fontSize: 16, color: AppColors.greyBlue),
-            ),
-            const Text(
-              "Discover Tenders",
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
               ),
-            ),
-            Obx(
-              () => AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                child: controller.currentIndex.value == 1
-                    ? _SearchBar(controller: controller)
-                    : const SizedBox(width: double.infinity, height: 0),
+              Obx(
+                () => AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: controller.currentIndex.value == 1
+                      ? _SearchBar(controller: controller)
+                      : const SizedBox(width: double.infinity, height: 0),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -184,9 +191,9 @@ class _QuickStatsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = [
-      ["Active", "24", Color(0xFF667EEA)],
-      ["Saved", "12", Color(0xFFF5576C)],
-      ["Applied", "8", Color(0xFF4FACFE)],
+      ["Active", "24", const Color(0xFF667EEA)],
+      ["Saved", "12", const Color(0xFFF5576C)],
+      ["Applied", "8", const Color(0xFF4FACFE)],
     ];
 
     return SliverToBoxAdapter(
@@ -204,7 +211,6 @@ class _QuickStatsSection extends StatelessWidget {
                     controller.applyFilter("status", "active");
                     break;
                   case "Saved":
-                    // Get.offNamed(Routes.SAVED);
                     break;
                   case "Applied":
                     controller.applyFilter("status", "applied");
@@ -235,29 +241,38 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        width: 100,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(theme.isDarkMode ? 0.15 : 0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: theme.isDarkMode ? Colors.white : color,
+              ),
             ),
-          ),
-          Text(label, style: TextStyle(fontSize: 12, color: Colors.white70)),
-        ],
-      ),
-    );
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.isDarkMode ? Colors.white70 : theme.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -271,20 +286,20 @@ class _TenderCardsSection extends StatelessWidget {
       if (controller.isLoading.value && controller.tenderList.isEmpty) {
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-            (_, _) => const _ShimmerCard(),
+            (_, __) => const _ShimmerCard(),
             childCount: 5,
           ),
         );
       }
 
       if (controller.tenderList.isEmpty) {
-        return const SliverToBoxAdapter(
+        return SliverToBoxAdapter(
           child: Center(
             child: Padding(
-              padding: EdgeInsets.all(40),
+              padding: const EdgeInsets.all(40),
               child: Text(
                 "No tenders available",
-                style: TextStyle(color: Colors.white70),
+                style: TextStyle(color: ThemeController.to.textSecondary),
               ),
             ),
           ),
@@ -339,6 +354,7 @@ class _CategoryChips extends StatelessWidget {
 
     return SliverToBoxAdapter(
       child: Obx(() {
+        final theme = ThemeController.to;
         final activeCategory = controller.activeFilters["category"];
 
         return Container(
@@ -366,12 +382,19 @@ class _CategoryChips extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isActive ? AppColors.actionBlue : Colors.white10,
+                    color: isActive ? AppColors.actionBlue : theme.cardColor,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isActive ? Colors.transparent : theme.borderColor,
+                    ),
                   ),
                   child: Text(
                     categories[i],
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(
+                      color: isActive ? Colors.white : theme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    ),
                   ),
                 ),
               );
@@ -400,58 +423,102 @@ class _TenderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                category,
-                style: const TextStyle(
-                  color: AppColors.actionBlue,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.borderColor),
+          boxShadow: theme.isDarkMode
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  category,
+                  style: const TextStyle(
+                    color: AppColors.actionBlue,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: onBookmark,
-                icon: Icon(
-                  isBookmarked ? Icons.favorite : Icons.favorite_border,
-                  color: isBookmarked ? Colors.red : Colors.white54,
-                  size: 20,
+                IconButton(
+                  onPressed: onBookmark,
+                  icon: Icon(
+                    isBookmarked ? Icons.favorite : Icons.favorite_border,
+                    color: isBookmarked ? Colors.red : theme.textSecondary,
+                    size: 20,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.3,
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const _InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
-              const SizedBox(width: 12),
-              _InfoPill(icon: Icons.schedule, label: deadline),
-            ],
-          ),
-        ],
-      ),
-    );
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: theme.textPrimary,
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const _InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
+                const SizedBox(width: 12),
+                _InfoPill(icon: Icons.schedule, label: deadline),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _InfoPill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.isDarkMode
+              ? Colors.white10
+              : AppColors.actionBlue.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: theme.textSecondary),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(color: theme.textPrimary, fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -484,33 +551,6 @@ class _AnimatedTapState extends State<_AnimatedTap> {
   }
 }
 
-class _InfoPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _InfoPill({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 14, color: AppColors.greyBlue),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _FloatingActionHub extends StatelessWidget {
   final HomeController controller;
   const _FloatingActionHub({required this.controller});
@@ -519,6 +559,7 @@ class _FloatingActionHub extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Obx(() {
+        final theme = ThemeController.to;
         final currentIndex = controller.currentIndex.value;
 
         return BackdropFilter(
@@ -526,9 +567,20 @@ class _FloatingActionHub extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
+              color: theme.isDarkMode
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: theme.borderColor),
+              boxShadow: theme.isDarkMode
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -581,38 +633,43 @@ class _HubButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: active
-              ? AppColors.actionBlue.withOpacity(0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: active ? AppColors.actionBlue : AppColors.greyBlue,
-              size: 22,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: active ? AppColors.actionBlue : AppColors.greyBlue,
+    return Obx(() {
+      final theme = ThemeController.to;
+      final inactiveColor = theme.textSecondary;
+
+      return GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: active
+                ? AppColors.actionBlue.withOpacity(0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: active ? AppColors.actionBlue : inactiveColor,
+                size: 22,
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: active ? AppColors.actionBlue : inactiveColor,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -624,32 +681,46 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 45,
-        height: 45,
-        decoration: BoxDecoration(
-          color: Colors.white10,
-          borderRadius: BorderRadius.circular(12),
+    return Obx(() {
+      final theme = ThemeController.to;
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: theme.isDarkMode
+                ? Colors.white10
+                : AppColors.actionBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.borderColor),
+          ),
+          child: Icon(icon, color: theme.textPrimary, size: 20),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
-      ),
-    );
+      );
+    });
   }
 }
 
 class _ShimmerCard extends StatelessWidget {
   const _ShimmerCard();
+
   @override
-  Widget build(BuildContext context) => Container(
-    height: 150,
-    margin: const EdgeInsets.only(bottom: 16),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(24),
-    ),
-  );
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        height: 150,
+        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.borderColor),
+        ),
+      );
+    });
+  }
 }
 
 class _Drawer extends StatelessWidget {
@@ -657,74 +728,64 @@ class _Drawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: AppColors.darkNavy,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-
-              const Text(
-                "Menu",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Drawer(
+        backgroundColor: theme.backgroundColor,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  "Menu",
+                  style: TextStyle(
+                    color: theme.textPrimary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 30),
-
-              _DrawerItem(
-                icon: Icons.bar_chart_rounded,
-                title: "Reports & Performance",
-                onTap: () {
-                  Get.back();
-                  // Get.toNamed(Routes.REPORTS);
-                },
-              ),
-
-              _DrawerItem(
-                icon: Icons.settings_rounded,
-                title: "Settings",
-                onTap: () {
-                  Get.back();
-                  // Get.toNamed(Routes.SETTINGS);
-                },
-              ),
-
-              _DrawerItem(
-                icon: Icons.description_rounded,
-                title: "Legal Information",
-                onTap: () {
-                  Get.back();
-                  // Get.toNamed(Routes.LEGAL);
-                },
-              ),
-
-              const Spacer(),
-
-              _DrawerItem(
-                icon: Icons.logout_rounded,
-                title: "Logout",
-                isDestructive: true,
-                onTap: () {
-                  Get.back();
-
-                  // controller.logout();
-                  // Get.offAllNamed(Routes.LOGIN);
-                },
-              ),
-
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 30),
+                _DrawerItem(
+                  icon: Icons.bar_chart_rounded,
+                  title: "Reports & Performance",
+                  onTap: () {
+                    Get.back();
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.settings_rounded,
+                  title: "Settings",
+                  onTap: () {
+                    Get.back();
+                    Get.toNamed(Routes.SETTINGS);
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.description_rounded,
+                  title: "Legal Information",
+                  onTap: () {
+                    Get.back();
+                  },
+                ),
+                const Spacer(),
+                _DrawerItem(
+                  icon: Icons.logout_rounded,
+                  title: "Logout",
+                  isDestructive: true,
+                  onTap: () {
+                    Get.back();
+                  },
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -743,34 +804,38 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? Colors.redAccent : AppColors.actionBlue;
+    return Obx(() {
+      final theme = ThemeController.to;
+      final color = isDestructive ? Colors.redAccent : AppColors.actionBlue;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(width: 14),
-            Text(
-              title,
-              style: TextStyle(
-                color: isDestructive ? Colors.redAccent : Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+      return InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: theme.borderColor),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: 14),
+              Text(
+                title,
+                style: TextStyle(
+                  color: isDestructive ? Colors.redAccent : theme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -780,33 +845,34 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-      ),
-      child: Obx(
-        () => TextField(
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        margin: const EdgeInsets.only(top: 24),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.borderColor),
+        ),
+        child: TextField(
           controller: controller.searchTextController,
           focusNode: controller.searchFocusNode,
           onChanged: (val) => controller.searchQuery.value = val,
-          style: const TextStyle(color: Colors.white, fontSize: 15),
+          style: TextStyle(color: theme.textPrimary, fontSize: 15),
           cursorColor: AppColors.actionBlue,
           decoration: InputDecoration(
             hintText: "Search tenders, categories...",
-            hintStyle: const TextStyle(color: AppColors.greyBlue, fontSize: 14),
-            prefixIcon: const Icon(
+            hintStyle: TextStyle(color: theme.textSecondary, fontSize: 14),
+            prefixIcon: Icon(
               Icons.search_rounded,
-              color: AppColors.greyBlue,
+              color: theme.textSecondary,
               size: 22,
             ),
             suffixIcon: controller.searchQuery.value.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.clear_rounded,
-                      color: AppColors.greyBlue,
+                      color: theme.textSecondary,
                       size: 18,
                     ),
                     onPressed: controller.clearSearch,
@@ -819,7 +885,7 @@ class _SearchBar extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

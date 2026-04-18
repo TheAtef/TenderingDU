@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/modules/profile/profile_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+import 'package:tendering_du/app/core/theme/theme_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -29,6 +30,8 @@ class _HeroHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
@@ -66,11 +69,10 @@ class _HeroHeader extends StatelessWidget {
                 child: Text(
                   'JD',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
-                ), // Initials
+                ),
               ),
             ),
             const SizedBox(height: 15),
-
             Obx(
               () => AnimatedSize(
                 duration: const Duration(milliseconds: 300),
@@ -83,7 +85,7 @@ class _HeroHeader extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: theme.textPrimary,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -93,7 +95,7 @@ class _HeroHeader extends StatelessWidget {
                           : Icons.error_outline_rounded,
                       color: controller.profile.value?.isVerified == true
                           ? AppColors.actionBlue
-                          : AppColors.errorRed,
+                          : Theme.of(context).colorScheme.error,
                       size: 20,
                     ),
                   ],
@@ -144,16 +146,20 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
     return InkWell(
       onTap: onTap,
       child: Container(
         width: 45,
         height: 45,
         decoration: BoxDecoration(
-          color: Colors.white10,
+          color: theme.isDarkMode
+              ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
+              : Theme.of(context).colorScheme.primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(icon, color: theme.textPrimary, size: 20),
       ),
     );
   }
@@ -165,6 +171,9 @@ class _PersonalInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       sliver: SliverToBoxAdapter(
@@ -177,226 +186,107 @@ class _PersonalInfoCard extends StatelessWidget {
 
           final profile = controller.profile.value;
           if (profile == null) {
-            return const Center(child: Text('No profile data available.'));
+            return Center(
+              child: Text(
+                'No profile data available.',
+                style: TextStyle(color: theme.textPrimary),
+              ),
+            );
           }
 
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: AnimationLimiter(
+          Widget buildCard({
+            required String value1,
+            required String label1,
+            required String value2,
+            required String label2,
+          }) {
+            return Container(
+              height: 150,
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(24),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: AnimationConfiguration.toStaggeredList(
-                  duration: const Duration(milliseconds: 500),
-                  childAnimationBuilder: (widget) => SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(child: widget),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 8, 0),
+                    child: Text(
+                      value1,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                  children: [
-                    Container(
-                      height: 150,
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              20.0,
-                              20.0,
-                              8.0,
-                              0,
-                            ),
-                            child: Text(
-                              profile.email,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
-                            child: Text(
-                              'Email',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              20.0,
-                              0.0,
-                              8.0,
-                              0,
-                            ),
-                            child: Text(
-                              profile.phone,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
-                            child: Text(
-                              'Phone',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                    child: Text(
+                      label1,
+                      style: TextStyle(
+                        color: colorScheme.onSurface.withOpacity(0.6),
+                        fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Container(
-                      height: 150,
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              20.0,
-                              20.0,
-                              8.0,
-                              0,
-                            ),
-                            child: Text(
-                              profile.birthdate,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
-                            child: Text(
-                              'Birthdate',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              20.0,
-                              0.0,
-                              8.0,
-                              0,
-                            ),
-                            child: Text(
-                              profile.sex,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
-                            child: Text(
-                              'Sex',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                    child: Text(
+                      value2,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Container(
-                      height: 150,
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              20.0,
-                              20.0,
-                              8.0,
-                              0,
-                            ),
-                            child: Text(
-                              profile.company,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
-                            child: Text(
-                              'Company',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              20.0,
-                              0.0,
-                              8.0,
-                              0,
-                            ),
-                            child: Text(
-                              profile.CRN,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
-                            child: Text(
-                              'Commercial Register Number',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                    child: Text(
+                      label2,
+                      style: TextStyle(
+                        color: colorScheme.onSurface.withOpacity(0.6),
+                        fontSize: 16,
                       ),
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AnimationLimiter(
+            child: Column(
+              children: AnimationConfiguration.toStaggeredList(
+                duration: const Duration(milliseconds: 500),
+                childAnimationBuilder: (widget) => SlideAnimation(
+                  verticalOffset: 50,
+                  child: FadeInAnimation(child: widget),
                 ),
+                children: [
+                  buildCard(
+                    value1: profile.email,
+                    label1: 'Email',
+                    value2: profile.phone,
+                    label2: 'Phone',
+                  ),
+                  buildCard(
+                    value1: profile.birthdate,
+                    label1: 'Birthdate',
+                    value2: profile.sex,
+                    label2: 'Sex',
+                  ),
+                  buildCard(
+                    value1: profile.company,
+                    label1: 'Company',
+                    value2: profile.CRN,
+                    label2: 'Commercial Register Number',
+                  ),
+                ],
               ),
             ),
           );
@@ -408,13 +298,18 @@ class _PersonalInfoCard extends StatelessWidget {
 
 class _ShimmerCard extends StatelessWidget {
   const _ShimmerCard();
+
   @override
-  Widget build(BuildContext context) => Container(
-    height: 150,
-    margin: const EdgeInsets.only(bottom: 16),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(24),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      height: 150,
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(24),
+      ),
+    );
+  }
 }
