@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -50,7 +49,7 @@ class SubmitBidView extends GetView<SubmitBidController> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        items: ["USD", "EUR", "JD", "BDSM"]
+                        items: ["USD", "EUR", "JD"]
                             .map(
                               (c) => DropdownMenuItem(value: c, child: Text(c)),
                             )
@@ -94,42 +93,15 @@ class SubmitBidView extends GetView<SubmitBidController> {
                     _customTextField("Email", controller.emailCtrl, false),
                     _customTextField("Phone", controller.phoneCtrl, false),
                   ]),
+
                   _buildSection("Supporting Documents", [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: colorScheme.outline.withOpacity(0.5),
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.picture_as_pdf,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          const Text("Upload Tech & Financial Proposals"),
-                          const Spacer(),
-                          IconButton(
-                            onPressed: controller.pickFile,
-                            icon: const Icon(Icons.attach_file),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Obx(
-                      () => controller.fileName.value.isNotEmpty
-                          ? Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Text(
-                                "Selected: ${controller.fileName.value}",
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
+                    Obx(() {
+                      if (controller.fileName.value.isEmpty) {
+                        return _buildUploadButton(colorScheme);
+                      } else {
+                        return _buildSelectedFile(colorScheme);
+                      }
+                    }),
                   ]),
 
                   const SizedBox(height: 40),
@@ -143,6 +115,59 @@ class SubmitBidView extends GetView<SubmitBidController> {
     );
   }
 
+  Widget _buildUploadButton(ColorScheme colorScheme) {
+    return InkWell(
+      onTap: controller.pickFile,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.upload_file_rounded, color: colorScheme.primary),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text("Upload Tech & Financial Proposals (PDF, DOC)"),
+            ),
+            const Icon(Icons.attach_file),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedFile(ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withOpacity(0.05),
+        border: Border.all(color: colorScheme.primary),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.picture_as_pdf, color: colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              controller.fileName.value,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: controller.removeFile,
+            tooltip: "Remove File",
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSection(String title, List<Widget> children) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -153,7 +178,12 @@ class SubmitBidView extends GetView<SubmitBidController> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
-      ...children,
+      ...children
+          .map(
+            (w) =>
+                Padding(padding: const EdgeInsets.only(bottom: 16), child: w),
+          )
+          .toList(),
     ],
   );
 
@@ -162,18 +192,15 @@ class SubmitBidView extends GetView<SubmitBidController> {
     TextEditingController ctrl,
     bool isNum, {
     int lines = 1,
-  }) => Padding(
-    padding: const EdgeInsets.only(bottom: 16),
-    child: TextFormField(
-      controller: ctrl,
-      maxLines: lines,
-      keyboardType: isNum ? TextInputType.number : TextInputType.text,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      validator: (v) => v!.isEmpty ? "Required" : null,
+  }) => TextFormField(
+    controller: ctrl,
+    maxLines: lines,
+    keyboardType: isNum ? TextInputType.number : TextInputType.text,
+    decoration: InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     ),
+    validator: (v) => v!.isEmpty ? "This field is required" : null,
   );
 
   Widget _buildBottomBar(ColorScheme colorScheme) => Container(
@@ -183,6 +210,10 @@ class SubmitBidView extends GetView<SubmitBidController> {
       boxShadow: [
         BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
       ],
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      ),
     ),
     child: Obx(
       () => ElevatedButton(
@@ -210,6 +241,7 @@ class SubmitBidView extends GetView<SubmitBidController> {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
       ),
