@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/modules/profile/profile_view.dart';
+import 'package:tendering_du/app/modules/saved/saved_controller.dart';
+import 'package:tendering_du/app/modules/saved/saved_view.dart';
 import 'home_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
@@ -22,11 +24,22 @@ class HomeView extends GetView<HomeController> {
           children: [
             const _StaticBackground(),
             Obx(() {
-              if (controller.currentIndex.value != 3) {
-                return _MainContent(controller: controller);
-              } else {
-                return ProfileView();
+              final index = controller.currentIndex.value;
+              if (index == 2) {
+                if (Get.isRegistered<SavedController>()) {
+                  Get.find<SavedController>().refreshData();
+                } else {
+                  Get.put(SavedController());
+                }
               }
+              if (index == 0 || index == 1) {
+                return _MainContent(controller: controller);
+              } else if (index == 3) {
+                return ProfileView();
+              } else if (index == 2) {
+                return const SavedView();
+              }
+              return const SizedBox();
             }),
             Positioned(
               bottom: 30,
