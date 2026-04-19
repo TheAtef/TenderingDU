@@ -15,6 +15,12 @@ import 'package:tendering_du/app/modules/notifications/notifications_view.dart';
 import 'package:tendering_du/app/modules/notifications/notifications_binding.dart';
 import 'package:tendering_du/app/modules/tender_details/tender_details_view.dart';
 import 'package:tendering_du/app/modules/tender_details/tender_details_binding.dart';
+import 'package:tendering_du/app/modules/login/login_view.dart';
+import 'package:tendering_du/app/modules/login/login_binding.dart';
+import 'package:tendering_du/app/modules/register/register_view.dart';
+import 'package:tendering_du/app/modules/register/register_binding.dart';
+import 'package:tendering_du/app/modules/onboarding_page/onboarding_view.dart';
+import 'package:tendering_du/app/modules/onboarding_page/onboarding_binding.dart';
 
 class AppPages {
   AppPages._();
@@ -22,6 +28,25 @@ class AppPages {
   static const INITIAL = Routes.SPLASH;
 
   static final routes = [
+    GetPage(
+      name: Routes.ONBOARDING,
+      page: () => const OnboardingView(),
+      binding: OnboardingBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.LOGIN,
+      page: () => const LoginView(),
+      binding: LoginBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.REGISTER,
+      page: () => const RegisterView(),
+      binding: RegisterBinding(),
+      transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 400),
+    ),
     GetPage(
       name: Routes.SPLASH,
       page: () => const SplashView(),
