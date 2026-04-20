@@ -16,35 +16,55 @@ class LoginView extends GetView<LoginController> {
         children: [
           const _StaticBackground(),
           SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-                child: Form(
-                  key: controller.formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Icon(Icons.gavel_rounded, size: 80, color: AppColors.actionBlue),
-                      const SizedBox(height: 24),
-                      Obx(() => Text(
-                            "Welcome Back",
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+                    child: Form(
+                      key: controller.formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 48),
+                      Column(
+                        children: [
+                          const Icon(Icons.gavel_rounded, size: 75, color: AppColors.actionBlue),
+                          const SizedBox(height: 16),
+                          Text(
+                            "TenderingDU",
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: ThemeController.to.textPrimary,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5,
+                              color: AppColors.actionBlue,
                             ),
-                          )),
-                      const SizedBox(height: 8),
-                      Obx(() => Text(
-                            "Login to continue to TenderingDU",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: ThemeController.to.textSecondary,
-                            ),
-                          )),
+                          ),
+                          const SizedBox(height: 12),
+                          Obx(() => Text(
+                                "Welcome Back",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: ThemeController.to.textPrimary,
+                                ),
+                              )),
+                          const SizedBox(height: 6),
+                          Obx(() => Text(
+                                "Login to continue to your account",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: ThemeController.to.textSecondary,
+                                ),
+                              )),
+                        ],
+                      ),
                       const SizedBox(height: 48),
                       _GlassCard(
                         child: Padding(
@@ -117,10 +137,12 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
+    ],
+  ),
+);
   }
 }
 

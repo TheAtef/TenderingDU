@@ -25,92 +25,228 @@ class RegisterView extends GetView<RegisterController> {
         children: [
           const _StaticBackground(),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-              physics: const BouncingScrollPhysics(),
-              child: Form(
-                key: controller.formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(Icons.person_add_alt_1_rounded, size: 60, color: AppColors.actionBlue),
-                    const SizedBox(height: 16),
-                    Obx(() => Text(
-                          "Create Account",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: ThemeController.to.textPrimary,
-                          ),
-                        )),
-                    const SizedBox(height: 8),
-                    Obx(() => Text(
-                          "Join TenderingDU today",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: ThemeController.to.textSecondary,
-                          ),
-                        )),
-                    const SizedBox(height: 32),
-                    _GlassCard(
+            child: _WizardForm(controller: controller),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WizardStep extends StatefulWidget {
+  final Widget child;
+  const _WizardStep({required this.child});
+  @override
+  State<_WizardStep> createState() => _WizardStepState();
+}
+
+class _WizardStepState extends State<_WizardStep> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+}
+
+class _WizardForm extends StatefulWidget {
+  final RegisterController controller;
+  const _WizardForm({required this.controller});
+
+  @override
+  State<_WizardForm> createState() => _WizardFormState();
+}
+
+class _WizardFormState extends State<_WizardForm> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  
+  final GlobalKey<FormState> _step1Key = GlobalKey<FormState>();
+  final GlobalKey<FormState> _step2Key = GlobalKey<FormState>();
+  final GlobalKey<FormState> _step3Key = GlobalKey<FormState>();
+
+  void _nextPage() {
+    FocusScope.of(context).unfocus();
+    
+    // Validation logic per step
+    if (_currentPage == 0) {
+      if (!_step1Key.currentState!.validate()) return;
+      if (widget.controller.selectedGender.value == null) {
+        Get.snackbar('Error', 'Please select your gender', snackPosition: SnackPosition.BOTTOM);
+        return;
+      }
+    } else if (_currentPage == 1) {
+      if (!_step2Key.currentState!.validate()) return;
+      if (widget.controller.selectedActivity.value == null) {
+        Get.snackbar('Error', 'Please select a business activity', snackPosition: SnackPosition.BOTTOM);
+        return;
+      }
+    }
+
+    if (_currentPage < 2) {
+      _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+  }
+
+  void _prevPage() {
+    FocusScope.of(context).unfocus();
+    if (_currentPage > 0) {
+      _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 20),
+        const Icon(Icons.person_add_alt_1_rounded, size: 50, color: AppColors.actionBlue),
+        const SizedBox(height: 12),
+        Obx(() => Text(
+              "Create Account",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: ThemeController.to.textPrimary,
+              ),
+            )),
+        const SizedBox(height: 6),
+        Text(
+          _currentPage == 0 ? "Step 1: Personal Information" : _currentPage == 1 ? "Step 2: Company Information" : "Step 3: Security & Finish",
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16,
+            color: AppColors.actionBlue,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Expanded(
+          child: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: (index) {
+              setState(() => _currentPage = index);
+            },
+            children: [
+              _WizardStep(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  physics: const BouncingScrollPhysics(),
+                  child: Form(
+                    key: _step1Key,
+                    child: _GlassCard(
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _SectionTitle("Personal Details"),
+                            const _SectionTitle("Personal Details"),
                             Row(
                               children: [
-                                Expanded(child: _AuthTextField(hintText: "First Name", icon: Icons.person_outline_rounded, controller: controller.fNameCtrl, validator: Validators.name, textCapitalization: TextCapitalization.words)),
+                                Expanded(child: _AuthTextField(hintText: "First Name", icon: Icons.person_outline_rounded, controller: widget.controller.fNameCtrl, validator: Validators.name, textCapitalization: TextCapitalization.words)),
                                 const SizedBox(width: 16),
-                                Expanded(child: _AuthTextField(hintText: "Last Name", icon: Icons.person_outline_rounded, controller: controller.lNameCtrl, validator: Validators.name, textCapitalization: TextCapitalization.words)),
+                                Expanded(child: _AuthTextField(hintText: "Last Name", icon: Icons.person_outline_rounded, controller: widget.controller.lNameCtrl, validator: Validators.name, textCapitalization: TextCapitalization.words)),
                               ],
                             ),
                             const SizedBox(height: 16),
-                            _AuthTextField(hintText: "Email Address", icon: Icons.email_outlined, controller: controller.emailCtrl, validator: Validators.email, keyboardType: TextInputType.emailAddress),
+                            _AuthTextField(hintText: "Email Address", icon: Icons.email_outlined, controller: widget.controller.emailCtrl, validator: Validators.email, keyboardType: TextInputType.emailAddress),
                             const SizedBox(height: 16),
-                            _AuthTextField(hintText: "Syrian Mobile (09x / +9639x)", icon: Icons.phone_android_rounded, controller: controller.mobileCtrl, validator: Validators.syrianMobile, keyboardType: TextInputType.phone),
+                            _AuthTextField(hintText: "Syrian Mobile (09x / +9639x)", icon: Icons.phone_android_rounded, controller: widget.controller.mobileCtrl, validator: Validators.syrianMobile, keyboardType: TextInputType.phone),
                             const SizedBox(height: 16),
                             Row(
                               children: [
-                                Expanded(child: _AuthTextField(hintText: "Age", icon: Icons.calendar_today_rounded, controller: controller.ageCtrl, validator: Validators.age, keyboardType: TextInputType.number)),
+                                Expanded(child: _AuthTextField(hintText: "Age", icon: Icons.calendar_today_rounded, controller: widget.controller.ageCtrl, validator: Validators.age, keyboardType: TextInputType.number)),
                                 const SizedBox(width: 16),
-                                Expanded(child: Obx(() => _AuthDropdown(hintText: "Gender", icon: Icons.people_outline_rounded, value: controller.selectedGender.value, items: controller.genders, onChanged: controller.setGender))),
+                                Expanded(child: Obx(() => _AuthDropdown(hintText: "Gender", icon: Icons.people_outline_rounded, value: widget.controller.selectedGender.value, items: widget.controller.genders, onChanged: widget.controller.setGender))),
                               ],
                             ),
-                            const SizedBox(height: 24),
-                            _SectionTitle("Business Details"),
-                            _AuthTextField(hintText: "Company Name", icon: Icons.business_rounded, controller: controller.companyCtrl, validator: Validators.required),
+                            const SizedBox(height: 32),
+                            _NavigationButton(title: "Next", onPressed: _nextPage),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ), // Closes Form
+                ), // Closes SingleChildScrollView
+              ), // Closes _WizardStep
+              _WizardStep(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    physics: const BouncingScrollPhysics(),
+                  child: Form(
+                    key: _step2Key,
+                    child: _GlassCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const _SectionTitle("Business Details"),
+                            _AuthTextField(hintText: "Company Name", icon: Icons.business_rounded, controller: widget.controller.companyCtrl, validator: Validators.required),
                             const SizedBox(height: 16),
-                            _AuthTextField(hintText: "Commercial Registration Number", icon: Icons.numbers_rounded, controller: controller.crnCtrl, validator: Validators.required, keyboardType: TextInputType.number),
+                            _AuthTextField(hintText: "Commercial Registration Number", icon: Icons.numbers_rounded, controller: widget.controller.crnCtrl, validator: Validators.required, keyboardType: TextInputType.number),
                             const SizedBox(height: 16),
-                            Obx(() => _AuthDropdown(hintText: "Business Activity", icon: Icons.work_outline_rounded, value: controller.selectedActivity.value, items: controller.activities, onChanged: controller.setActivity)),
-                            const SizedBox(height: 24),
-                            _SectionTitle("Security"),
+                            Obx(() => _AuthDropdown(hintText: "Business Activity", icon: Icons.work_outline_rounded, value: widget.controller.selectedActivity.value, items: widget.controller.activities, onChanged: widget.controller.setActivity)),
+                            const SizedBox(height: 32),
+                            Row(
+                              children: [
+                                Expanded(child: _NavigationButton(title: "Back", isOutline: true, onPressed: _prevPage)),
+                                const SizedBox(width: 16),
+                                Expanded(child: _NavigationButton(title: "Next", onPressed: _nextPage)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ), // Closes Form
+                ), // Closes SingleChildScrollView
+              ), // Closes _WizardStep
+              _WizardStep(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    physics: const BouncingScrollPhysics(),
+                  child: Form(
+                    key: _step3Key,
+                    child: _GlassCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const _SectionTitle("Security"),
                             Obx(() => _AuthTextField(
                                   hintText: "Password",
                                   icon: Icons.lock_outline_rounded,
-                                  controller: controller.passwordCtrl,
+                                  controller: widget.controller.passwordCtrl,
                                   isPassword: true,
-                                  obscureText: controller.isPasswordHidden.value,
-                                  onTogglePassword: controller.togglePasswordVisibility,
+                                  obscureText: widget.controller.isPasswordHidden.value,
+                                  onTogglePassword: widget.controller.togglePasswordVisibility,
                                   validator: Validators.password,
                                 )),
                             const SizedBox(height: 16),
                             Obx(() => _AuthTextField(
                                   hintText: "Confirm Password",
                                   icon: Icons.lock_reset_rounded,
-                                  controller: controller.confirmPasswordCtrl,
+                                  controller: widget.controller.confirmPasswordCtrl,
                                   isPassword: true,
-                                  obscureText: controller.isConfirmPasswordHidden.value,
-                                  onTogglePassword: controller.toggleConfirmPasswordVisibility,
-                                  validator: (v) => Validators.confirmPassword(v, controller.passwordCtrl.text),
+                                  obscureText: widget.controller.isConfirmPasswordHidden.value,
+                                  onTogglePassword: widget.controller.toggleConfirmPasswordVisibility,
+                                  validator: (v) => Validators.confirmPassword(v, widget.controller.passwordCtrl.text),
                                 )),
                             const SizedBox(height: 32),
                             Obx(() {
-                              bool isBusy = controller.isLoading.value || controller.isSuccess.value;
+                              bool isBusy = widget.controller.isLoading.value || widget.controller.isSuccess.value;
                               return Center(
                                 child: _AnimatedTap(
                                   child: AnimatedContainer(
@@ -119,11 +255,11 @@ class RegisterView extends GetView<RegisterController> {
                                     height: 55,
                                     width: isBusy ? 55 : MediaQuery.of(context).size.width,
                                     decoration: BoxDecoration(
-                                      color: controller.isSuccess.value ? Colors.green : AppColors.actionBlue,
+                                      color: widget.controller.isSuccess.value ? Colors.green : AppColors.actionBlue,
                                       borderRadius: BorderRadius.circular(isBusy ? 30 : 16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: (controller.isSuccess.value ? Colors.green : AppColors.actionBlue).withOpacity(0.5),
+                                          color: (widget.controller.isSuccess.value ? Colors.green : AppColors.actionBlue).withOpacity(0.5),
                                           blurRadius: 8,
                                           offset: const Offset(0, 4),
                                         )
@@ -132,14 +268,18 @@ class RegisterView extends GetView<RegisterController> {
                                     child: Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        onTap: isBusy ? null : controller.register,
+                                        onTap: isBusy ? null : () {
+                                          if (_step3Key.currentState?.validate() ?? false) {
+                                            widget.controller.register();
+                                          }
+                                        },
                                         borderRadius: BorderRadius.circular(isBusy ? 30 : 16),
                                         child: Center(
-                                          child: controller.isSuccess.value
+                                          child: widget.controller.isSuccess.value
                                               ? const Icon(Icons.check_rounded, color: Colors.white, size: 30)
-                                              : controller.isLoading.value
+                                              : widget.controller.isLoading.value
                                                   ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                                  : const Text("Sign Up", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                                                  : const Text("Register", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                                         ),
                                       ),
                                     ),
@@ -147,10 +287,12 @@ class RegisterView extends GetView<RegisterController> {
                                 ),
                               );
                             }),
+                            const SizedBox(height: 16),
+                            _NavigationButton(title: "Go Back", isOutline: true, onPressed: _prevPage),
                             const SizedBox(height: 24),
                             Center(
                               child: TextButton(
-                                onPressed: controller.navigateToLogin,
+                                onPressed: widget.controller.navigateToLogin,
                                 child: Obx(() => RichText(
                                       text: TextSpan(
                                         text: "Already have an account? ",
@@ -162,16 +304,62 @@ class RegisterView extends GetView<RegisterController> {
                                     )),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                          ], // closes Column children
+                        ), // closes Column
+                      ), // closes Padding
+                    ), // closes GlassCard
+                  ), // closes Form
+                ), // closes SingleChildScrollView
+              ), // closes _WizardStep
+            ], // closes PageView children
+          ), // closes PageView
+        ), // closes Expanded
+      ], // closes Column children
+    ); // closes return Column
+  }
+}
+
+class _NavigationButton extends StatelessWidget {
+  final String title;
+  final VoidCallback onPressed;
+  final bool isOutline;
+
+  const _NavigationButton({required this.title, required this.onPressed, this.isOutline = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return _AnimatedTap(
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: isOutline ? Colors.transparent : AppColors.actionBlue,
+          border: isOutline ? Border.all(color: AppColors.actionBlue, width: 2) : null,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: isOutline ? [] : [
+            BoxShadow(
+              color: AppColors.actionBlue.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(16),
+            child: Center(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: isOutline ? AppColors.actionBlue : Colors.white,
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
