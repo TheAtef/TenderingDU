@@ -6,6 +6,8 @@ import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/modules/profile/profile_view.dart';
 import 'package:tendering_du/app/modules/saved/saved_controller.dart';
 import 'package:tendering_du/app/modules/saved/saved_view.dart';
+import 'package:tendering_du/app/modules/tender_results/tender_results_controller.dart';
+import 'package:tendering_du/app/modules/tender_results/tender_results_view.dart';
 import 'home_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
@@ -762,10 +764,12 @@ class _Drawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 _DrawerItem(
-                  icon: Icons.bar_chart_rounded,
-                  title: "Reports & Performance",
+                  icon: Icons.assignment_turned_in,
+                  title: "Tenders Results",
                   onTap: () {
                     Get.back();
+                    Get.lazyPut(() => TenderResultsController());
+                    Get.to(() => const TenderResultsView());
                   },
                 ),
                 _DrawerItem(
@@ -784,20 +788,13 @@ class _Drawer extends StatelessWidget {
                     Get.toNamed(Routes.SETTINGS);
                   },
                 ),
-                _DrawerItem(
-                  icon: Icons.description_rounded,
-                  title: "Legal Information",
-                  onTap: () {
-                    Get.back();
-                  },
-                ),
                 const Spacer(),
                 _DrawerItem(
                   icon: Icons.logout_rounded,
                   title: "Logout",
                   isDestructive: true,
                   onTap: () {
-                    Get.back();
+                    Get.offAllNamed(Routes.LOGIN);
                   },
                 ),
                 const SizedBox(height: 10),
