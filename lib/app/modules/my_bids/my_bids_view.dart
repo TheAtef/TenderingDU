@@ -23,23 +23,142 @@ class BidsView extends GetView<BidsController> {
                   _Header(),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(30.0, 0, 0, 0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.arrow_downward,
-                            color: theme.textPrimary,
-                            size: 22,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Applied Bids",
-                            style: TextStyle(
-                              color: theme.textPrimary,
-                              fontSize: 22,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Theme(
+                        data: Theme.of(
+                          context,
+                        ).copyWith(iconTheme: const IconThemeData(size: 40)),
+                        child: ExpansionTile(
+                          childrenPadding: EdgeInsets.only(bottom: 10),
+                          collapsedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: theme.borderColor,
+                              width: 2,
                             ),
                           ),
-                        ],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: theme.borderColor,
+                              width: 2,
+                            ),
+                          ),
+                          title: const Text(
+                            'Applied',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Bids you have applied for',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          initiallyExpanded: true,
+
+                          children: [
+                            Obx(() {
+                              if (controller.isLoading.value) {
+                                return Column(
+                                  children: List.generate(
+                                    3,
+                                    (_) => const _ShimmerCard(),
+                                  ),
+                                );
+                              } else {
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics:
+                                      NeverScrollableScrollPhysics(), // Delegate scrolling to the parent
+                                  itemCount: controller.appliedList.length,
+                                  itemBuilder: (context, index) {
+                                    final item = controller.appliedList[index];
+                                    return _ResultItem(
+                                      title: item.title,
+                                      category: item.category,
+                                      deadline: item.deadline,
+                                      onTap: () => Get.toNamed(
+                                        '/tender-details',
+                                        arguments: item,
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            }),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 20, 10, 30),
+                      child: Theme(
+                        data: Theme.of(
+                          context,
+                        ).copyWith(iconTheme: const IconThemeData(size: 40)),
+                        child: ExpansionTile(
+                          childrenPadding: EdgeInsets.only(bottom: 10),
+                          collapsedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: theme.borderColor,
+                              width: 2,
+                            ),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: theme.borderColor,
+                              width: 2,
+                            ),
+                          ),
+                          title: const Text(
+                            'History',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Bids in your history',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          children: [
+                            Obx(() {
+                              if (controller.isLoading.value) {
+                                return Column(
+                                  children: List.generate(
+                                    3,
+                                    (_) => const _ShimmerCard(),
+                                  ),
+                                );
+                              } else {
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics:
+                                      NeverScrollableScrollPhysics(), // Delegate scrolling to the parent
+                                  itemCount: controller.historyList.length,
+                                  itemBuilder: (context, index) {
+                                    final item = controller.historyList[index];
+                                    return _ResultItem(
+                                      title: item.title,
+                                      category: item.category,
+                                      result: item.isWinningBid,
+                                      onTap: () => Get.toNamed(
+                                        '/tender-details',
+                                        arguments: item,
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            }),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -190,5 +309,153 @@ class _AnimatedTapState extends State<_AnimatedTap> {
         child: widget.child,
       ),
     );
+  }
+}
+
+class _ShimmerCard extends StatelessWidget {
+  const _ShimmerCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
+    return Container(
+      height: 120,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.borderColor),
+      ),
+    );
+  }
+}
+
+class _ResultItem extends StatelessWidget {
+  final String title;
+  final String category;
+  String? deadline;
+  bool? result;
+  final VoidCallback onTap;
+
+  _ResultItem({
+    required this.title,
+    required this.category,
+    required this.onTap,
+    this.deadline,
+    this.result,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.borderColor),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.actionBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Icon(
+                Icons.description_outlined,
+                color: AppColors.actionBlue,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: theme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Category: $category",
+                    style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  ),
+                  const SizedBox(height: 4),
+                  if (deadline != null)
+                    _InfoPill(
+                      icon: Icon(
+                        Icons.schedule,
+                        size: 14,
+                        color: theme.textSecondary,
+                      ),
+                      label: deadline!,
+                    ),
+                  if (result != null)
+                    _InfoPill(
+                      icon: result == true
+                          ? Icon(
+                              Icons.check_circle_outlined,
+                              size: 14,
+                              color: Color(0xFF4CAF50),
+                            )
+                          : Icon(
+                              Icons.not_interested_outlined,
+                              size: 14,
+                              color: Color(0xFFF44336),
+                            ),
+                      label: result == true ? "Won Tender" : "Lost Tender",
+                    ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: theme.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  final Icon icon;
+  final String label;
+  const _InfoPill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final theme = ThemeController.to;
+      return Container(
+        width: 105,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.isDarkMode
+              ? Colors.white10
+              : AppColors.actionBlue.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(color: theme.textPrimary, fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

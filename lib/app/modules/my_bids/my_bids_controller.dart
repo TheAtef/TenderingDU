@@ -20,7 +20,7 @@ class BidsController extends GetxController {
     await Future.delayed(const Duration(milliseconds: 1500));
 
     final categories = ['Construction', 'IT', 'Healthcare'];
-    final statuses = ['applied', 'history'];
+    final statuses = ['history', 'applied'];
 
     List<Bid> mockDb = List.generate(20, (index) {
       return Bid(
@@ -31,7 +31,7 @@ class BidsController extends GetxController {
         category: categories[index % categories.length],
         status: statuses[index % statuses.length],
         bidDetails: 'Bid details for tender ${index + 1}',
-        isWinningBid: statuses[index % statuses.length] == 'applied'
+        isWinningBid: statuses[index % statuses.length] == 'history'
             ? index % 5 == 0
             : false,
       );
