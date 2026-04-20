@@ -7,6 +7,60 @@ class ProfileController extends GetxController {
   final ScrollController scrollCtrl = ScrollController();
   var isLoading = true.obs;
 
+  // Edit Form Key
+  GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
+
+  // Edit Text Controllers
+  final editFirstNameCtrl = TextEditingController();
+  final editLastNameCtrl = TextEditingController();
+  final editEmailCtrl = TextEditingController();
+  final editPhoneCtrl = TextEditingController();
+  final editBirthdateCtrl = TextEditingController();
+  final editSexCtrl = TextEditingController();
+
+  void populateEditFields() {
+    if (Get.isBottomSheetOpen ?? false) return; // Prevent double sheets
+    editFormKey = GlobalKey<FormState>(); // Renew the key on every open
+
+    final cur = profile.value;
+    if (cur != null) {
+      editFirstNameCtrl.text = cur.firstName;
+      editLastNameCtrl.text = cur.lastName;
+      editEmailCtrl.text = cur.email;
+      editPhoneCtrl.text = cur.phone;
+      editBirthdateCtrl.text = cur.birthdate;
+      editSexCtrl.text = cur.sex;
+    }
+  }
+
+  void saveProfileChanges() {
+    if (editFormKey.currentState?.validate() ?? false) {
+      final cur = profile.value;
+      if (cur != null) {
+        profile.value = ProfileModel(
+          firstName: editFirstNameCtrl.text,
+          lastName: editLastNameCtrl.text,
+          email: editEmailCtrl.text,
+          phone: editPhoneCtrl.text,
+          birthdate: editBirthdateCtrl.text,
+          sex: editSexCtrl.text,
+          company: cur.company, // Unchanged
+          CRN: cur.CRN, // Unchanged
+          isVerified: cur.isVerified,
+        );
+        Get.back();
+        Get.snackbar(
+          'Success',
+          'Profile updated successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(16),
+        );
+      }
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -26,9 +80,10 @@ class ProfileController extends GetxController {
       await Future.delayed(const Duration(milliseconds: 1500));
 
       final mockApiResponse = {
-        'name': 'John Doe',
+        'first_name': 'John',
+        'last_name': 'Doe',
         'email': 'john.doe@example.com',
-        'phone': '+1234567890',
+        'phone': '0933123456',
         'birthdate': '1990-01-01',
         'sex': 'Male',
         'company': 'Example Inc.',

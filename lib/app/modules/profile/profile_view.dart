@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,7 @@ import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/modules/profile/profile_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/core/utils/validators.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -55,7 +57,20 @@ class _HeroHeader extends StatelessWidget {
                     _AnimatedTap(
                       child: _GlassIconButton(
                         icon: Icons.edit_rounded,
-                        onTap: () {},
+                        onTap: () {
+                          controller.populateEditFields();
+                          Get.bottomSheet(
+                            const EditProfileBottomSheet(),
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            enterBottomSheetDuration: const Duration(
+                              milliseconds: 400,
+                            ),
+                            exitBottomSheetDuration: const Duration(
+                              milliseconds: 300,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -81,7 +96,7 @@ class _HeroHeader extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      controller.profile.value?.name ?? '',
+                      '${controller.profile.value?.firstName ?? ''} ${controller.profile.value?.lastName ?? ''}',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
@@ -319,6 +334,275 @@ class _ShimmerCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface.withOpacity(0.5),
         borderRadius: BorderRadius.circular(24),
+      ),
+    );
+  }
+}
+
+class EditProfileBottomSheet extends GetView<ProfileController> {
+  const EditProfileBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+      child: Container(
+        height: Get.height * 0.85,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        decoration: BoxDecoration(
+          color: theme.backgroundColor.withOpacity(
+            theme.isDarkMode ? 0.8 : 0.95,
+          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+          border: Border.all(color: theme.borderColor.withOpacity(0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.actionBlue.withOpacity(0.1),
+              blurRadius: 40,
+              spreadRadius: 10,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 50,
+              height: 5,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: theme.textSecondary.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            Text(
+              "Edit Personal Info",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: theme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 30),
+            Expanded(
+              child: Form(
+                key: controller.editFormKey,
+                child: AnimationLimiter(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 500),
+                      childAnimationBuilder: (widget) => SlideAnimation(
+                        verticalOffset: 50,
+                        child: FadeInAnimation(child: widget),
+                      ),
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: _buildModernTextField(
+                                'First Name',
+                                Icons.person_rounded,
+                                controller.editFirstNameCtrl,
+                                theme,
+                                validator: (val) =>
+                                    Validators.name(val, isLastName: false),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildModernTextField(
+                                'Last Name',
+                                Icons.person_rounded,
+                                controller.editLastNameCtrl,
+                                theme,
+                                validator: (val) =>
+                                    Validators.name(val, isLastName: true),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          'Email Address',
+                          Icons.email_rounded,
+                          controller.editEmailCtrl,
+                          theme,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: Validators.email,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          'Syrian Phone Number',
+                          Icons.phone_rounded,
+                          controller.editPhoneCtrl,
+                          theme,
+                          keyboardType: TextInputType.phone,
+                          validator: Validators.syrianMobile,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: _buildModernTextField(
+                                'Birthdate (YYYY-MM-DD)',
+                                Icons.calendar_month_rounded,
+                                controller.editBirthdateCtrl,
+                                theme,
+                                validator: Validators.birthdate,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildModernDropdown(
+                                'Sex',
+                                Icons.wc_rounded,
+                                controller.editSexCtrl,
+                                theme,
+                                ['Male', 'Female'],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Get.back(),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      side: BorderSide(color: theme.borderColor),
+                    ),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: theme.textSecondary,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: controller.saveProfileChanges,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.actionBlue,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      "Save Changes",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernTextField(
+    String label,
+    IconData icon,
+    TextEditingController txtController,
+    ThemeController theme, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.isDarkMode
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.borderColor.withOpacity(0.5)),
+      ),
+      child: TextFormField(
+        controller: txtController,
+        style: TextStyle(color: theme.textPrimary),
+        keyboardType: keyboardType,
+        validator: validator,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: theme.textSecondary, fontSize: 14),
+          prefixIcon: Icon(icon, color: AppColors.actionBlue.withOpacity(0.7)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
+          errorStyle: const TextStyle(height: 0),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernDropdown(
+    String label,
+    IconData icon,
+    TextEditingController txtController,
+    ThemeController theme,
+    List<String> items,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.isDarkMode
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.borderColor.withOpacity(0.5)),
+      ),
+      child: DropdownButtonFormField<String>(
+        value:
+            txtController.text.isNotEmpty && items.contains(txtController.text)
+            ? txtController.text
+            : null,
+        dropdownColor: theme.cardColor,
+        style: TextStyle(color: theme.textPrimary, fontSize: 16),
+        icon: Icon(Icons.arrow_drop_down_rounded, color: theme.textSecondary),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: theme.textSecondary, fontSize: 14),
+          prefixIcon: Icon(icon, color: AppColors.actionBlue.withOpacity(0.7)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
+          errorStyle: const TextStyle(height: 0),
+        ),
+        items: items
+            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+            .toList(),
+        onChanged: (val) {
+          if (val != null) txtController.text = val;
+        },
+        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
       ),
     );
   }

@@ -1,5 +1,6 @@
 class ProfileModel {
-  final String name;
+  final String firstName;
+  final String lastName;
   final String email;
   final String phone;
   final String birthdate;
@@ -9,7 +10,8 @@ class ProfileModel {
   final bool isVerified;
 
   ProfileModel({
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
     required this.phone,
     required this.birthdate,
@@ -21,10 +23,11 @@ class ProfileModel {
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
-      name: json['name'] ?? '',
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      birthdate: json['birthdate'] ?? '',
+      birthdate: json['birthdate']?.toString() ?? '',
       sex: json['sex'] ?? '',
       company: json['company'] ?? '',
       CRN: json['commercial_register_number'] ?? '',

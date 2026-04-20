@@ -9,16 +9,16 @@ class RegisterController extends GetxController {
   final lNameCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
   final mobileCtrl = TextEditingController();
-  final ageCtrl = TextEditingController();
+  final birthdateCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
   final confirmPasswordCtrl = TextEditingController();
   final companyCtrl = TextEditingController();
   final crnCtrl = TextEditingController();
 
-  var selectedGender = RxnString();
+  var selectedSex = RxnString();
   var selectedActivity = RxnString();
 
-  final genders = ['Male', 'Female'];
+  final sexOptions = ['Male', 'Female'];
   final activities = [
     'Construction',
     'IT',
@@ -33,17 +33,17 @@ class RegisterController extends GetxController {
   void togglePasswordVisibility() => isPasswordHidden.toggle();
   void toggleConfirmPasswordVisibility() => isConfirmPasswordHidden.toggle();
 
-  void setGender(String? val) => selectedGender.value = val;
+  void setSex(String? val) => selectedSex.value = val;
   void setActivity(String? val) => selectedActivity.value = val;
 
   void register() async {
     // If the view handles step-by-step validation, we only ensure final step here
     // but the formKey check should still be there for safety if accessed otherwise.
-    if (ageCtrl.text.isNotEmpty && passwordCtrl.text.isNotEmpty) {
-      if (selectedGender.value == null) {
+    if (birthdateCtrl.text.isNotEmpty && passwordCtrl.text.isNotEmpty) {
+      if (selectedSex.value == null) {
         Get.snackbar(
           'Error',
-          'Please select your gender',
+          'Please select your sex',
           snackPosition: SnackPosition.BOTTOM,
         );
         return;
@@ -80,7 +80,7 @@ class RegisterController extends GetxController {
     lNameCtrl.dispose();
     emailCtrl.dispose();
     mobileCtrl.dispose();
-    ageCtrl.dispose();
+    birthdateCtrl.dispose();
     passwordCtrl.dispose();
     confirmPasswordCtrl.dispose();
     companyCtrl.dispose();
