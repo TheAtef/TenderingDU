@@ -7,6 +7,7 @@ class TenderDetailsModel {
   final String status;
   final String estimatedBudget;
   final List<String> requirements;
+  final String pdfUrl;
   bool isFavourite;
 
   TenderDetailsModel({
@@ -18,6 +19,7 @@ class TenderDetailsModel {
     required this.status,
     required this.estimatedBudget,
     required this.requirements,
+    required this.pdfUrl,
     this.isFavourite = false,
   });
 
@@ -31,6 +33,7 @@ class TenderDetailsModel {
       status: json['status'] ?? '',
       estimatedBudget: json['estimated_budget'] ?? '\$0',
       requirements: List<String>.from(json['requirements'] ?? []),
+      pdfUrl: json['pdf_url'] ?? '',
       isFavourite: json['is_favourite'] == true,
     );
   }

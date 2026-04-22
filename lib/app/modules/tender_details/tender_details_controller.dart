@@ -40,6 +40,8 @@ class TenderDetailsController extends GetxController {
           'Company Profile & Portfolio',
           'Financial Statements (Last 2 Years)',
         ],
+        'pdf_url':
+            'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
         'is_favourite': basicTender.isFavourite,
       };
 

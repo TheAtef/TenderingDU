@@ -10,4 +10,5 @@ abstract class Routes {
   static const SETTINGS = '/settings';
   static const MYBIDS = '/my-bids';
   static const SUBMITBID = '/submit-bid';
+  static const PDF_VIEWER = '/pdf-viewer';
 }

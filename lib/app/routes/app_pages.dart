@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:tendering_du/app/modules/PDF_viewer/pdfviewer_view.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_binding.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_view.dart';
 import 'package:tendering_du/app/modules/settings/settings_binding.dart';
@@ -23,6 +24,7 @@ import 'package:tendering_du/app/modules/register/register_view.dart';
 import 'package:tendering_du/app/modules/register/register_binding.dart';
 import 'package:tendering_du/app/modules/onboarding_page/onboarding_view.dart';
 import 'package:tendering_du/app/modules/onboarding_page/onboarding_binding.dart';
+import 'package:tendering_du/app/modules/PDF_viewer/pdfviewer_controller.dart';
 
 class AppPages {
   AppPages._();
@@ -92,6 +94,11 @@ class AppPages {
       name: '/tenders-results',
       page: () => const TenderResultsView(),
       binding: TenderResultsBinding(),
+    ),
+    GetPage(
+      name: '/pdf-viewer',
+      page: () => const PdfViewerView(),
+      binding: BindingsBuilder(() => Get.lazyPut(() => PdfViewerController())),
     ),
   ];
 }

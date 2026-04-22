@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
+import 'package:tendering_du/app/routes/app_routes.dart';
 import 'tender_details_controller.dart';
 
 class TenderDetailsView extends GetView<TenderDetailsController> {
@@ -170,6 +171,32 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      Text(
+                        "Attachments",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _DocumentAttachment(
+                        title: "Tender Official Document",
+                        onTap: () {
+                          print(
+                            "DEBUG: Navigating to PDF with URL: ${data.pdfUrl}",
+                          );
+                          Get.toNamed(
+                            '/pdf-viewer',
+                            arguments: {
+                              'url': data.pdfUrl,
+                              'title': data.title,
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -265,6 +292,60 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
   }
 }
 
+class _DocumentAttachment extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const _DocumentAttachment({required this.title, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colorScheme.surface.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.picture_as_pdf, color: colorScheme.primary, size: 28),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "Tap to view document",
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.6),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: colorScheme.onSurface.withOpacity(0.4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _InfoCard extends StatelessWidget {
   final String title, value;
   final IconData icon;
@@ -277,7 +358,6 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -317,7 +397,6 @@ class _StaticBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
