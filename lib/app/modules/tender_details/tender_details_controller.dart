@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:tendering_du/app/modules/home/home_controller.dart';
-import 'tender_details_model.dart';
+import 'tender_details_model.dart'; // Ensure correct import
 
 class TenderDetailsController extends GetxController {
-  final Tender basicTender = Get.arguments;
+  final TenderDetailsModel basicTender = Get.arguments as TenderDetailsModel;
 
   var isLoading = true.obs;
   var isSubmitting = false.obs;
@@ -59,6 +59,7 @@ class TenderDetailsController extends GetxController {
     // await http.post('.../api/tenders/${basicTender.id}/favorite');
 
     basicTender.isFavourite = isFavourite.value;
+
     if (Get.isRegistered<HomeController>()) {
       Get.find<HomeController>().tenderList.refresh();
     }
