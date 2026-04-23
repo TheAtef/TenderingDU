@@ -1,29 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
-
-class Tender {
-  final int id;
-  final String title;
-  final String description;
-  final String deadline;
-  final String category;
-  final String status;
-  bool isFavourite;
-
-  Tender({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.deadline,
-    required this.category,
-    required this.status,
-    this.isFavourite = false,
-  });
-}
+import 'package:tendering_du/app/modules/home/home_model.dart';
 
 class HomeController extends GetxController {
-  static const _pageSize = 10;
+  static const _pageSize = 100000;
   int _currentPage = 1;
   var isLastPage = false.obs;
 
@@ -35,14 +17,16 @@ class HomeController extends GetxController {
   var activeFilters = <String, dynamic>{}.obs;
   var currentIndex = 0.obs;
 
-  final ScrollController scrollCtrl = ScrollController();
+  final Map<int, ScrollController> _scrollControllers = {};
+
   final TextEditingController searchTextController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
+
+  ScrollController? get scrollCtrl => null;
 
   @override
   void onInit() {
     super.onInit();
-    scrollCtrl.addListener(_onScroll);
     debounce(
       searchQuery,
       (_) => refreshAll(),
@@ -52,10 +36,29 @@ class HomeController extends GetxController {
     fetchNextPage();
   }
 
+  ScrollController getScrollController(int index) {
+    if (!_scrollControllers.containsKey(index)) {
+      _scrollControllers[index] = ScrollController();
+      _scrollControllers[index]!.addListener(() => _onScroll(index));
+    }
+    return _scrollControllers[index]!;
+  }
+
+  void _onScroll(int index) {
+    final ctrl = _scrollControllers[index];
+    if (ctrl != null &&
+        ctrl.position.pixels >= ctrl.position.maxScrollExtent - 200 &&
+        !isLoading.value &&
+        !isLastPage.value) {
+      fetchNextPage();
+    }
+  }
+
   @override
   void onClose() {
-    scrollCtrl.removeListener(_onScroll);
-    scrollCtrl.dispose();
+    for (var controller in _scrollControllers.values) {
+      controller.dispose();
+    }
     searchTextController.dispose();
     searchFocusNode.dispose();
     super.onClose();
@@ -71,22 +74,15 @@ class HomeController extends GetxController {
 
     if (index == 1) {
       Future.delayed(const Duration(milliseconds: 200), () {
-        searchFocusNode.requestFocus();
+        if (searchFocusNode.canRequestFocus) {
+          searchFocusNode.requestFocus();
+        }
       });
     } else {
       searchFocusNode.unfocus();
       if (searchQuery.value.isNotEmpty) {
         clearSearch();
       }
-    }
-  }
-
-  void _onScroll() {
-    if (scrollCtrl.position.pixels >=
-            scrollCtrl.position.maxScrollExtent - 200 &&
-        !isLoading.value &&
-        !isLastPage.value) {
-      fetchNextPage();
     }
   }
 
@@ -173,8 +169,8 @@ class HomeController extends GetxController {
       Get.snackbar(
         'Error',
         e.toString(),
-        backgroundColor: AppColors.errorRed,
-        colorText: AppColors.white,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     } finally {
       isLoading.value = false;

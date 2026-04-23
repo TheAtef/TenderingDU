@@ -1,26 +1,29 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:tendering_du/app/modules/home/home_controller.dart';
-import 'tender_details_model.dart'; // Ensure correct import
+import 'package:tendering_du/app/modules/home/home_model.dart';
+import 'tender_details_model.dart';
 
 class TenderDetailsController extends GetxController {
-  final TenderDetailsModel basicTender = Get.arguments as TenderDetailsModel;
+  final Tender basicTender = Get.arguments;
 
-  var isLoading = true.obs;
-  var isSubmitting = false.obs;
-  var isFavourite = false.obs;
+  final isLoading = true.obs;
+  final isError = false.obs;
+  final isSubmitting = false.obs;
+  final isFavourite = false.obs;
 
-  var tenderDetails = Rxn<TenderDetailsModel>();
+  late TenderDetailsModel tenderDetails;
 
   @override
   void onInit() {
     super.onInit();
     isFavourite.value = basicTender.isFavourite;
-    fetchTenderDetailsFromApi();
+    fetchTenderDetails();
   }
 
-  Future<void> fetchTenderDetailsFromApi() async {
+  Future<void> fetchTenderDetails() async {
     isLoading.value = true;
+    isError.value = false;
 
     try {
       await Future.delayed(const Duration(milliseconds: 1500));
@@ -41,28 +44,23 @@ class TenderDetailsController extends GetxController {
           'Financial Statements (Last 2 Years)',
         ],
         'pdf_url':
-            'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
+            'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+        'postedDate': '',
         'is_favourite': basicTender.isFavourite,
       };
 
-      tenderDetails.value = TenderDetailsModel.fromJson(mockApiResponse);
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to load details from server.');
-    } finally {
+      tenderDetails = TenderDetailsModel.fromJson(mockApiResponse);
       isLoading.value = false;
+    } catch (e) {
+      isLoading.value = false;
+      isError.value = true;
+      Get.snackbar('Error', 'Failed to load details');
     }
   }
 
-  Future<void> toggleFavourite() async {
+  void toggleFavourite() {
     isFavourite.value = !isFavourite.value;
-
-    // await http.post('.../api/tenders/${basicTender.id}/favorite');
-
     basicTender.isFavourite = isFavourite.value;
-
-    if (Get.isRegistered<HomeController>()) {
-      Get.find<HomeController>().tenderList.refresh();
-    }
   }
 
   Future<void> submitBid() async {
@@ -74,12 +72,11 @@ class TenderDetailsController extends GetxController {
 
     Get.snackbar(
       'Success',
-      'Your bid has been submitted successfully.',
-      backgroundColor: Colors.green.withOpacity(0.9),
+      'Your bid submitted successfully',
+      backgroundColor: Colors.green,
       colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
     );
 
-    Future.delayed(const Duration(seconds: 2), () => Get.back());
+    Get.back();
   }
 }

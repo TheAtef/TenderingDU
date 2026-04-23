@@ -1,3 +1,7 @@
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:tendering_du/app/core/constants/app_colors.dart';
+
 class Tender {
   final int id;
   final String title;

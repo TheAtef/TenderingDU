@@ -17,42 +17,43 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Scaffold(
-        backgroundColor: theme.backgroundColor,
-        drawer: const _Drawer(),
-        body: Stack(
-          children: [
-            const _StaticBackground(),
-            Obx(() {
-              final index = controller.currentIndex.value;
-              if (index == 2) {
-                if (Get.isRegistered<SavedController>()) {
-                  Get.find<SavedController>().refreshData();
-                } else {
-                  Get.put(SavedController());
-                }
-              }
-              if (index == 0 || index == 1) {
-                return _MainContent(controller: controller);
-              } else if (index == 3) {
-                return ProfileView();
-              } else if (index == 2) {
-                return const SavedView();
-              }
-              return const SizedBox();
-            }),
-            Positioned(
-              bottom: 30,
-              left: 0,
-              right: 0,
-              child: _FloatingActionHub(controller: controller),
-            ),
-          ],
-        ),
-      );
-    });
+    final theme = ThemeController.to;
+
+    return Scaffold(
+      backgroundColor: theme.backgroundColor,
+      drawer: const _Drawer(),
+      body: Stack(
+        children: [
+          const _StaticBackground(),
+          Obx(() => _buildIndexedContent(controller.currentIndex.value)),
+          Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: _FloatingActionHub(controller: controller),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIndexedContent(int index) {
+    if (index == 2) {
+      final savedController = Get.isRegistered<SavedController>()
+          ? Get.find<SavedController>()
+          : Get.put(SavedController());
+      savedController.refreshData();
+    }
+
+    return IndexedStack(
+      index: index,
+      children: [
+        _MainContent(controller: controller),
+        _MainContent(controller: controller),
+        const SavedView(),
+        ProfileView(),
+      ],
+    );
   }
 }
 

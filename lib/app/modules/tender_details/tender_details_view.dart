@@ -54,7 +54,11 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
               );
             }
 
-            final data = controller.tenderDetails.value!;
+            if (controller.isError.value) {
+              return const Center(child: Text("Error loading data"));
+            }
+
+            final data = controller.tenderDetails;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(24, 100, 24, 120),
@@ -184,9 +188,6 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                       _DocumentAttachment(
                         title: "Tender Official Document",
                         onTap: () {
-                          print(
-                            "DEBUG: Navigating to PDF with URL: ${data.pdfUrl}",
-                          );
                           Get.toNamed(
                             '/pdf-viewer',
                             arguments: {
@@ -206,7 +207,8 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
         ],
       ),
       bottomNavigationBar: Obx(() {
-        if (controller.isLoading.value) return const SizedBox.shrink();
+        if (controller.isLoading.value || controller.isError.value)
+          return const SizedBox.shrink();
 
         return ClipRRect(
           child: BackdropFilter(
@@ -236,7 +238,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                         ),
                       ),
                       Text(
-                        controller.tenderDetails.value!.estimatedBudget,
+                        controller.tenderDetails.estimatedBudget,
                         style: TextStyle(
                           color: colorScheme.onSurface,
                           fontSize: 22,
@@ -246,12 +248,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Get.toNamed(
-                        '/submit-bid',
-                        arguments: controller.tenderDetails.value,
-                      );
-                    },
+                    onPressed: controller.submitBid,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
