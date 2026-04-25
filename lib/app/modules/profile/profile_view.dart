@@ -467,6 +467,34 @@ class EditProfileBottomSheet extends GetView<ProfileController> {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 16),
+                        Obx(
+                          () => _buildModernTextField(
+                            'Enter Password to Confirm Edit',
+                            Icons.lock_rounded,
+                            controller.editPasswordCtrl,
+                            theme,
+                            obscureText: controller.isPasswordHidden.value,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return 'Password is required to apply changes';
+                              }
+                              return null;
+                            },
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isPasswordHidden.value
+                                    ? Icons.visibility_off_rounded
+                                    : Icons.visibility_rounded,
+                                color: theme.textSecondary,
+                              ),
+                              onPressed: controller.togglePasswordVisibility,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ), // extra padding for scrolling
                       ],
                     ),
                   ),
@@ -533,6 +561,8 @@ class EditProfileBottomSheet extends GetView<ProfileController> {
     ThemeController theme, {
     String? Function(String?)? validator,
     TextInputType? keyboardType,
+    bool obscureText = false,
+    Widget? suffixIcon,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -547,10 +577,12 @@ class EditProfileBottomSheet extends GetView<ProfileController> {
         style: TextStyle(color: theme.textPrimary),
         keyboardType: keyboardType,
         validator: validator,
+        obscureText: obscureText,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(color: theme.textSecondary, fontSize: 14),
           prefixIcon: Icon(icon, color: AppColors.actionBlue.withOpacity(0.7)),
+          suffixIcon: suffixIcon,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
