@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'settings_controller.dart';
 
 class SettingsView extends GetView<SettingsController> {
@@ -113,8 +114,8 @@ class _Header extends StatelessWidget {
           final theme = ThemeController.to;
           return Row(
             children: [
-              _AnimatedTap(
-                child: _GlassIconButton(
+              AnimatedTap(
+                child: GlassIconButton(
                   icon: Icons.arrow_back_rounded,
                   onTap: () => Get.back(),
                 ),
@@ -479,7 +480,7 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AnimatedTap(
+    return AnimatedTap(
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
@@ -514,61 +515,6 @@ class _ActionTile extends StatelessWidget {
             );
           }),
         ),
-      ),
-    );
-  }
-}
-
-class _GlassIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassIconButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 45,
-          height: 45,
-          decoration: BoxDecoration(
-            color: theme.isDarkMode
-                ? Colors.white10
-                : AppColors.actionBlue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.borderColor),
-          ),
-          child: Icon(icon, color: theme.textPrimary, size: 20),
-        ),
-      );
-    });
-  }
-}
-
-class _AnimatedTap extends StatefulWidget {
-  final Widget child;
-  const _AnimatedTap({required this.child});
-
-  @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
-}
-
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => scale = 0.97),
-      onTapUp: (_) => setState(() => scale = 1),
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
       ),
     );
   }

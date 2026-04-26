@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'onboarding_controller.dart';
 
 class OnboardingView extends GetView<OnboardingController> {
@@ -15,7 +16,7 @@ class OnboardingView extends GetView<OnboardingController> {
     return Scaffold(
       body: Stack(
         children: [
-          const _StaticBackground(),
+          const StaticBackground(),
           SafeArea(
             child: Column(
               children: [
@@ -193,7 +194,7 @@ class _NextButton extends StatelessWidget {
     return Obx(() {
       final isLast =
           controller.currentIndex.value == controller.items.length - 1;
-      return _AnimatedTap(
+      return AnimatedTap(
         child: ElevatedButton(
           onPressed: controller.nextPage,
           style: ElevatedButton.styleFrom(
@@ -220,55 +221,6 @@ class _NextButton extends StatelessWidget {
         ),
       );
     });
-  }
-}
-
-class _StaticBackground extends StatelessWidget {
-  const _StaticBackground();
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: ThemeController.to.gradientColors,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -50,
-              right: -50,
-              child: _Glow(color: ThemeController.to.glowBlue, size: 300),
-            ),
-            Positioned(
-              bottom: 100,
-              left: -50,
-              child: _Glow(color: ThemeController.to.glowPurple, size: 250),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _Glow extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Glow({required this.color, required this.size});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 50)],
-      ),
-    );
   }
 }
 
@@ -303,31 +255,5 @@ class _GlassCard extends StatelessWidget {
         ),
       );
     });
-  }
-}
-
-class _AnimatedTap extends StatefulWidget {
-  final Widget child;
-  const _AnimatedTap({required this.child});
-  @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
-}
-
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-  void _onTapDown(_) => setState(() => scale = 0.95);
-  void _onTapUp(_) => setState(() => scale = 1);
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
-      ),
-    );
   }
 }

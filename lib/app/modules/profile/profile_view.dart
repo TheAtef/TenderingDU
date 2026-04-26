@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/modules/profile/profile_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
@@ -44,7 +45,7 @@ class _HeroHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Builder(
-                  builder: (context) => _AnimatedTap(
+                  builder: (context) => AnimatedTap(
                     child: _GlassIconButton(
                       icon: Icons.menu,
                       onTap: () => Scaffold.of(context).openDrawer(),
@@ -54,7 +55,7 @@ class _HeroHeader extends StatelessWidget {
                 Row(
                   children: [
                     const SizedBox(width: 12),
-                    _AnimatedTap(
+                    AnimatedTap(
                       child: _GlassIconButton(
                         icon: Icons.edit_rounded,
                         onTap: () {
@@ -119,35 +120,6 @@ class _HeroHeader extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _AnimatedTap extends StatefulWidget {
-  final Widget child;
-  const _AnimatedTap({required this.child});
-
-  @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
-}
-
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-
-  void _onTapDown(_) => setState(() => scale = 0.95);
-  void _onTapUp(_) => setState(() => scale = 1);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
       ),
     );
   }

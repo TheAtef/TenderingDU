@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'notifications_controller.dart';
 import 'notifications_model.dart';
 
@@ -18,7 +19,7 @@ class NotificationsView extends GetView<NotificationsController> {
         backgroundColor: theme.backgroundColor,
         body: Stack(
           children: [
-            const _StaticBackground(),
+            const StaticBackground(),
             _MainContent(controller: controller),
           ],
         ),
@@ -53,63 +54,6 @@ class _MainContent extends StatelessWidget {
         ),
       );
     });
-  }
-}
-
-class _StaticBackground extends StatelessWidget {
-  const _StaticBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: theme.gradientColors,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -50,
-              right: -50,
-              child: _Glow(color: theme.glowBlue, size: 300),
-            ),
-            Positioned(
-              bottom: 100,
-              left: -50,
-              child: _Glow(
-                color: AppColors.errorRed.withOpacity(
-                  theme.isDarkMode ? 0.1 : 0.05,
-                ),
-                size: 250,
-              ),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _Glow extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Glow({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 50)],
-      ),
-    );
   }
 }
 

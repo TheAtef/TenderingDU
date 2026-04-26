@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'tender_details_controller.dart';
 
@@ -46,7 +47,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
       ),
       body: Stack(
         children: [
-          const _StaticBackground(),
+          const StaticBackground(),
           Obx(() {
             if (controller.isLoading.value) {
               return Center(
@@ -384,56 +385,6 @@ class _InfoCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _StaticBackground extends StatelessWidget {
-  const _StaticBackground();
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colorScheme.background,
-            colorScheme.surface,
-            colorScheme.surface.withOpacity(0.8),
-          ],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -50,
-            right: -50,
-            child: _Glow(
-              color: colorScheme.primary.withOpacity(0.2),
-              size: 300,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Glow extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Glow({required this.color, required this.size});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 50)],
       ),
     );
   }

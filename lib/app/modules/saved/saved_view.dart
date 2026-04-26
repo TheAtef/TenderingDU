@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'saved_controller.dart';
@@ -151,42 +152,10 @@ class _TenderCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                const _InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
+                const InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
                 const SizedBox(width: 12),
-                _InfoPill(icon: Icons.schedule, label: deadline),
+                InfoPill(icon: Icons.schedule, label: deadline),
               ],
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _InfoPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _InfoPill({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: theme.isDarkMode
-              ? Colors.white10
-              : AppColors.actionBlue.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 14, color: theme.textSecondary),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(color: theme.textPrimary, fontSize: 12),
             ),
           ],
         ),

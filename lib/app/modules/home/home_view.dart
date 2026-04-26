@@ -11,6 +11,7 @@ import 'package:tendering_du/app/modules/tender_results/tender_results_view.dart
 import 'home_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -24,7 +25,7 @@ class HomeView extends GetView<HomeController> {
       drawer: const _Drawer(),
       body: Stack(
         children: [
-          const _StaticBackground(),
+          const StaticBackground(),
           Obx(() => _buildIndexedContent(controller.currentIndex.value)),
           Positioned(
             bottom: 30,
@@ -53,58 +54,6 @@ class HomeView extends GetView<HomeController> {
         const SavedView(),
         ProfileView(),
       ],
-    );
-  }
-}
-
-class _StaticBackground extends StatelessWidget {
-  const _StaticBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: theme.gradientColors,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -50,
-              right: -50,
-              child: _Glow(color: theme.glowBlue, size: 300),
-            ),
-            Positioned(
-              bottom: 100,
-              left: -50,
-              child: _Glow(color: theme.glowPurple, size: 250),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _Glow extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Glow({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 50)],
-      ),
     );
   }
 }
@@ -150,8 +99,8 @@ class _HeroHeader extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Builder(
-                    builder: (context) => _AnimatedTap(
-                      child: _GlassIconButton(
+                    builder: (context) => AnimatedTap(
+                      child: GlassIconButton(
                         icon: Icons.menu,
                         onTap: () => Scaffold.of(context).openDrawer(),
                       ),
@@ -160,8 +109,8 @@ class _HeroHeader extends StatelessWidget {
                   Row(
                     children: [
                       const SizedBox(width: 12),
-                      _AnimatedTap(
-                        child: _GlassIconButton(
+                      AnimatedTap(
+                        child: GlassIconButton(
                           icon: Icons.notifications_rounded,
                           onTap: () => Get.toNamed(Routes.NOTIFICATIONS),
                         ),
@@ -302,7 +251,7 @@ class _TenderCardsSection extends StatelessWidget {
       if (controller.isLoading.value && controller.tenderList.isEmpty) {
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-            (_, __) => const _ShimmerCard(),
+            (_, _) => const _ShimmerCard(),
             childCount: 5,
           ),
         );
@@ -335,7 +284,7 @@ class _TenderCardsSection extends StatelessWidget {
                 child: SlideAnimation(
                   verticalOffset: 50,
                   child: FadeInAnimation(
-                    child: _AnimatedTap(
+                    child: AnimatedTap(
                       child: GestureDetector(
                         onTap: () {
                           Get.toNamed(Routes.TENDER_DETAILS, arguments: tender);
@@ -494,76 +443,15 @@ class _TenderCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                const _InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
+                const InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
                 const SizedBox(width: 12),
-                _InfoPill(icon: Icons.schedule, label: deadline),
+                InfoPill(icon: Icons.schedule, label: deadline),
               ],
             ),
           ],
         ),
       );
     });
-  }
-}
-
-class _InfoPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _InfoPill({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: theme.isDarkMode
-              ? Colors.white10
-              : AppColors.actionBlue.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 14, color: theme.textSecondary),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(color: theme.textPrimary, fontSize: 12),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _AnimatedTap extends StatefulWidget {
-  final Widget child;
-  const _AnimatedTap({required this.child});
-
-  @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
-}
-
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-
-  void _onTapDown(_) => setState(() => scale = 0.95);
-  void _onTapUp(_) => setState(() => scale = 1);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
-      ),
-    );
   }
 }
 
@@ -683,36 +571,6 @@ class _HubButton extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      );
-    });
-  }
-}
-
-class _GlassIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  final int? badge;
-  const _GlassIconButton({required this.icon, required this.onTap, this.badge});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 45,
-          height: 45,
-          decoration: BoxDecoration(
-            color: theme.isDarkMode
-                ? Colors.white10
-                : AppColors.actionBlue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.borderColor),
-          ),
-          child: Icon(icon, color: theme.textPrimary, size: 20),
         ),
       );
     });

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/validators.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'register_controller.dart';
 
 class RegisterView extends GetView<RegisterController> {
@@ -400,7 +401,7 @@ class _WizardFormState extends State<_WizardForm> {
                                   widget.controller.isLoading.value ||
                                   widget.controller.isSuccess.value;
                               return Center(
-                                child: _AnimatedTap(
+                                child: AnimatedTap(
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
                                     curve: Curves.easeInOut,
@@ -537,7 +538,7 @@ class _NavigationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AnimatedTap(
+    return AnimatedTap(
       child: Container(
         height: 50,
         decoration: BoxDecoration(
@@ -838,31 +839,5 @@ class _AuthTextField extends StatelessWidget {
         validator: validator,
       );
     });
-  }
-}
-
-class _AnimatedTap extends StatefulWidget {
-  final Widget child;
-  const _AnimatedTap({required this.child});
-  @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
-}
-
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-  void _onTapDown(_) => setState(() => scale = 0.95);
-  void _onTapUp(_) => setState(() => scale = 1);
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
-      ),
-    );
   }
 }
