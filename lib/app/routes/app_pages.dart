@@ -22,6 +22,8 @@ import 'package:tendering_du/app/modules/login/login_view.dart';
 import 'package:tendering_du/app/modules/login/login_binding.dart';
 import 'package:tendering_du/app/modules/register/register_view.dart';
 import 'package:tendering_du/app/modules/register/register_binding.dart';
+import 'package:tendering_du/app/modules/forgot_password/forgot_password_view.dart';
+import 'package:tendering_du/app/modules/forgot_password/forgot_password_binding.dart';
 import 'package:tendering_du/app/modules/onboarding_page/onboarding_view.dart';
 import 'package:tendering_du/app/modules/onboarding_page/onboarding_binding.dart';
 import 'package:tendering_du/app/modules/PDF_viewer/pdfviewer_controller.dart';
@@ -50,6 +52,13 @@ class AppPages {
       binding: RegisterBinding(),
       transition: Transition.cupertino,
       transitionDuration: const Duration(milliseconds: 400),
+    ),
+    GetPage(
+      name: Routes.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: const Duration(milliseconds: 300),
     ),
     GetPage(
       name: Routes.SPLASH,

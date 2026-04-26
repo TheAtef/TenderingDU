@@ -17,6 +17,11 @@ class ProfileController extends GetxController {
   final editPhoneCtrl = TextEditingController();
   final editBirthdateCtrl = TextEditingController();
   final editSexCtrl = TextEditingController();
+  final editPasswordCtrl = TextEditingController();
+
+  var isPasswordHidden = true.obs;
+
+  void togglePasswordVisibility() => isPasswordHidden.toggle();
 
   void populateEditFields() {
     if (Get.isBottomSheetOpen ?? false) return; // Prevent double sheets
@@ -30,6 +35,8 @@ class ProfileController extends GetxController {
       editPhoneCtrl.text = cur.phone;
       editBirthdateCtrl.text = cur.birthdate;
       editSexCtrl.text = cur.sex;
+      editPasswordCtrl.clear();
+      isPasswordHidden.value = true;
     }
   }
 

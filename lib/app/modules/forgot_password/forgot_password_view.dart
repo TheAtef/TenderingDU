@@ -4,18 +4,17 @@ import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/validators.dart';
-import 'package:tendering_du/app/core/utils/widgets.dart';
-import 'login_controller.dart';
+import 'forgot_password_controller.dart';
 
-class LoginView extends GetView<LoginController> {
-  const LoginView({super.key});
+class ForgotPasswordView extends GetView<ForgotPasswordController> {
+  const ForgotPasswordView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          const StaticBackground(),
+          const _StaticBackground(),
           SafeArea(
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -33,41 +32,41 @@ class LoginView extends GetView<LoginController> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const SizedBox(height: 48),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                              ),
+                              color: AppColors.actionBlue,
+                              onPressed: () => Get.back(),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
                           Column(
                             children: [
                               const Icon(
-                                Icons.gavel_rounded,
+                                Icons.lock_reset_rounded,
                                 size: 75,
                                 color: AppColors.actionBlue,
                               ),
                               const SizedBox(height: 16),
-                              Text(
-                                "TenderingDU",
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.5,
-                                  color: AppColors.actionBlue,
+                              Obx(
+                                () => Text(
+                                  "Reset Password",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.0,
+                                    color: ThemeController.to.textPrimary,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
                               Obx(
                                 () => Text(
-                                  "Welcome Back",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: ThemeController.to.textPrimary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Obx(
-                                () => Text(
-                                  "Login to continue to your account",
+                                  "Enter your registered email or phone to receive a password reset link.",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 15,
@@ -90,48 +89,13 @@ class LoginView extends GetView<LoginController> {
                                     controller: controller.identifierCtrl,
                                     validator: Validators.emailOrSyrianMobile,
                                   ),
-                                  const SizedBox(height: 20),
-                                  Obx(
-                                    () => _AuthTextField(
-                                      hintText: "Password",
-                                      icon: Icons.lock_outline_rounded,
-                                      controller: controller.passwordCtrl,
-                                      isPassword: true,
-                                      obscureText:
-                                          controller.isPasswordHidden.value,
-                                      onTogglePassword:
-                                          controller.togglePasswordVisibility,
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return 'Password is required';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Get.toNamed('/forgot-password');
-                                      },
-                                      child: const Text(
-                                        "Forgot Password?",
-                                        style: TextStyle(
-                                          color: AppColors.actionBlue,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 32),
                                   Obx(
                                     () => _AnimatedTap(
                                       child: ElevatedButton(
                                         onPressed: controller.isLoading.value
                                             ? null
-                                            : controller.login,
+                                            : controller.resetPassword,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.actionBlue,
                                           minimumSize: const Size(
@@ -158,38 +122,13 @@ class LoginView extends GetView<LoginController> {
                                                     ),
                                               )
                                             : const Text(
-                                                "Login",
+                                                "Send Reset Link",
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white,
                                                 ),
                                               ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  TextButton(
-                                    onPressed: controller.navigateToRegister,
-                                    child: Obx(
-                                      () => RichText(
-                                        text: TextSpan(
-                                          text: "Don't have an account? ",
-                                          style: TextStyle(
-                                            color: ThemeController
-                                                .to
-                                                .textSecondary,
-                                          ),
-                                          children: const [
-                                            TextSpan(
-                                              text: "Sign Up",
-                                              style: TextStyle(
-                                                color: AppColors.actionBlue,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
                                       ),
                                     ),
                                   ),
@@ -303,7 +242,6 @@ class _AuthTextField extends StatelessWidget {
   final VoidCallback? onTogglePassword;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
-  final TextInputType? keyboardType;
 
   const _AuthTextField({
     required this.hintText,
@@ -313,7 +251,6 @@ class _AuthTextField extends StatelessWidget {
     this.onTogglePassword,
     this.controller,
     this.validator,
-    this.keyboardType,
   });
 
   @override
@@ -322,19 +259,21 @@ class _AuthTextField extends StatelessWidget {
       final theme = ThemeController.to;
       return TextFormField(
         controller: controller,
+        validator: validator,
         obscureText: obscureText,
-        keyboardType: keyboardType,
-        style: TextStyle(color: theme.textPrimary, fontSize: 15),
+        style: TextStyle(color: theme.textPrimary, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: theme.textSecondary, fontSize: 14),
+          hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.6)),
           prefixIcon: Icon(icon, color: theme.textSecondary, size: 22),
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
-                    obscureText ? Icons.visibility_off : Icons.visibility,
+                    obscureText
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
                     color: theme.textSecondary,
-                    size: 20,
+                    size: 22,
                   ),
                   onPressed: onTogglePassword,
                 )
@@ -345,7 +284,7 @@ class _AuthTextField extends StatelessWidget {
               : AppColors.actionBlue.withOpacity(0.05),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
-            vertical: 16,
+            vertical: 18,
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
@@ -354,9 +293,8 @@ class _AuthTextField extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(
-              color: theme.isDarkMode
-                  ? Colors.transparent
-                  : Colors.black.withOpacity(0.05),
+              color: theme.borderColor.withOpacity(0.5),
+              width: 1.5,
             ),
           ),
           focusedBorder: OutlineInputBorder(
@@ -368,14 +306,13 @@ class _AuthTextField extends StatelessWidget {
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.errorRed, width: 1),
+            borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
+            borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
           ),
         ),
-        validator: validator,
       );
     });
   }
@@ -385,24 +322,40 @@ class _AnimatedTap extends StatefulWidget {
   final Widget child;
   const _AnimatedTap({required this.child});
   @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
+  __AnimatedTapState createState() => __AnimatedTapState();
 }
 
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-  void _onTapDown(_) => setState(() => scale = 0.95);
-  void _onTapUp(_) => setState(() => scale = 1);
+class __AnimatedTapState extends State<_AnimatedTap>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
-      ),
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(scale: _scale, child: widget.child),
     );
   }
 }
