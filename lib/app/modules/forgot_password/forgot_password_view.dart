@@ -5,6 +5,7 @@ import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/validators.dart';
 import 'forgot_password_controller.dart';
+import 'package:tendering_du/app/core/utils/widgets.dart';
 
 class ForgotPasswordView extends GetView<ForgotPasswordController> {
   const ForgotPasswordView({super.key});
@@ -14,7 +15,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
     return Scaffold(
       body: Stack(
         children: [
-          const _StaticBackground(),
+          const StaticBackground(),
           SafeArea(
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -145,56 +146,6 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _StaticBackground extends StatelessWidget {
-  const _StaticBackground();
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: theme.gradientColors,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -50,
-              right: -50,
-              child: _Glow(color: theme.glowBlue, size: 300),
-            ),
-            Positioned(
-              bottom: 100,
-              left: -50,
-              child: _Glow(color: theme.glowPurple, size: 250),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _Glow extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Glow({required this.color, required this.size});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 50)],
       ),
     );
   }

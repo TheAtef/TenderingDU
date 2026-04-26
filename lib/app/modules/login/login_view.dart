@@ -127,7 +127,7 @@ class LoginView extends GetView<LoginController> {
                                   ),
                                   const SizedBox(height: 12),
                                   Obx(
-                                    () => _AnimatedTap(
+                                    () => AnimatedTap(
                                       child: ElevatedButton(
                                         onPressed: controller.isLoading.value
                                             ? null
@@ -206,56 +206,6 @@ class LoginView extends GetView<LoginController> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _StaticBackground extends StatelessWidget {
-  const _StaticBackground();
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: theme.gradientColors,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -50,
-              right: -50,
-              child: _Glow(color: theme.glowBlue, size: 300),
-            ),
-            Positioned(
-              bottom: 100,
-              left: -50,
-              child: _Glow(color: theme.glowPurple, size: 250),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _Glow extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Glow({required this.color, required this.size});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 50)],
       ),
     );
   }
@@ -378,31 +328,5 @@ class _AuthTextField extends StatelessWidget {
         validator: validator,
       );
     });
-  }
-}
-
-class _AnimatedTap extends StatefulWidget {
-  final Widget child;
-  const _AnimatedTap({required this.child});
-  @override
-  State<_AnimatedTap> createState() => _AnimatedTapState();
-}
-
-class _AnimatedTapState extends State<_AnimatedTap> {
-  double scale = 1;
-  void _onTapDown(_) => setState(() => scale = 0.95);
-  void _onTapUp(_) => setState(() => scale = 1);
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: () => setState(() => scale = 1),
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: widget.child,
-      ),
-    );
   }
 }
