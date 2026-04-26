@@ -43,6 +43,26 @@ class ChangePasswordView extends GetView<ChangePasswordController> {
                         "Current Password",
                         controller.oldPasswordController,
                       ),
+                      // Professional Forgot Password placement
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: controller.goToForgotPassword,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.only(top: 8),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              color: AppColors.actionBlue,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 20),
                       _buildTextField(
                         "New Password",

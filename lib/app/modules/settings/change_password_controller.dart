@@ -37,4 +37,8 @@ class ChangePasswordController extends GetxController {
     Get.back();
     Get.snackbar("Success", "Password updated successfully");
   }
+
+  void goToForgotPassword() {
+    Get.toNamed('/forgot-password');
+  }
 }
