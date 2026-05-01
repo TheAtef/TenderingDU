@@ -4,7 +4,6 @@ import 'package:tendering_du/app/core/services/api_service.dart';
 import 'package:tendering_du/app/modules/home/home_model.dart';
 
 class HomeController extends GetxController {
-  int _currentPage = 1;
   var isLastPage = false.obs;
 
   var tenderList = <Tender>[].obs;
