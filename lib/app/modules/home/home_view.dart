@@ -315,7 +315,7 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ["All", "Construction", "IT", "Healthcare"];
+    final categories = ["All", ...controller.categoryList];
 
     return SliverToBoxAdapter(
       child: Obx(() {
