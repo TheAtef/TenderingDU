@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+import '../../core/services/api_service.dart';
 
 class LoginController extends GetxController {
+  final ApiService _apiService = Get.find<ApiService>();
+
   final formKey = GlobalKey<FormState>();
   final identifierCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
@@ -12,41 +15,40 @@ class LoginController extends GetxController {
 
   void togglePasswordVisibility() => isPasswordHidden.toggle();
 
-  void login() async {
-    if (formKey.currentState!.validate()) {
-      isLoading.value = true;
+  Future<void> login() async {
+    if (!formKey.currentState!.validate()) return;
 
-      try {
-        // TODO: Replace with your actual API login request
-        await Future.delayed(const Duration(seconds: 2));
-        bool isSuccess = true; // Placeholder for API response status
+    isLoading.value = true;
 
-        if (isSuccess) {
-          Get.offAllNamed(Routes.HOME);
-        } else {
-          // Display error when credentials are wrong
-          Get.snackbar(
-            'Login Failed',
-            'Incorrect email or password.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.redAccent,
-            colorText: Colors.white,
-            margin: const EdgeInsets.all(16),
-          );
-        }
-      } catch (e) {
-        // Handle unexpected network/API errors
+    try {
+      final result = await _apiService.login(
+        email: identifierCtrl.text.trim(),
+        password: passwordCtrl.text.trim(),
+      );
+
+      if (result['success']) {
+        Get.offAllNamed(Routes.HOME);
+      } else {
         Get.snackbar(
-          'Error',
-          'Something went wrong. Please try again.',
+          'Login Failed',
+          'Incorrect email/phone or password',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
           margin: const EdgeInsets.all(16),
         );
-      } finally {
-        isLoading.value = false;
       }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 

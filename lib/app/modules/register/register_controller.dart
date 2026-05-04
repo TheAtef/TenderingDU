@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+import 'package:tendering_du/app/core/services/api_service.dart';
 
 class RegisterController extends GetxController {
+  final ApiService _apiService = Get.find<ApiService>();
+
   final formKey = GlobalKey<FormState>();
 
   final fNameCtrl = TextEditingController();
@@ -19,11 +22,8 @@ class RegisterController extends GetxController {
   var selectedActivity = RxnString();
 
   final sexOptions = ['Male', 'Female'];
-  final activities = [
-    'Construction',
-    'IT',
-    'Healthcare',
-  ]; // Matched existing categories
+
+  final activities = ['Construction', 'IT', 'Healthcare'];
 
   var isLoading = false.obs;
   var isSuccess = false.obs;
@@ -36,37 +36,55 @@ class RegisterController extends GetxController {
   void setSex(String? val) => selectedSex.value = val;
   void setActivity(String? val) => selectedActivity.value = val;
 
-  void register() async {
-    // If the view handles step-by-step validation, we only ensure final step here
-    // but the formKey check should still be there for safety if accessed otherwise.
-    if (birthdateCtrl.text.isNotEmpty && passwordCtrl.text.isNotEmpty) {
-      if (selectedSex.value == null) {
-        Get.snackbar(
-          'Error',
-          'Please select your sex',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
-      }
-      if (selectedActivity.value == null) {
-        Get.snackbar(
-          'Error',
-          'Please select a business activity',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
-      }
+  Future<void> register() async {
+    if (selectedSex.value == null) {
+      Get.snackbar('Error', 'Please select your sex');
+      return;
+    }
 
-      isLoading.value = true;
-      // Mock API Registration
-      await Future.delayed(const Duration(seconds: 2));
+    isLoading.value = true;
+
+    try {
+      final username =
+          "${fNameCtrl.text.trim().toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}";
+
+      final result = await _apiService.register(
+        email: emailCtrl.text.trim(),
+        phone: mobileCtrl.text.trim(),
+        gender: selectedSex.value!,
+        crNumber: crnCtrl.text.trim(),
+        birthDate: birthdateCtrl.text.trim(),
+        firstName: fNameCtrl.text.trim(),
+        lastName: lNameCtrl.text.trim(),
+        password: passwordCtrl.text.trim(),
+        username: username,
+      );
+
       isLoading.value = false;
 
-      isSuccess.value = true;
-      await Future.delayed(const Duration(milliseconds: 1500));
+      if (result['success']) {
+        isSuccess.value = true;
 
-      Get.snackbar('Success', 'Account created successfully!');
-      Get.offAllNamed(Routes.ONBOARDING);
+        await Future.delayed(const Duration(milliseconds: 1200));
+
+        Get.snackbar(
+          'Success',
+          'Account created successfully',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        Get.offAllNamed(Routes.ONBOARDING);
+      } else {
+        Get.snackbar(
+          'Registration Failed',
+          result['message'],
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      isLoading.value = false;
+
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }
 

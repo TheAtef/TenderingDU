@@ -14,6 +14,74 @@ class ApiService {
     };
   }
 
+  Future<Map<String, dynamic>> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/login/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": email, "password": password}),
+    );
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      if (body['access'] != null) {
+        await storage.write('access_token', body['access']);
+      }
+
+      if (body['refresh'] != null) {
+        await storage.write('refresh_token', body['refresh']);
+      }
+
+      return {"success": true, "data": body};
+    }
+
+    return {"success": false, "message": body.toString()};
+  }
+
+  Future<void> logout() async {
+    await storage.remove('access_token');
+    await storage.remove('refresh_token');
+  }
+
+  Future<Map<String, dynamic>> register({
+    required String email,
+    required String phone,
+    required String gender,
+    required String crNumber,
+    required String birthDate,
+    required String firstName,
+    required String lastName,
+    required String password,
+    required String username,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/sign-up/'),
+      headers: _getHeaders(),
+      body: jsonEncode({
+        "email": email,
+        "phone": phone,
+        "gender": gender,
+        "cr_number": crNumber,
+        "birth_date": birthDate,
+        "first_name": firstName,
+        "last_name": lastName,
+        "password": password,
+        "username": username,
+      }),
+    );
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return {"success": true, "data": body};
+    }
+
+    return {"success": false, "message": body.toString()};
+  }
+
   Future<List<dynamic>> getTenders({String? query, String? category}) async {
     Map<String, String> queryParams = {};
 
