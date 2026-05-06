@@ -4,7 +4,6 @@ import 'package:tendering_du/app/core/services/api_service.dart';
 import 'package:tendering_du/app/modules/home/home_model.dart';
 
 class HomeController extends GetxController {
-  // Observables for UI state
   var tenderList = <Tender>[].obs;
   var categoryList = <String>[].obs;
   var categoryLookup = <int, String>{}.obs;

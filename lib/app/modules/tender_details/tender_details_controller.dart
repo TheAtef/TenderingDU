@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:tendering_du/app/modules/home/home_controller.dart';
+import 'package:tendering_du/app/core/services/api_service.dart'; // Ensure this path is correct
 import 'package:tendering_du/app/modules/home/home_model.dart';
 import 'tender_details_model.dart';
 
 class TenderDetailsController extends GetxController {
+  final ApiService _apiService = ApiService();
+
   final Tender basicTender = Get.arguments;
 
   final isLoading = true.obs;
@@ -26,57 +28,65 @@ class TenderDetailsController extends GetxController {
     isError.value = false;
 
     try {
-      await Future.delayed(const Duration(milliseconds: 1500));
+      final data = await _apiService.getTenderDetails(basicTender.id);
 
-      final mockApiResponse = {
-        'id': basicTender.id,
-        'title': basicTender.title,
-        'description':
-            'This is a highly detailed description coming from the API. ' * 4,
-        'deadline': basicTender.deadline,
-        'category': basicTender.category,
-        'status': basicTender.status,
-        'estimated_budget': '\$2,500,000',
-        'requirements': [
-          'Valid Trade License',
-          'Tax Clearance Certificate',
-          'Company Profile & Portfolio',
-          'Financial Statements (Last 2 Years)',
-        ],
-        'pdf_url':
-            'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'postedDate': '',
-        'is_favourite': basicTender.isFavourite,
-      };
+      tenderDetails = TenderDetailsModel.fromJson(data);
 
-      tenderDetails = TenderDetailsModel.fromJson(mockApiResponse);
+      isFavourite.value = tenderDetails.isFavourite;
+
       isLoading.value = false;
     } catch (e) {
+      print("Error fetching tender details: $e");
       isLoading.value = false;
       isError.value = true;
-      Get.snackbar('Error', 'Failed to load details');
     }
   }
 
-  void toggleFavourite() {
+  void toggleFavourite() async {
     isFavourite.value = !isFavourite.value;
-    basicTender.isFavourite = isFavourite.value;
+
+    try {
+      bool success = await _apiService.toggleSaveTender(
+        basicTender.id,
+        isFavourite.value,
+      );
+
+      if (success) {
+        basicTender.isFavourite = isFavourite.value;
+      } else {
+        throw Exception("Server returned false");
+      }
+    } catch (e) {
+      isFavourite.value = !isFavourite.value;
+      Get.snackbar(
+        'Error',
+        'Could not update saved status. Please check your connection.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+    }
   }
 
   Future<void> submitBid() async {
     isSubmitting.value = true;
 
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      await Future.delayed(const Duration(seconds: 2));
 
-    isSubmitting.value = false;
+      Get.snackbar(
+        'Success',
+        'Your bid submitted successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
 
-    Get.snackbar(
-      'Success',
-      'Your bid submitted successfully',
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-
-    Get.back();
+      Get.back();
+    } catch (e) {
+      Get.snackbar('Error', 'Submission failed. Please try again.');
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 }

@@ -20,7 +20,7 @@ class TenderResultsController extends GetxController {
       tenders.assignAll([
         TenderDetailsModel(
           id: 1,
-          title: "وزارة الدفاع التكتيكية",
+          title: "مشروع خالص ",
           category: "Construction",
           description: "",
           deadline: "",

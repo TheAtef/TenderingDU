@@ -44,17 +44,24 @@ class TenderDetailsModel {
 
   factory TenderDetailsModel.fromJson(Map<String, dynamic> json) {
     return TenderDetailsModel(
-      id: json['id'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      deadline: json['deadline'] ?? '',
-      category: json['category'] ?? '',
-      status: json['status'] ?? '',
-      estimatedBudget: json['estimated_budget'] ?? '\$0',
-      requirements: List<String>.from(json['requirements'] ?? []),
-      pdfUrl: json['pdf_url'] ?? '',
+      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      deadline: json['deadline']?.toString() ?? '',
+      category:
+          json['category_name']?.toString() ??
+          json['category']?.toString() ??
+          '',
+      status:
+          json['status_name']?.toString() ?? json['status']?.toString() ?? '',
+      estimatedBudget: json['estimated_budget']?.toString() ?? '0',
+      requirements: json['requirements'] != null
+          ? List<String>.from(json['requirements'].map((x) => x.toString()))
+          : [],
+      pdfUrl: json['pdf_url']?.toString() ?? '',
       isFavourite: json['is_favourite'] == true,
-      postedDate: json['postedDate'],
+      postedDate:
+          json['posted_at']?.toString() ?? json['postedDate']?.toString() ?? '',
     );
   }
 }
