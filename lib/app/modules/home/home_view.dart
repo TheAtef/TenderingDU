@@ -12,6 +12,8 @@ import 'home_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
+import 'package:tendering_du/app/core/services/api_service.dart';
+import 'package:http/http.dart' as http;
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -292,7 +294,7 @@ class _TenderCardsSection extends StatelessWidget {
                         child: _TenderCard(
                           title: tender.title,
                           category: tender.category,
-                          deadline: tender.deadline,
+                          deadline: tender.daysLeft,
                           isBookmarked: tender.isFavourite,
                           onBookmark: () => controller.toggleFavourite(tender),
                         ),
@@ -315,11 +317,12 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ["All", ...controller.categoryList];
-
     return SliverToBoxAdapter(
       child: Obx(() {
         final theme = ThemeController.to;
+
+        final categories = ["All", ...controller.categoryList];
+
         final activeCategory = controller.activeFilters["category"];
 
         return Container(
@@ -602,6 +605,8 @@ class _Drawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ApiService _apiService = ApiService();
+
     return Obx(() {
       final theme = ThemeController.to;
       return Drawer(
@@ -652,7 +657,8 @@ class _Drawer extends StatelessWidget {
                   icon: Icons.logout_rounded,
                   title: "Logout",
                   isDestructive: true,
-                  onTap: () {
+                  onTap: () async {
+                    await _apiService.logout;
                     Get.offAllNamed(Routes.LOGIN);
                   },
                 ),

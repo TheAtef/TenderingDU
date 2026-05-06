@@ -90,7 +90,7 @@ class ApiService {
     }
 
     if (category != null && category != "All" && category.isNotEmpty) {
-      queryParams['fields__name'] = category;
+      queryParams['category__name'] = category;
     }
 
     final url = Uri.parse(
@@ -100,7 +100,7 @@ class ApiService {
     print("Requesting URL: $url");
 
     final response = await http.get(url, headers: _getHeaders());
-
+    print(response.body);
     if (response.statusCode == 200) {
       return json.decode(response.body) as List<dynamic>;
     } else {
@@ -110,9 +110,11 @@ class ApiService {
 
   Future<List<dynamic>> getFields() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/fields/'),
+      Uri.parse('$baseUrl/categories/'),
       headers: _getHeaders(),
     );
+    print(response.body);
+
     return response.statusCode == 200 ? json.decode(response.body) : [];
   }
 
