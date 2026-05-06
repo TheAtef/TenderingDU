@@ -26,16 +26,16 @@ class SettingsView extends GetView<SettingsController> {
                     padding: const EdgeInsets.fromLTRB(24, 10, 24, 40),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        _SectionTitle(title: "Preferences"),
+                        _SectionTitle(title: "preferences".tr),
                         _PreferencesSection(controller: controller),
                         const SizedBox(height: 24),
-                        _SectionTitle(title: "Notifications"),
+                        _SectionTitle(title: "notifications".tr),
                         _NotificationsSection(controller: controller),
                         const SizedBox(height: 24),
-                        _SectionTitle(title: "Security"),
+                        _SectionTitle(title: "security".tr),
                         _SecuritySection(controller: controller),
                         const SizedBox(height: 24),
-                        _SectionTitle(title: "General"),
+                        _SectionTitle(title: "general".tr),
                         _GeneralSection(controller: controller),
                         const SizedBox(height: 24),
                         _AppVersion(),
@@ -122,7 +122,7 @@ class _Header extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Text(
-                "Settings",
+                "settings".tr,
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -148,7 +148,7 @@ class _SectionTitle extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(left: 4, bottom: 12),
         child: Text(
-          title,
+          title.tr,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -173,10 +173,10 @@ class _PreferencesSection extends StatelessWidget {
           Obx(
             () => _SwitchTile(
               icon: Icons.dark_mode_rounded,
-              title: "Dark Mode",
+              title: "dark_mode".tr,
               subtitle: controller.themeController.isDarkMode
-                  ? "Dark theme enabled"
-                  : "Light theme enabled",
+                  ? "dark_mode_enabled".tr
+                  : "light_mode_enabled".tr,
               value: controller.themeController.isDarkMode,
               onChanged: controller.toggleTheme,
             ),
@@ -185,7 +185,7 @@ class _PreferencesSection extends StatelessWidget {
           Obx(
             () => _ActionTile(
               icon: Icons.language_rounded,
-              title: "Language",
+              title: "language".tr,
               trailing: Text(
                 controller.selectedLanguage.value,
                 style: const TextStyle(
@@ -216,7 +216,7 @@ class _PreferencesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Select Language",
+              "Select Language".tr,
               style: TextStyle(
                 color: theme.textPrimary,
                 fontSize: 18,
@@ -261,8 +261,8 @@ class _NotificationsSection extends StatelessWidget {
           Obx(
             () => _SwitchTile(
               icon: Icons.notifications_rounded,
-              title: "Push Notifications",
-              subtitle: "Receive app notifications",
+              title: "push_notifications".tr,
+              subtitle: "receive_app_notif".tr,
               value: controller.pushNotifications.value,
               onChanged: controller.togglePushNotifications,
             ),
@@ -271,8 +271,8 @@ class _NotificationsSection extends StatelessWidget {
           Obx(
             () => _SwitchTile(
               icon: Icons.alarm_rounded,
-              title: "Deadline Reminders",
-              subtitle: "Alert before tender deadlines",
+              title: "deadline_reminders".tr,
+              subtitle: "alert_before_deadline".tr,
               value: controller.deadlineReminders.value,
               onChanged: controller.toggleDeadlineReminders,
             ),
@@ -294,7 +294,7 @@ class _SecuritySection extends StatelessWidget {
         children: [
           _ActionTile(
             icon: Icons.lock_rounded,
-            title: "Change Password",
+            title: "change_password".tr,
             trailing: Obx(
               () => Icon(
                 Icons.chevron_right_rounded,
@@ -320,7 +320,7 @@ class _GeneralSection extends StatelessWidget {
         children: [
           _ActionTile(
             icon: Icons.help_outline_rounded,
-            title: "Help & Support",
+            title: "help_support".tr,
             trailing: Obx(
               () => Icon(
                 Icons.chevron_right_rounded,
@@ -332,7 +332,7 @@ class _GeneralSection extends StatelessWidget {
           const _Divider(),
           _ActionTile(
             icon: Icons.info_outline_rounded,
-            title: "About",
+            title: "about".tr,
             trailing: Obx(
               () => Icon(
                 Icons.chevron_right_rounded,
@@ -433,7 +433,7 @@ class _SwitchTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    title.tr,
                     style: TextStyle(
                       color: theme.textPrimary,
                       fontSize: 14,
@@ -442,7 +442,7 @@ class _SwitchTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    subtitle,
+                    subtitle.tr,
                     style: TextStyle(color: theme.textSecondary, fontSize: 12),
                   ),
                 ],
@@ -502,7 +502,7 @@ class _ActionTile extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    title,
+                    title.tr,
                     style: TextStyle(
                       color: theme.textPrimary,
                       fontSize: 14,
@@ -529,7 +529,7 @@ class _AppVersion extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: Text(
-            "Version 1.0.0",
+            "app_version".tr,
             style: TextStyle(color: theme.textSecondary, fontSize: 12),
           ),
         ),

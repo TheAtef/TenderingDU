@@ -9,6 +9,7 @@ class SettingsBinding extends Bindings {
       Get.put<ThemeController>(ThemeController(), permanent: true);
     }
 
-    Get.lazyPut<SettingsController>(() => SettingsController());
+    // Get.lazyPut<SettingsController>(() => SettingsController());
+    Get.put<SettingsController>(SettingsController(), permanent: true);
   }
 }

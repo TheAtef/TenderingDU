@@ -79,8 +79,8 @@ class _WizardFormState extends State<_WizardForm> {
       if (!_step1Key.currentState!.validate()) return;
       if (widget.controller.selectedSex.value == null) {
         Get.snackbar(
-          'Error',
-          'Please select your Sex',
+          'error'.tr,
+          'select_sex'.tr,
           snackPosition: SnackPosition.BOTTOM,
         );
         return;
@@ -89,8 +89,8 @@ class _WizardFormState extends State<_WizardForm> {
       if (!_step2Key.currentState!.validate()) return;
       if (widget.controller.selectedActivity.value == null) {
         Get.snackbar(
-          'Error',
-          'Please select a business activity',
+          'error'.tr,
+          'select_activity'.tr,
           snackPosition: SnackPosition.BOTTOM,
         );
         return;
@@ -135,7 +135,7 @@ class _WizardFormState extends State<_WizardForm> {
         const SizedBox(height: 12),
         Obx(
           () => Text(
-            "Create Account",
+            "create_acc".tr,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 28,
@@ -147,10 +147,10 @@ class _WizardFormState extends State<_WizardForm> {
         const SizedBox(height: 6),
         Text(
           _currentPage == 0
-              ? "Step 1: Personal Information"
+              ? "step_1".tr
               : _currentPage == 1
-              ? "Step 2: Company Information"
-              : "Step 3: Security & Finish",
+              ? "step_2".tr
+              : "step_3".tr,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 16,
@@ -182,12 +182,12 @@ class _WizardFormState extends State<_WizardForm> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const _SectionTitle("Personal Details"),
+                            _SectionTitle("personal_details".tr),
                             Row(
                               children: [
                                 Expanded(
                                   child: _AuthTextField(
-                                    hintText: "First Name",
+                                    hintText: "first_name".tr,
                                     icon: Icons.person_outline_rounded,
                                     controller: widget.controller.fNameCtrl,
                                     validator: Validators.name,
@@ -198,7 +198,7 @@ class _WizardFormState extends State<_WizardForm> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: _AuthTextField(
-                                    hintText: "Last Name",
+                                    hintText: "last_name".tr,
                                     icon: Icons.person_outline_rounded,
                                     controller: widget.controller.lNameCtrl,
                                     validator: Validators.name,
@@ -210,7 +210,7 @@ class _WizardFormState extends State<_WizardForm> {
                             ),
                             const SizedBox(height: 16),
                             _AuthTextField(
-                              hintText: "Email Address",
+                              hintText: "email_address".tr,
                               icon: Icons.email_outlined,
                               controller: widget.controller.emailCtrl,
                               validator: Validators.email,
@@ -218,7 +218,7 @@ class _WizardFormState extends State<_WizardForm> {
                             ),
                             const SizedBox(height: 16),
                             _AuthTextField(
-                              hintText: "Syrian Mobile (09x / +9639x)",
+                              hintText: "phone".tr,
                               icon: Icons.phone_android_rounded,
                               controller: widget.controller.mobileCtrl,
                               validator: Validators.syrianMobile,
@@ -230,23 +230,23 @@ class _WizardFormState extends State<_WizardForm> {
                               children: [
                                 Expanded(
                                   child: _AuthTextField(
-                                    hintText: "Birthdate q(YYYY-MM-DD)",
+                                    hintText: "birth".tr,
                                     icon: Icons.calendar_month_rounded,
                                     controller: widget.controller.birthdateCtrl,
                                     validator: (val) {
                                       if (val == null || val.trim().isEmpty)
-                                        return 'Required';
+                                        return 'req'.tr;
                                       if (!RegExp(
                                         r"^\d{4}-\d{2}-\d{2}$",
                                       ).hasMatch(val.trim()))
-                                        return 'Format:\nYYYY-MM-DD';
+                                        return 'birth_format'.tr;
                                       final parsedDate = DateTime.tryParse(
                                         val.trim(),
                                       );
                                       if (parsedDate == null)
-                                        return 'Invalid date';
+                                        return 'invalid_date'.tr;
                                       if (parsedDate.isAfter(DateTime.now()))
-                                        return 'Future dates not allowed';
+                                        return 'future_date'.tr;
                                       return null;
                                     },
                                     keyboardType: TextInputType.datetime,
@@ -256,7 +256,7 @@ class _WizardFormState extends State<_WizardForm> {
                                 Expanded(
                                   child: Obx(
                                     () => _AuthDropdown(
-                                      hintText: "Sex",
+                                      hintText: "sex".tr,
                                       icon: Icons.wc_rounded,
                                       value:
                                           widget.controller.selectedSex.value,
@@ -269,7 +269,7 @@ class _WizardFormState extends State<_WizardForm> {
                             ),
                             const SizedBox(height: 32),
                             _NavigationButton(
-                              title: "Next",
+                              title: "next".tr,
                               onPressed: _nextPage,
                             ),
                           ],
@@ -294,16 +294,16 @@ class _WizardFormState extends State<_WizardForm> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const _SectionTitle("Business Details"),
+                            _SectionTitle("business_details".tr),
                             _AuthTextField(
-                              hintText: "Company Name",
+                              hintText: "company_name".tr,
                               icon: Icons.business_rounded,
                               controller: widget.controller.companyCtrl,
                               validator: Validators.required,
                             ),
                             const SizedBox(height: 16),
                             _AuthTextField(
-                              hintText: "Commercial Registration Number",
+                              hintText: "crn".tr,
                               icon: Icons.numbers_rounded,
                               controller: widget.controller.crnCtrl,
                               validator: Validators.required,
@@ -312,7 +312,7 @@ class _WizardFormState extends State<_WizardForm> {
                             const SizedBox(height: 16),
                             Obx(
                               () => _AuthDropdown(
-                                hintText: "Business Activity",
+                                hintText: "business_activity".tr,
                                 icon: Icons.work_outline_rounded,
                                 value: widget.controller.selectedActivity.value,
                                 items: widget.controller.activities,
@@ -324,7 +324,7 @@ class _WizardFormState extends State<_WizardForm> {
                               children: [
                                 Expanded(
                                   child: _NavigationButton(
-                                    title: "Back",
+                                    title: "back".tr,
                                     isOutline: true,
                                     onPressed: _prevPage,
                                   ),
@@ -332,7 +332,7 @@ class _WizardFormState extends State<_WizardForm> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: _NavigationButton(
-                                    title: "Next",
+                                    title: "next".tr,
                                     onPressed: _nextPage,
                                   ),
                                 ),
@@ -360,10 +360,10 @@ class _WizardFormState extends State<_WizardForm> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const _SectionTitle("Security"),
+                            _SectionTitle("security".tr),
                             Obx(
                               () => _AuthTextField(
-                                hintText: "Password",
+                                hintText: "password".tr,
                                 icon: Icons.lock_outline_rounded,
                                 controller: widget.controller.passwordCtrl,
                                 isPassword: true,
@@ -377,7 +377,7 @@ class _WizardFormState extends State<_WizardForm> {
                             const SizedBox(height: 16),
                             Obx(
                               () => _AuthTextField(
-                                hintText: "Confirm Password",
+                                hintText: "confirm_password".tr,
                                 icon: Icons.lock_reset_rounded,
                                 controller:
                                     widget.controller.confirmPasswordCtrl,
@@ -464,8 +464,8 @@ class _WizardFormState extends State<_WizardForm> {
                                                         strokeWidth: 2,
                                                       ),
                                                 )
-                                              : const Text(
-                                                  "Register",
+                                              : Text(
+                                                  "register".tr,
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
@@ -481,7 +481,7 @@ class _WizardFormState extends State<_WizardForm> {
                             }),
                             const SizedBox(height: 16),
                             _NavigationButton(
-                              title: "Go Back",
+                              title: "back".tr,
                               isOutline: true,
                               onPressed: _prevPage,
                             ),
@@ -492,13 +492,13 @@ class _WizardFormState extends State<_WizardForm> {
                                 child: Obx(
                                   () => RichText(
                                     text: TextSpan(
-                                      text: "Already have an account? ",
+                                      text: "have_acc".tr,
                                       style: TextStyle(
                                         color: ThemeController.to.textSecondary,
                                       ),
-                                      children: const [
+                                      children: [
                                         TextSpan(
-                                          text: "Login",
+                                          text: "login".tr,
                                           style: TextStyle(
                                             color: AppColors.actionBlue,
                                             fontWeight: FontWeight.bold,
@@ -663,7 +663,7 @@ class _AuthDropdown extends StatelessWidget {
             .map((item) => DropdownMenuItem(value: item, child: Text(item)))
             .toList(),
         onChanged: onChanged,
-        validator: (val) => val == null ? 'Required' : null,
+        validator: (val) => val == null ? 'req'.tr : null,
       );
     });
   }

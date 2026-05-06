@@ -31,7 +31,7 @@ class SplashView extends GetView<SplashController> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  "TenderingDU",
+                  "app_title".tr,
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -39,10 +39,7 @@ class SplashView extends GetView<SplashController> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  "Smart Bidding Solutions",
-                  style: theme.textTheme.bodyMedium,
-                ),
+                Text("app_slogan".tr, style: theme.textTheme.bodyMedium),
               ],
             ),
           ),

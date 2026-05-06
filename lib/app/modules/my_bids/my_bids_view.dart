@@ -45,15 +45,15 @@ class BidsView extends GetView<BidsController> {
                               width: 2,
                             ),
                           ),
-                          title: const Text(
-                            'Applied',
+                          title: Text(
+                            'applied'.tr,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          subtitle: const Text(
-                            'Bids you have applied for',
+                          subtitle: Text(
+                            'applied_hint'.tr,
                             style: TextStyle(fontSize: 14),
                           ),
                           initiallyExpanded: true,
@@ -117,15 +117,15 @@ class BidsView extends GetView<BidsController> {
                               width: 2,
                             ),
                           ),
-                          title: const Text(
-                            'History',
+                          title: Text(
+                            'history'.tr,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          subtitle: const Text(
-                            'Bids in your history',
+                          subtitle: Text(
+                            'history_hint'.tr,
                             style: TextStyle(fontSize: 14),
                           ),
                           children: [
@@ -191,7 +191,7 @@ class _Header extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Text(
-                "My Bids",
+                "my_bids".tr,
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -282,7 +282,7 @@ class _ResultItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "Category: $category",
+                    "${"category".tr}: $category",
                     style: TextStyle(fontSize: 12, color: theme.textSecondary),
                   ),
                   const SizedBox(height: 4),

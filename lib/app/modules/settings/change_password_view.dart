@@ -54,7 +54,7 @@ class ChangePasswordView extends GetView<ChangePasswordController> {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            "Forgot Password?",
+                            "forgot_password".tr,
                             style: TextStyle(
                               color: AppColors.actionBlue,
                               fontSize: 13,

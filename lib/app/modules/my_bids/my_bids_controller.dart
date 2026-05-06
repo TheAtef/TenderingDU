@@ -19,8 +19,8 @@ class BidsController extends GetxController {
   Future<(List<Bid>, List<Bid>)> _fetchFromServer() async {
     await Future.delayed(const Duration(milliseconds: 1500));
 
-    final categories = ['Construction', 'IT', 'Healthcare'];
-    final statuses = ['history', 'applied'];
+    final categories = ['construction'.tr, 'it'.tr, 'healthcare'.tr];
+    final statuses = ['history'.tr, 'applied'.tr];
 
     List<Bid> mockDb = List.generate(20, (index) {
       return Bid(
@@ -39,10 +39,10 @@ class BidsController extends GetxController {
 
     var filtered = mockDb;
     var appliedList = filtered
-        .where((t) => t.status.toLowerCase() == 'applied')
+        .where((t) => t.status.toLowerCase() == 'applied'.tr)
         .toList();
     var historyList = filtered
-        .where((t) => t.status.toLowerCase() == 'history')
+        .where((t) => t.status.toLowerCase() == 'history'.tr)
         .toList();
 
     return (appliedList, historyList);

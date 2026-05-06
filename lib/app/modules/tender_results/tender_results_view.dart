@@ -10,8 +10,8 @@ class TenderResultsView extends GetView<TenderResultsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Tender Directory",
+        title: Text(
+          "tenders_results".tr,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -23,9 +23,7 @@ class TenderResultsView extends GetView<TenderResultsController> {
         }
 
         if (controller.tenders.isEmpty) {
-          return const Center(
-            child: Text("No tenders available at the moment"),
-          );
+          return Center(child: Text("no_tenders_available".tr));
         }
 
         return ListView.separated(
@@ -66,19 +64,19 @@ class _TenderCard extends StatelessWidget {
             const SizedBox(height: 12),
             _DetailRow(
               icon: Icons.grid_view_rounded,
-              label: "Category",
+              label: "category".tr,
               value: item.category,
             ),
             const SizedBox(height: 8),
             _DetailRow(
               icon: Icons.attach_money_rounded,
-              label: "Budget",
+              label: "budget".tr,
               value: item.estimatedBudget,
             ),
             const SizedBox(height: 8),
             _DetailRow(
               icon: Icons.event_available_rounded,
-              label: "Deadline",
+              label: "deadline".tr,
               value: item.deadline,
             ),
           ],

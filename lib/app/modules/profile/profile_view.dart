@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/modules/profile/profile_controller.dart';
-import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/validators.dart';
 
@@ -267,21 +266,21 @@ class _PersonalInfoCard extends StatelessWidget {
                 children: [
                   buildCard(
                     value1: profile.email,
-                    label1: 'Email',
+                    label1: 'email'.tr,
                     value2: profile.phone,
-                    label2: 'Phone',
+                    label2: 'phone_no_hint'.tr,
                   ),
                   buildCard(
                     value1: profile.birthdate,
-                    label1: 'Birthdate',
+                    label1: 'birth_no_hint'.tr,
                     value2: profile.sex,
-                    label2: 'Sex',
+                    label2: 'sex'.tr,
                   ),
                   buildCard(
                     value1: profile.company,
-                    label1: 'Company',
+                    label1: 'company'.tr,
                     value2: profile.CRN,
-                    label2: 'Commercial Register Number',
+                    label2: 'crn'.tr,
                   ),
                 ],
               ),

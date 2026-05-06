@@ -43,7 +43,7 @@ class LoginView extends GetView<LoginController> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                "TenderingDU",
+                                "app_title".tr,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 28,
@@ -55,7 +55,7 @@ class LoginView extends GetView<LoginController> {
                               const SizedBox(height: 12),
                               Obx(
                                 () => Text(
-                                  "Welcome Back",
+                                  "welcome_back".tr,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 24,
@@ -67,7 +67,7 @@ class LoginView extends GetView<LoginController> {
                               const SizedBox(height: 6),
                               Obx(
                                 () => Text(
-                                  "Login to continue to your account",
+                                  "login_inst".tr,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 15,
@@ -84,8 +84,7 @@ class LoginView extends GetView<LoginController> {
                               child: Column(
                                 children: [
                                   _AuthTextField(
-                                    hintText:
-                                        "Email or Syrian Mobile (e.g. 09x...)",
+                                    hintText: "email_phone".tr,
                                     icon: Icons.person_outline_rounded,
                                     controller: controller.identifierCtrl,
                                     validator: Validators.emailOrSyrianMobile,
@@ -93,7 +92,7 @@ class LoginView extends GetView<LoginController> {
                                   const SizedBox(height: 20),
                                   Obx(
                                     () => _AuthTextField(
-                                      hintText: "Password",
+                                      hintText: "password".tr,
                                       icon: Icons.lock_outline_rounded,
                                       controller: controller.passwordCtrl,
                                       isPassword: true,
@@ -104,7 +103,7 @@ class LoginView extends GetView<LoginController> {
                                       validator: (value) {
                                         if (value == null ||
                                             value.trim().isEmpty) {
-                                          return 'Password is required';
+                                          return 'password_required'.tr;
                                         }
                                         return null;
                                       },
@@ -116,8 +115,8 @@ class LoginView extends GetView<LoginController> {
                                       onPressed: () {
                                         Get.toNamed('/forgot-password');
                                       },
-                                      child: const Text(
-                                        "Forgot Password?",
+                                      child: Text(
+                                        "forgot_password".tr,
                                         style: TextStyle(
                                           color: AppColors.actionBlue,
                                           fontWeight: FontWeight.w600,
@@ -157,8 +156,8 @@ class LoginView extends GetView<LoginController> {
                                                       strokeWidth: 2,
                                                     ),
                                               )
-                                            : const Text(
-                                                "Login",
+                                            : Text(
+                                                "login".tr,
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -174,15 +173,15 @@ class LoginView extends GetView<LoginController> {
                                     child: Obx(
                                       () => RichText(
                                         text: TextSpan(
-                                          text: "Don't have an account? ",
+                                          text: "dont_have_account".tr,
                                           style: TextStyle(
                                             color: ThemeController
                                                 .to
                                                 .textSecondary,
                                           ),
-                                          children: const [
+                                          children: [
                                             TextSpan(
-                                              text: "Sign Up",
+                                              text: "signup".tr,
                                               style: TextStyle(
                                                 color: AppColors.actionBlue,
                                                 fontWeight: FontWeight.bold,

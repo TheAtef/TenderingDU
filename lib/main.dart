@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:tendering_du/app/core/services/api_service.dart';
+import 'package:tendering_du/app/core/services/translations.dart';
 import 'package:tendering_du/app/core/theme/initial_binding.dart';
 import 'package:tendering_du/app/core/storage/local_storage.dart';
 import 'package:tendering_du/app/core/theme/app_theme.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       initialBinding: InitialBinding(),
+      translations: TranslationsService(),
+      locale: const Locale('ar', 'SY'),
+      fallbackLocale: const Locale('ar', 'SY'),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: StorageService.getDarkMode()

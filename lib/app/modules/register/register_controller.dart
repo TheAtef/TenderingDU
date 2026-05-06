@@ -21,9 +21,9 @@ class RegisterController extends GetxController {
   var selectedSex = RxnString();
   var selectedActivity = RxnString();
 
-  final sexOptions = ['Male', 'Female'];
+  final sexOptions = ['male'.tr, 'female'.tr];
 
-  final activities = ['Construction', 'IT', 'Healthcare'];
+  final activities = ['construction'.tr, 'it'.tr, 'healthcare'.tr];
 
   var isLoading = false.obs;
   var isSuccess = false.obs;
@@ -38,7 +38,7 @@ class RegisterController extends GetxController {
 
   Future<void> register() async {
     if (selectedSex.value == null) {
-      Get.snackbar('Error', 'Please select your sex');
+      Get.snackbar('error'.tr, 'select_sex'.tr);
       return;
     }
 

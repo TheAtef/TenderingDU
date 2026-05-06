@@ -96,7 +96,7 @@ class _HeroHeader extends StatelessWidget {
                             color: AppColors.actionBlue.withOpacity(0.3),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(
                               Icons.done_all,
@@ -105,7 +105,7 @@ class _HeroHeader extends StatelessWidget {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              "Mark all read",
+                              "mark_all_read".tr,
                               style: TextStyle(
                                 color: AppColors.actionBlue,
                                 fontSize: 13,
@@ -124,7 +124,7 @@ class _HeroHeader extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Notifications",
+                    "notifications".tr,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
@@ -146,7 +146,7 @@ class _HeroHeader extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "$unreadCount New",
+                        "$unreadCount ${"new".tr}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -171,7 +171,7 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ["All", "Unread", "Alerts"];
+    final categories = ["all".tr, "unread".tr, "alerts".tr];
 
     return SliverToBoxAdapter(
       child: Obx(() {

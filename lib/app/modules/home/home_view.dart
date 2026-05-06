@@ -123,11 +123,11 @@ class _HeroHeader extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                "Good Morning,",
+                "greetings".tr,
                 style: TextStyle(fontSize: 16, color: theme.textSecondary),
               ),
               Text(
-                "Discover Tenders",
+                "discover_tenders".tr,
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -158,9 +158,9 @@ class _QuickStatsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = [
-      ["Active", "24", const Color(0xFF667EEA)],
-      ["Saved", "12", const Color(0xFFF5576C)],
-      ["Applied", "8", const Color(0xFF4FACFE)],
+      ["active".tr, "24", const Color(0xFF667EEA)],
+      ["saved".tr, "12", const Color(0xFFF5576C)],
+      ["applied".tr, "8", const Color(0xFF4FACFE)],
     ];
 
     return SliverToBoxAdapter(
@@ -265,7 +265,7 @@ class _TenderCardsSection extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(40),
               child: Text(
-                "No tenders available",
+                "no_tenders_available".tr,
                 style: TextStyle(color: ThemeController.to.textSecondary),
               ),
             ),
@@ -321,7 +321,7 @@ class _CategoryChips extends StatelessWidget {
       child: Obx(() {
         final theme = ThemeController.to;
 
-        final categories = ["All", ...controller.categoryList];
+        final categories = ["all".tr, ...controller.categoryList];
 
         final activeCategory = controller.activeFilters["category"];
 
@@ -494,25 +494,25 @@ class _FloatingActionHub extends StatelessWidget {
               children: [
                 _HubButton(
                   icon: Icons.home_rounded,
-                  label: "Home",
+                  label: "home".tr,
                   active: currentIndex == 0,
                   onTap: () => controller.changeTab(0),
                 ),
                 _HubButton(
                   icon: Icons.search_rounded,
-                  label: "Search",
+                  label: "search".tr,
                   active: currentIndex == 1,
                   onTap: () => controller.changeTab(1),
                 ),
                 _HubButton(
                   icon: Icons.bookmark_rounded,
-                  label: "Saved",
+                  label: "saved".tr,
                   active: currentIndex == 2,
                   onTap: () => controller.changeTab(2),
                 ),
                 _HubButton(
                   icon: Icons.person_rounded,
-                  label: "Profile",
+                  label: "profile".tr,
                   active: currentIndex == 3,
                   onTap: () => controller.changeTab(3),
                 ),
@@ -619,7 +619,7 @@ class _Drawer extends StatelessWidget {
               children: [
                 const SizedBox(height: 20),
                 Text(
-                  "Menu",
+                  "menu".tr,
                   style: TextStyle(
                     color: theme.textPrimary,
                     fontSize: 20,
@@ -629,7 +629,7 @@ class _Drawer extends StatelessWidget {
                 const SizedBox(height: 30),
                 _DrawerItem(
                   icon: Icons.assignment_turned_in,
-                  title: "Tenders Results",
+                  title: "tenders_results".tr,
                   onTap: () {
                     Get.back();
                     Get.lazyPut(() => TenderResultsController());
@@ -638,7 +638,7 @@ class _Drawer extends StatelessWidget {
                 ),
                 _DrawerItem(
                   icon: Icons.monetization_on_rounded,
-                  title: "My Bids",
+                  title: "my_bids".tr,
                   onTap: () {
                     Get.back();
                     Get.toNamed(Routes.MYBIDS);
@@ -646,7 +646,7 @@ class _Drawer extends StatelessWidget {
                 ),
                 _DrawerItem(
                   icon: Icons.settings_rounded,
-                  title: "Settings",
+                  title: "settings".tr,
                   onTap: () {
                     Get.back();
                     Get.toNamed(Routes.SETTINGS);
@@ -655,7 +655,7 @@ class _Drawer extends StatelessWidget {
                 const Spacer(),
                 _DrawerItem(
                   icon: Icons.logout_rounded,
-                  title: "Logout",
+                  title: "logout".tr,
                   isDestructive: true,
                   onTap: () async {
                     await _apiService.logout;
@@ -744,7 +744,7 @@ class _SearchBar extends StatelessWidget {
           style: TextStyle(color: theme.textPrimary, fontSize: 15),
           cursorColor: AppColors.actionBlue,
           decoration: InputDecoration(
-            hintText: "Search tenders, categories...",
+            hintText: "search_hint".tr,
             hintStyle: TextStyle(color: theme.textSecondary, fontSize: 14),
             prefixIcon: Icon(
               Icons.search_rounded,

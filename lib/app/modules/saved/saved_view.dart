@@ -19,7 +19,7 @@ class SavedView extends GetView<SavedController> {
           child: Row(
             children: [
               Text(
-                "Saved Tenders",
+                "saved_tenders".tr,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class SavedView extends GetView<SavedController> {
             if (controller.savedList.isEmpty) {
               return Center(
                 child: Text(
-                  "No saved tenders yet",
+                  "no_saved".tr,
                   style: TextStyle(color: ThemeController.to.textSecondary),
                 ),
               );
