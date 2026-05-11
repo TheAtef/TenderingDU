@@ -10,6 +10,8 @@ import 'package:tendering_du/app/modules/submit_bid/submit_bid_view.dart';
 import 'package:tendering_du/app/modules/submit_bid/sumbit_bid_binding.dart';
 import 'package:tendering_du/app/modules/tender_results/tender_results_binding.dart';
 import 'package:tendering_du/app/modules/tender_results/tender_results_view.dart';
+import 'package:tendering_du/app/modules/waiting_approval/waiting_approval_binding.dart';
+import 'package:tendering_du/app/modules/waiting_approval/waiting_approval_view.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 // Import your dashboard or next view/binding here
 import 'package:tendering_du/app/modules/home/home_view.dart';
@@ -108,6 +110,12 @@ class AppPages {
       name: '/pdf-viewer',
       page: () => const PdfViewerView(),
       binding: BindingsBuilder(() => Get.lazyPut(() => PdfViewerController())),
+    ),
+    GetPage(
+      name: Routes.WAITING_APPROVAL,
+      page: () => const WaitingApprovalView(),
+      binding: WaitingApprovalBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 }
