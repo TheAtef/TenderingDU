@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/modules/profile/profile_view.dart';
+import 'package:tendering_du/app/modules/receivedBids/received_bids_controller.dart';
+import 'package:tendering_du/app/modules/receivedBids/received_bids_view.dart';
 import 'package:tendering_du/app/modules/saved/saved_controller.dart';
 import 'package:tendering_du/app/modules/saved/saved_view.dart';
 import 'package:tendering_du/app/modules/tender_results/tender_results_controller.dart';
@@ -637,6 +639,15 @@ class _Drawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  icon: Icons.gavel_rounded,
+                  title: "Received Bids".tr,
+                  onTap: () {
+                    Get.back();
+                    Get.lazyPut(() => ReceivedBidsController());
+                    Get.to(() => const ReceivedBidsView());
+                  },
+                ),
+                _DrawerItem(
                   icon: Icons.monetization_on_rounded,
                   title: "my_bids".tr,
                   onTap: () {
@@ -652,6 +663,7 @@ class _Drawer extends StatelessWidget {
                     Get.toNamed(Routes.SETTINGS);
                   },
                 ),
+
                 const Spacer(),
                 _DrawerItem(
                   icon: Icons.logout_rounded,

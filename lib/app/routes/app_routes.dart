@@ -13,4 +13,6 @@ abstract class Routes {
   static const SUBMITBID = '/submit-bid';
   static const PDF_VIEWER = '/pdf-viewer';
   static const WAITING_APPROVAL = '/waiting-approval';
+  static const RECEIVED_BIDS = '/received-bids';
+  static const BID_DETAILS = '/bid-details';
 }

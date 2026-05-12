@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 import 'package:tendering_du/app/modules/PDF_viewer/pdfviewer_view.dart';
+import 'package:tendering_du/app/modules/bidsDetails/bidDetails_binding.dart';
+import 'package:tendering_du/app/modules/bidsDetails/bidDetails_view.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_binding.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_view.dart';
+import 'package:tendering_du/app/modules/receivedBids/received_bids_binding.dart';
+import 'package:tendering_du/app/modules/receivedBids/received_bids_view.dart';
 import 'package:tendering_du/app/modules/settings/settings_binding.dart';
 import 'package:tendering_du/app/modules/settings/settings_view.dart';
 import 'package:tendering_du/app/modules/splash/splash_view.dart';
@@ -116,6 +120,16 @@ class AppPages {
       page: () => const WaitingApprovalView(),
       binding: WaitingApprovalBinding(),
       transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.RECEIVED_BIDS,
+      page: () => const ReceivedBidsView(),
+      binding: ReceivedBidsBinding(),
+    ),
+    GetPage(
+      name: Routes.BID_DETAILS,
+      page: () => const BidDetailsView(),
+      binding: BidDetailsBinding(),
     ),
   ];
 }
