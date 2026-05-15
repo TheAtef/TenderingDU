@@ -100,6 +100,23 @@ class TranslationsService extends Translations {
       'budget': 'Budget',
       'deadline': 'Deadline',
 
+      //Create Tender
+      'create_tender': 'Create Tender',
+      'heading': 'Enter the details of the tender you want to create.',
+      'basics': 'Basics',
+      'title': 'Title',
+      'description': 'Tender Description / Overview',
+      'pricing': 'Pricing',
+      'expected_budget': 'Expected Budget',
+      'currency': 'Currency',
+      'timeline': 'Timeline',
+      'applying_deadline': 'Applying Deadline',
+      'completion_deadline': 'Completion Deadline',
+      'supporting_documents': 'Supporting Documents',
+      'remove_file': 'Remove File',
+      'upload_hint': 'Upload tender details (PDF, DOC)',
+      'submit_tender': 'Submit Tender',
+
       //My Bids
       'applied_hint': 'Bids you have applied for',
       'history': 'History',
@@ -227,6 +244,23 @@ class TranslationsService extends Translations {
       //Tenders Results
       'budget': 'الميزانية',
       'deadline': 'الموعد النهائي',
+
+      //Create Tender
+      'create_tender': 'إنشاء مناقصة',
+      'heading': 'ادخل معلومات المناقصة التي تود إنشاءها',
+      'basics': 'الأساسيات',
+      'title': 'العنوان',
+      'description': 'وصف المناقصة / لمحة عامة',
+      'pricing': 'السعر',
+      'expected_budget': 'الميزانية المتوقعة',
+      'currency': 'العملة',
+      'timeline': 'الجدول الزمني',
+      'applying_deadline': 'موعد انتهاء التقديم',
+      'completion_deadline': 'موعد انتهاء العمل',
+      'supporting_documents': 'الملفات الملحقة',
+      'remove_file': 'حذف الملف',
+      'upload_hint': 'ارفع ملف المعلومات (PDF, DOC)',
+      'submit_tender': 'تقديم المناقصة',
 
       //My Bids
       'applied_hint': 'مناقصات قمت بالتقديم إليها',

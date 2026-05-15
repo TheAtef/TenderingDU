@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/modules/create_tender/create_tender_controller.dart';
+import 'package:tendering_du/app/modules/create_tender/create_tender_view.dart';
 import 'package:tendering_du/app/modules/profile/profile_view.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_controller.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_view.dart';
@@ -639,8 +641,17 @@ class _Drawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  icon: Icons.construction_rounded,
+                  title: "create_tender".tr,
+                  onTap: () {
+                    Get.back();
+                    Get.lazyPut(() => CreateTenderController());
+                    Get.to(() => const CreateTenderView());
+                  },
+                ),
+                _DrawerItem(
                   icon: Icons.gavel_rounded,
-                  title: "Received Bids".tr,
+                  title: "received_bids".tr,
                   onTap: () {
                     Get.back();
                     Get.lazyPut(() => ReceivedBidsController());

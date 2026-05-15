@@ -15,4 +15,5 @@ abstract class Routes {
   static const WAITING_APPROVAL = '/waiting-approval';
   static const RECEIVED_BIDS = '/received-bids';
   static const BID_DETAILS = '/bid-details';
+  static const CREATE_TENDER = '/create-tender';
 }

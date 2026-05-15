@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'TenderingDU',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppPages.INITIAL,
+      initialRoute: AppPages.HOME,
       getPages: AppPages.routes,
       initialBinding: InitialBinding(),
       translations: TranslationsService(),

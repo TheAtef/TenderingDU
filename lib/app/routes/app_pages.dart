@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:tendering_du/app/modules/PDF_viewer/pdfviewer_view.dart';
 import 'package:tendering_du/app/modules/bidsDetails/bidDetails_binding.dart';
 import 'package:tendering_du/app/modules/bidsDetails/bidDetails_view.dart';
+import 'package:tendering_du/app/modules/create_tender/create_tender_binding.dart';
+import 'package:tendering_du/app/modules/create_tender/create_tender_view.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_binding.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_view.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_binding.dart';
@@ -17,7 +19,6 @@ import 'package:tendering_du/app/modules/tender_results/tender_results_view.dart
 import 'package:tendering_du/app/modules/waiting_approval/waiting_approval_binding.dart';
 import 'package:tendering_du/app/modules/waiting_approval/waiting_approval_view.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
-// Import your dashboard or next view/binding here
 import 'package:tendering_du/app/modules/home/home_view.dart';
 import 'package:tendering_du/app/modules/home/home_binding.dart';
 import 'package:tendering_du/app/modules/notifications/notifications_view.dart';
@@ -38,6 +39,7 @@ class AppPages {
   AppPages._();
 
   static const INITIAL = Routes.SPLASH;
+  static const HOME = Routes.HOME;
 
   static final routes = [
     GetPage(
@@ -130,6 +132,11 @@ class AppPages {
       name: Routes.BID_DETAILS,
       page: () => const BidDetailsView(),
       binding: BidDetailsBinding(),
+    ),
+    GetPage(
+      name: Routes.CREATE_TENDER,
+      page: () => const CreateTenderView(),
+      binding: CreateTenderBinding(),
     ),
   ];
 }
