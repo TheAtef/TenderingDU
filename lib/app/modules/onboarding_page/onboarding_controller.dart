@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 
 class OnboardingItem {
@@ -15,6 +16,7 @@ class OnboardingItem {
 }
 
 class OnboardingController extends GetxController {
+  final storage = GetStorage();
   final pageController = PageController();
   var currentIndex = 0.obs;
 
@@ -59,7 +61,7 @@ class OnboardingController extends GetxController {
   }
 
   void _finishOnboarding() {
-    Get.offAllNamed(Routes.HOME);
+    Get.offAllNamed(Routes.WAITING_APPROVAL);
   }
 
   @override

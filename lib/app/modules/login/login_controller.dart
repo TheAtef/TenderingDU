@@ -27,11 +27,17 @@ class LoginController extends GetxController {
       );
 
       if (result['success']) {
-        Get.offAllNamed(Routes.HOME);
+        bool isVerified = result['is_verified'] ?? false;
+
+        if (isVerified) {
+          Get.offAllNamed(Routes.HOME);
+        } else {
+          Get.offAllNamed(Routes.WAITING_APPROVAL);
+        }
       } else {
         Get.snackbar(
           'Login Failed',
-          'Incorrect email/phone or password',
+          result['message'] ?? 'Incorrect email/phone or password',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
@@ -41,7 +47,7 @@ class LoginController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Error',
-        e.toString(),
+        'An unexpected error occurred. Please try again.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,

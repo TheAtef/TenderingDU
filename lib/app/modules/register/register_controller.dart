@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/services/api_service.dart';
 
 class RegisterController extends GetxController {
   final ApiService _apiService = Get.find<ApiService>();
+  final storage = GetStorage();
 
   final formKey = GlobalKey<FormState>();
 
@@ -22,7 +24,6 @@ class RegisterController extends GetxController {
   var selectedActivity = RxnString();
 
   final sexOptions = ['male'.tr, 'female'.tr];
-
   final activities = ['construction'.tr, 'it'.tr, 'healthcare'.tr];
 
   var isLoading = false.obs;
@@ -63,6 +64,17 @@ class RegisterController extends GetxController {
       isLoading.value = false;
 
       if (result['success']) {
+        final data = result['data'];
+        final user = data['user'];
+
+        await storage.write('is_verified', user['is_verified'] ?? false);
+        await storage.write('user_id', user['id']);
+
+        if (data['access'] != null)
+          await storage.write('access_token', data['access']);
+        if (data['refresh'] != null)
+          await storage.write('refresh_token', data['refresh']);
+
         isSuccess.value = true;
 
         await Future.delayed(const Duration(milliseconds: 1200));
@@ -77,13 +89,12 @@ class RegisterController extends GetxController {
       } else {
         Get.snackbar(
           'Registration Failed',
-          result['message'],
+          result['message'].toString(),
           snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (e) {
       isLoading.value = false;
-
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }

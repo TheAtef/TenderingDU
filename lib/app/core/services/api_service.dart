@@ -64,15 +64,31 @@ class ApiService {
     final body = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      if (body['access'] != null) {
-        await storage.write('access_token', body['access']);
-      }
-      if (body['refresh'] != null) {
-        await storage.write('refresh_token', body['refresh']);
-      }
-      return {"success": true, "data": body};
+      await storage.write('access_token', body['access']);
+      await storage.write('refresh_token', body['refresh']);
+      await storage.write('user_id', body['user_id']);
+
+      return {
+        "success": true,
+        "is_verified": body['is_verified'],
+        "data": body,
+      };
     }
-    return {"success": false, "message": body.toString()};
+    return {"success": false, "message": body['detail'] ?? "Login failed"};
+  }
+
+  Future<bool> checkUserApproval() async {
+    final userId = storage.read('user_id');
+    if (userId == null) return false;
+
+    final url = Uri.parse('$baseUrl/users/$userId/');
+    final response = await _handleGet(url);
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body['is_verified'] ?? false;
+    }
+    return false;
   }
 
   Future<Map<String, dynamic>> getTenderDetails(int id) async {
@@ -131,7 +147,7 @@ class ApiService {
     if (query != null && query.isNotEmpty) {
       queryParams['search'] = query;
     }
-    if (category != null && category != "All" && category.isNotEmpty) {
+    if (category != null && category != "All" && category.trim().isNotEmpty) {
       queryParams['category__name'] = category;
     }
 
@@ -141,9 +157,17 @@ class ApiService {
     final response = await _handleGet(url);
 
     if (response.statusCode == 200) {
-      return json.decode(response.body) as List<dynamic>;
+      final data = json.decode(response.body);
+
+      // CHECK IF DATA IS WRAPPED IN 'results' (Django Pagination)
+      if (data is Map && data.containsKey('results')) {
+        return data['results'] as List<dynamic>;
+      }
+
+      return data as List<dynamic>;
     } else {
-      throw Exception('Failed to load tenders: ${response.statusCode}');
+      print("API Error: ${response.statusCode} ${response.body}");
+      return [];
     }
   }
 
