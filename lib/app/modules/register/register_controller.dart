@@ -70,10 +70,12 @@ class RegisterController extends GetxController {
         await storage.write('is_verified', user['is_verified'] ?? false);
         await storage.write('user_id', user['id']);
 
-        if (data['access'] != null)
+        if (data['access'] != null) {
           await storage.write('access_token', data['access']);
-        if (data['refresh'] != null)
+        }
+        if (data['refresh'] != null) {
           await storage.write('refresh_token', data['refresh']);
+        }
 
         isSuccess.value = true;
 

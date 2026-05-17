@@ -197,4 +197,64 @@ class ApiService {
     }
     return isSaved ? res.statusCode == 201 : res.statusCode == 204;
   }
+
+  Future<Map<String, dynamic>> getProfile() async {
+    final userId = storage.read('user_id');
+    final token = storage.read('access_token');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/users/$userId/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data;
+    } else {
+      print("API Error: ${response.statusCode} ${response.body}");
+      return {};
+    }
+  }
+
+  Future<bool> editProfile({
+    required String email,
+    required String phone,
+    required String gender,
+    required String birthDate,
+    required String firstName,
+    required String lastName,
+  }) async {
+    final userId = storage.read('user_id');
+    final token = storage.read('access_token');
+
+    // check password here
+    //
+    //
+
+    final response = await http.patch(
+      Uri.parse('$baseUrl/users/$userId/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "email": email,
+        "phone": phone,
+        "gender": gender.toLowerCase(),
+        "birth_date": birthDate,
+        "first_name": firstName,
+        "last_name": lastName,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print("API Error: ${response.statusCode} ${response.body}");
+      return false;
+    }
+  }
 }

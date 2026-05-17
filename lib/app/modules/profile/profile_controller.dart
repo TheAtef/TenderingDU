@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tendering_du/app/core/services/api_service.dart';
 import 'package:tendering_du/app/modules/profile/profile_model.dart';
 
 class ProfileController extends GetxController {
@@ -34,37 +35,49 @@ class ProfileController extends GetxController {
       editEmailCtrl.text = cur.email;
       editPhoneCtrl.text = cur.phone;
       editBirthdateCtrl.text = cur.birthdate;
-      editSexCtrl.text = cur.sex;
+      editSexCtrl.text = cur.sex.capitalizeFirst!;
       editPasswordCtrl.clear();
       isPasswordHidden.value = true;
     }
   }
 
-  void saveProfileChanges() {
+  Future<void> saveProfileChanges() async {
+    final cur = profile.value!;
+    if (editEmailCtrl.text.trim() == cur.email ||
+        editPhoneCtrl.text.trim() == cur.phone ||
+        editBirthdateCtrl.text.trim() == cur.birthdate ||
+        editSexCtrl.text.trim() == cur.sex ||
+        editFirstNameCtrl.text.trim() == cur.firstName ||
+        editLastNameCtrl.text.trim() == cur.lastName) {
+      Get.back();
+      Get.snackbar(
+        'Huh?',
+        'No changes detected to save.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
     if (editFormKey.currentState?.validate() ?? false) {
-      final cur = profile.value;
-      if (cur != null) {
-        profile.value = ProfileModel(
-          firstName: editFirstNameCtrl.text,
-          lastName: editLastNameCtrl.text,
-          email: editEmailCtrl.text,
-          phone: editPhoneCtrl.text,
-          birthdate: editBirthdateCtrl.text,
-          sex: editSexCtrl.text,
-          company: cur.company, // Unchanged
-          CRN: cur.CRN, // Unchanged
-          isVerified: cur.isVerified,
-        );
-        Get.back();
-        Get.snackbar(
-          'Success',
-          'Profile updated successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(16),
-        );
-      }
+      final ApiService _apiService = ApiService();
+      _apiService.editProfile(
+        email: editEmailCtrl.text,
+        phone: editPhoneCtrl.text,
+        gender: editSexCtrl.text.toLowerCase(),
+        birthDate: editBirthdateCtrl.text,
+        firstName: editFirstNameCtrl.text,
+        lastName: editLastNameCtrl.text,
+      );
+      await Future.delayed(const Duration(seconds: 1));
+      onInit();
+      Get.back();
+      Get.snackbar(
+        'Success',
+        'Profile updated successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
     }
   }
 
@@ -82,23 +95,13 @@ class ProfileController extends GetxController {
 
   Future<void> fetchProfileFromApi() async {
     isLoading.value = true;
+    final ApiService _apiService = ApiService();
 
     try {
-      await Future.delayed(const Duration(milliseconds: 1500));
-
-      final mockApiResponse = {
-        'first_name': 'John',
-        'last_name': 'Doe',
-        'email': 'john.doe@example.com',
-        'phone': '0933123456',
-        'birthdate': '1990-01-01',
-        'sex': 'Male',
-        'company': 'Example Inc.',
-        'commercial_register_number': '123456789',
-        'is_verified': true,
-      };
-
-      profile.value = ProfileModel.fromJson(mockApiResponse);
+      // await Future.delayed(const Duration(milliseconds: 1500));
+      final getProfileResult = await _apiService.getProfile();
+      print(getProfileResult);
+      profile.value = ProfileModel.fromJson(getProfileResult);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load profile from server.');
     } finally {

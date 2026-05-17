@@ -24,12 +24,12 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'TenderingDU',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppPages.HOME,
+      initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       initialBinding: InitialBinding(),
       translations: TranslationsService(),
-      locale: const Locale('ar', 'SY'),
-      fallbackLocale: const Locale('ar', 'SY'),
+      locale: const Locale('en', 'US'),
+      fallbackLocale: const Locale('en', 'US'),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: StorageService.getDarkMode()

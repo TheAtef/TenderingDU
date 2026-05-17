@@ -186,71 +186,73 @@ class _PersonalInfoCard extends StatelessWidget {
             required String value2,
             required String label2,
           }) {
-            return Container(
-              height: 150,
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: theme.borderColor),
-                boxShadow: theme.isDarkMode
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 20,
-                          offset: const Offset(0, 4),
+            return Obx(
+              () => Container(
+                height: 150,
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: theme.borderColor),
+                  boxShadow: theme.isDarkMode
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 20,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 8, 0),
+                      child: Text(
+                        value1,
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 8, 0),
-                    child: Text(
-                      value1,
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
-                    child: Text(
-                      label1,
-                      style: TextStyle(
-                        color: colorScheme.onSurface.withOpacity(0.6),
-                        fontSize: 16,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                      child: Text(
+                        label1,
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.6),
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
-                    child: Text(
-                      value2,
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                      child: Text(
+                        value2,
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
-                    child: Text(
-                      label2,
-                      style: TextStyle(
-                        color: colorScheme.onSurface.withOpacity(0.6),
-                        fontSize: 16,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                      child: Text(
+                        label2,
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.6),
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }
@@ -273,7 +275,7 @@ class _PersonalInfoCard extends StatelessWidget {
                   buildCard(
                     value1: profile.birthdate,
                     label1: 'birth_no_hint'.tr,
-                    value2: profile.sex,
+                    value2: profile.sex.capitalizeFirst!,
                     label2: 'sex'.tr,
                   ),
                   buildCard(

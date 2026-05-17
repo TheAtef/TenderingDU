@@ -27,10 +27,10 @@ class ProfileModel {
       lastName: json['last_name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      birthdate: json['birthdate']?.toString() ?? '',
-      sex: json['sex'] ?? '',
+      birthdate: json['birth_date']?.toString() ?? '',
+      sex: json['gender'] ?? '',
       company: json['company'] ?? '',
-      CRN: json['commercial_register_number'] ?? '',
+      CRN: json['cr_number'] ?? '',
       isVerified: json['is_verified'],
     );
   }
