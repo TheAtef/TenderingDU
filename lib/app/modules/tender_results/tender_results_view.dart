@@ -12,7 +12,7 @@ class TenderResultsView extends GetView<TenderResultsController> {
       appBar: AppBar(
         title: Text(
           "tenders_results".tr,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,
@@ -57,9 +57,20 @@ class _TenderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              item.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                _StatusBadge(status: item.status),
+              ],
             ),
             const SizedBox(height: 12),
             _DetailRow(
@@ -69,9 +80,15 @@ class _TenderCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _DetailRow(
+              icon: Icons.location_on_outlined,
+              label: "location".tr,
+              value: item.location,
+            ),
+            const SizedBox(height: 8),
+            _DetailRow(
               icon: Icons.attach_money_rounded,
               label: "budget".tr,
-              value: item.estimatedBudget,
+              value: "${item.budgetMin} - ${item.budgetMax} ${item.currency}",
             ),
             const SizedBox(height: 8),
             _DetailRow(
@@ -107,11 +124,50 @@ class _DetailRow extends StatelessWidget {
           "$label: ",
           style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
         ),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  const _StatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
+    switch (status.toLowerCase()) {
+      case 'open':
+        color = Colors.green;
+        break;
+      case 'closed':
+        color = Colors.red;
+        break;
+      default:
+        color = Colors.orange;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

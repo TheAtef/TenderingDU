@@ -3,7 +3,6 @@ import 'package:tendering_du/app/modules/tender_details/tender_details_model.dar
 
 class TenderResultsController extends GetxController {
   var isLoading = true.obs;
-  // Use TenderDetailsModel instead of the old TenderModel
   var tenders = <TenderDetailsModel>[].obs;
 
   @override
@@ -22,25 +21,31 @@ class TenderResultsController extends GetxController {
           id: 1,
           title: "مشروع خالص ",
           category: "Construction",
-          description: "",
-          deadline: "",
-          status: "",
-          estimatedBudget: "",
-          requirements: [],
-          pdfUrl: "",
-          postedDate: "",
+          description: "Description here",
+          deadline: "2024-12-01",
+          status: "open",
+          currency: "USD",
+          budgetMin: "1000",
+          budgetMax: "5000",
+          startDate: "2024-10-01",
+          location: "Muscat",
+          requirements: ["Requirement 1"],
+          pdfUrl: "https://example.com/doc1.pdf",
         ),
         TenderDetailsModel(
           id: 2,
           title: "مشروع الرصيف الخارق",
           category: "Infrastructure",
-          description: "",
-          deadline: "",
-          status: "",
-          estimatedBudget: "",
-          requirements: [],
-          pdfUrl: "",
-          postedDate: "",
+          description: "Description here",
+          deadline: "2024-11-15",
+          status: "closed",
+          currency: "OMR",
+          budgetMin: "20000",
+          budgetMax: "50000",
+          startDate: "2024-09-01",
+          location: "Salalah",
+          requirements: ["Requirement A"],
+          pdfUrl: "https://example.com/doc2.pdf",
         ),
       ]);
     } catch (e) {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:tendering_du/app/core/services/api_service.dart'; // Ensure this path is correct
@@ -26,19 +28,16 @@ class TenderDetailsController extends GetxController {
   Future<void> fetchTenderDetails() async {
     isLoading.value = true;
     isError.value = false;
-
     try {
       final data = await _apiService.getTenderDetails(basicTender.id);
-
+      print(jsonEncode(data));
       tenderDetails = TenderDetailsModel.fromJson(data);
-
       isFavourite.value = tenderDetails.isFavourite;
-
-      isLoading.value = false;
     } catch (e) {
-      print("Error fetching tender details: $e");
-      isLoading.value = false;
       isError.value = true;
+      print("Fetch Error: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -68,25 +67,17 @@ class TenderDetailsController extends GetxController {
     }
   }
 
-  Future<void> submitBid() async {
-    isSubmitting.value = true;
-
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-
+  void submitBid() {
+    if (isLoading.value || isError.value) {
       Get.snackbar(
-        'Success',
-        'Your bid submitted successfully',
-        backgroundColor: Colors.green,
+        'Wait',
+        'Please wait for tender details to load.',
+        backgroundColor: Colors.orange,
         colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
       );
-
-      Get.back();
-    } catch (e) {
-      Get.snackbar('Error', 'Submission failed. Please try again.');
-    } finally {
-      isSubmitting.value = false;
+      return;
     }
+
+    Get.toNamed('/submit-bid', arguments: tenderDetails);
   }
 }

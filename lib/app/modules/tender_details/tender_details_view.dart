@@ -2,9 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
-import 'package:tendering_du/app/routes/app_routes.dart';
 import 'tender_details_controller.dart';
 
 class TenderDetailsView extends GetView<TenderDetailsController> {
@@ -74,25 +72,35 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                       child: FadeInAnimation(child: widget),
                     ),
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          data.category,
-                          style: TextStyle(
-                            color: colorScheme.primary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                data.category,
+                                style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 10),
+                          _StatusChip(status: data.status),
+                        ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Text(
                         data.title,
                         style: TextStyle(
@@ -102,27 +110,39 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           height: 1.3,
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Row(
+                      const SizedBox(height: 16),
+                      GridView.count(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 2.0,
                         children: [
-                          Expanded(
-                            child: _InfoCard(
-                              title: "Deadline",
-                              value: data.deadline,
-                              icon: Icons.schedule,
-                            ),
+                          _InfoCard(
+                            title: "Location",
+                            value: data.location,
+                            icon: Icons.location_on_outlined,
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _InfoCard(
-                              title: "Status",
-                              value: data.status.toUpperCase(),
-                              icon: Icons.analytics_outlined,
-                            ),
+                          _InfoCard(
+                            title: "Budget (${data.currency})",
+                            value: "${data.budgetMin} - ${data.budgetMax}",
+                            icon: Icons.payments_outlined,
+                          ),
+                          _InfoCard(
+                            title: "Start Date",
+                            value: data.startDate,
+                            icon: Icons.calendar_today_rounded,
+                          ),
+                          _InfoCard(
+                            title: "Deadline",
+                            value: data.deadline,
+                            icon: Icons.timer_outlined,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       Text(
                         "Description",
                         style: TextStyle(
@@ -131,7 +151,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           color: colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Text(
                         data.description,
                         style: TextStyle(
@@ -140,7 +160,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           height: 1.6,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       Text(
                         "Requirements",
                         style: TextStyle(
@@ -149,16 +169,17 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           color: colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       ...data.requirements.map(
                         (req) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Icon(
                                 Icons.check_circle,
                                 color: colorScheme.primary,
-                                size: 20,
+                                size: 18,
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -168,7 +189,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                                     color: colorScheme.onSurface.withOpacity(
                                       0.7,
                                     ),
-                                    fontSize: 15,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
@@ -176,7 +197,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       Text(
                         "Attachments",
                         style: TextStyle(
@@ -185,20 +206,14 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           color: colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _DocumentAttachment(
                         title: "Tender Official Document",
-                        onTap: () {
-                          Get.toNamed(
-                            '/pdf-viewer',
-                            arguments: {
-                              'url': data.pdfUrl,
-                              'title': data.title,
-                            },
-                          );
-                        },
+                        onTap: () => Get.toNamed(
+                          '/pdf-viewer',
+                          arguments: {'url': data.pdfUrl, 'title': data.title},
+                        ),
                       ),
-                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -208,14 +223,15 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
         ],
       ),
       bottomNavigationBar: Obx(() {
-        if (controller.isLoading.value || controller.isError.value)
+        if (controller.isLoading.value || controller.isError.value) {
           return const SizedBox.shrink();
+        }
 
         return ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 30),
               decoration: BoxDecoration(
                 color: colorScheme.surface.withOpacity(0.7),
                 border: Border(
@@ -225,47 +241,50 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Est. Budget",
-                        style: TextStyle(
-                          color: colorScheme.onSurface.withOpacity(0.6),
-                          fontSize: 12,
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Est. Budget (${controller.tenderDetails.currency})",
+                          style: TextStyle(
+                            color: colorScheme.onSurface.withOpacity(0.6),
+                            fontSize: 11,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      Text(
-                        controller.tenderDetails.estimatedBudget,
-                        style: TextStyle(
-                          color: colorScheme.onSurface,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          "${controller.tenderDetails.budgetMin} - ${controller.tenderDetails.budgetMax}",
+                          style: TextStyle(
+                            color: colorScheme.onSurface,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: controller.submitBid,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
+                        horizontal: 24,
+                        vertical: 14,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 8,
-                      shadowColor: colorScheme.primary.withOpacity(0.5),
+                      elevation: 4,
                     ),
                     child: controller.isSubmitting.value
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
+                            height: 18,
+                            width: 18,
                             child: CircularProgressIndicator(
                               color: Colors.white,
                               strokeWidth: 2,
@@ -275,7 +294,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                             "Submit Bid",
                             style: TextStyle(
                               color: colorScheme.onPrimary,
-                              fontSize: 16,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -302,16 +321,16 @@ class _DocumentAttachment extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: colorScheme.surface.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
         ),
         child: Row(
           children: [
-            Icon(Icons.picture_as_pdf, color: colorScheme.primary, size: 28),
-            const SizedBox(width: 16),
+            Icon(Icons.picture_as_pdf, color: colorScheme.primary, size: 24),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,13 +340,15 @@ class _DocumentAttachment extends StatelessWidget {
                     style: TextStyle(
                       color: colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     "Tap to view document",
                     style: TextStyle(
                       color: colorScheme.onSurface.withOpacity(0.6),
-                      fontSize: 12,
+                      fontSize: 11,
                     ),
                   ),
                 ],
@@ -336,6 +357,7 @@ class _DocumentAttachment extends StatelessWidget {
             Icon(
               Icons.chevron_right,
               color: colorScheme.onSurface.withOpacity(0.4),
+              size: 20,
             ),
           ],
         ),
@@ -357,34 +379,75 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: colorScheme.surface.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: colorScheme.primary, size: 20),
-          const SizedBox(height: 8),
+          Icon(icon, color: colorScheme.primary, size: 18),
+          const SizedBox(height: 4),
           Text(
             title,
             style: TextStyle(
               color: colorScheme.onSurface.withOpacity(0.6),
-              fontSize: 12,
+              fontSize: 10,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
           Text(
             value,
             style: TextStyle(
               color: colorScheme.onSurface,
-              fontSize: 15,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final String status;
+  const _StatusChip({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
+    switch (status.toLowerCase()) {
+      case 'open':
+        color = Colors.green;
+        break;
+      case 'closed':
+        color = Colors.red;
+        break;
+      default:
+        color = Colors.orange;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

@@ -96,6 +96,7 @@ class ApiService {
     final response = await _handleGet(url);
 
     if (response.statusCode == 200) {
+      print(response.body);
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load tender details');

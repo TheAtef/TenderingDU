@@ -10,6 +10,8 @@ import 'package:tendering_du/app/modules/receivedBids/received_bids_controller.d
 import 'package:tendering_du/app/modules/receivedBids/received_bids_view.dart';
 import 'package:tendering_du/app/modules/saved/saved_controller.dart';
 import 'package:tendering_du/app/modules/saved/saved_view.dart';
+import 'package:tendering_du/app/modules/tender_details/tender_details_controller.dart';
+import 'package:tendering_du/app/modules/tender_details/tender_details_view.dart';
 import 'package:tendering_du/app/modules/tender_results/tender_results_controller.dart';
 import 'package:tendering_du/app/modules/tender_results/tender_results_view.dart';
 import 'home_controller.dart';
@@ -163,7 +165,6 @@ class _QuickStatsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = [
       ["active".tr, "24", const Color(0xFF667EEA)],
-      ["saved".tr, "12", const Color(0xFFF5576C)],
       ["applied".tr, "8", const Color(0xFF4FACFE)],
     ];
 
@@ -180,8 +181,6 @@ class _QuickStatsSection extends StatelessWidget {
                 switch (data[index][0]) {
                   case "Active":
                     controller.applyFilter("status", "active");
-                    break;
-                  case "Saved":
                     break;
                   case "Applied":
                     controller.applyFilter("status", "applied");
@@ -293,7 +292,13 @@ class _TenderCardsSection extends StatelessWidget {
                     child: AnimatedTap(
                       child: GestureDetector(
                         onTap: () {
-                          Get.toNamed(Routes.TENDER_DETAILS, arguments: tender);
+                          Get.to(
+                            () => const TenderDetailsView(),
+                            binding: BindingsBuilder(() {
+                              Get.put(TenderDetailsController());
+                            }),
+                            arguments: tender,
+                          );
                         },
                         child: _TenderCard(
                           title: tender.title,
@@ -681,7 +686,7 @@ class _Drawer extends StatelessWidget {
                   title: "logout".tr,
                   isDestructive: true,
                   onTap: () async {
-                    await _apiService.logout;
+                    await _apiService.logout();
                     Get.offAllNamed(Routes.LOGIN);
                   },
                 ),
