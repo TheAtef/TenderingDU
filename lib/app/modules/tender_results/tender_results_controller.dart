@@ -30,7 +30,7 @@ class TenderResultsController extends GetxController {
           startDate: "2024-10-01",
           location: "Muscat",
           requirements: ["Requirement 1"],
-          pdfUrl: "https://example.com/doc1.pdf",
+          attachments: [],
         ),
         TenderDetailsModel(
           id: 2,
@@ -45,7 +45,7 @@ class TenderResultsController extends GetxController {
           startDate: "2024-09-01",
           location: "Salalah",
           requirements: ["Requirement A"],
-          pdfUrl: "https://example.com/doc2.pdf",
+          attachments: [],
         ),
       ]);
     } catch (e) {

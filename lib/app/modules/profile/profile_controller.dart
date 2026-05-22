@@ -42,12 +42,15 @@ class ProfileController extends GetxController {
   }
 
   Future<void> saveProfileChanges() async {
-    final cur = profile.value!;
-    if (editEmailCtrl.text.trim() == cur.email ||
-        editPhoneCtrl.text.trim() == cur.phone ||
-        editBirthdateCtrl.text.trim() == cur.birthdate ||
-        editSexCtrl.text.trim() == cur.sex ||
-        editFirstNameCtrl.text.trim() == cur.firstName ||
+    final cur = profile.value;
+    if (cur == null) return;
+
+    // Fixed logical check: Change '||' to '&&' so that updating any single field is allowed.
+    if (editEmailCtrl.text.trim() == cur.email &&
+        editPhoneCtrl.text.trim() == cur.phone &&
+        editBirthdateCtrl.text.trim() == cur.birthdate &&
+        editSexCtrl.text.trim().toLowerCase() == cur.sex.toLowerCase() &&
+        editFirstNameCtrl.text.trim() == cur.firstName &&
         editLastNameCtrl.text.trim() == cur.lastName) {
       Get.back();
       Get.snackbar(
@@ -57,27 +60,65 @@ class ProfileController extends GetxController {
       );
       return;
     }
+
     if (editFormKey.currentState?.validate() ?? false) {
+      isLoading.value = true; // Turn on loader
       final ApiService _apiService = ApiService();
-      _apiService.editProfile(
-        email: editEmailCtrl.text,
-        phone: editPhoneCtrl.text,
-        gender: editSexCtrl.text.toLowerCase(),
-        birthDate: editBirthdateCtrl.text,
-        firstName: editFirstNameCtrl.text,
-        lastName: editLastNameCtrl.text,
-      );
-      await Future.delayed(const Duration(seconds: 1));
-      onInit();
-      Get.back();
-      Get.snackbar(
-        'Success',
-        'Profile updated successfully!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-      );
+
+      try {
+        // 1. Verify the password first
+        final bool isPasswordCorrect = await _apiService.checkPassword(
+          editPasswordCtrl.text.trim(),
+        );
+
+        if (!isPasswordCorrect) {
+          Get.snackbar(
+            'Verification Failed',
+            'The password you entered is incorrect.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        // 2. If password is correct, apply profile updates
+        final bool success = await _apiService.editProfile(
+          email: editEmailCtrl.text.trim(),
+          phone: editPhoneCtrl.text.trim(),
+          gender: editSexCtrl.text.trim().toLowerCase(),
+          birthDate: editBirthdateCtrl.text.trim(),
+          firstName: editFirstNameCtrl.text.trim(),
+          lastName: editLastNameCtrl.text.trim(),
+        );
+
+        if (success) {
+          await fetchProfileFromApi();
+          Get.back();
+          Get.snackbar(
+            'Success',
+            'Profile updated successfully!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green.withOpacity(0.8),
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+          );
+        } else {
+          Get.snackbar(
+            'Error',
+            'Failed to save changes. Please try again.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          'Error',
+          'An unexpected error occurred.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } finally {
+        isLoading.value = false;
+      }
     }
   }
 

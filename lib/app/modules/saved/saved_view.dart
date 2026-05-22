@@ -66,8 +66,13 @@ class SavedView extends GetView<SavedController> {
                           child: _TenderCard(
                             title: tender.title,
                             category: tender.category,
-                            deadline: tender.deadline,
-                            isBookmarked: true, // It is in the saved tab
+                            deadline: tender.deadline is DateTime
+                                ? tender.deadline.toString().split(
+                                    ' ',
+                                  )[0] // Formats "2026-05-22 16:46:55" to "2026-05-22"
+                                : tender
+                                      .deadline, // Keeps it as is if it's already a String
+                            isBookmarked: true,
                             onBookmark: () =>
                                 controller.removeFromSaved(tender),
                           ),

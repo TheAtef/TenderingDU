@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
@@ -75,6 +76,49 @@ class ApiService {
       };
     }
     return {"success": false, "message": body['detail'] ?? "Login failed"};
+  }
+
+  Future<Map<String, dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final url = Uri.parse('$baseUrl/change-password/');
+
+    var response = await http.post(
+      url,
+      headers: _getHeaders(),
+      body: jsonEncode({
+        "old_password": oldPassword,
+        "new_password": newPassword,
+      }),
+    );
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.post(
+          url,
+          headers: _getHeaders(),
+          body: jsonEncode({
+            "old_password": oldPassword,
+            "new_password": newPassword,
+          }),
+        );
+      }
+    }
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return {
+        "success": true,
+        "message": body['message'] ?? "Password updated successfully",
+      };
+    } else {
+      return {
+        "success": false,
+        "message": body['error'] ?? "Failed to change password",
+      };
+    }
   }
 
   Future<bool> checkUserApproval() async {
@@ -160,7 +204,6 @@ class ApiService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
 
-      // CHECK IF DATA IS WRAPPED IN 'results' (Django Pagination)
       if (data is Map && data.containsKey('results')) {
         return data['results'] as List<dynamic>;
       }
@@ -187,16 +230,45 @@ class ApiService {
         ? await http.post(
             url,
             headers: _getHeaders(),
-            body: json.encode({'tender_id': tenderId}),
+            body: json.encode({'tender': tenderId}),
           )
         : await http.delete(url, headers: _getHeaders());
-
+    if (res.statusCode == 400) {
+      print("VALIDATION ERROR FROM DJANGO: ${res.body}");
+    }
     if (res.statusCode == 401) {
       if (await refreshToken()) {
         return toggleSaveTender(tenderId, isSaved);
       }
     }
     return isSaved ? res.statusCode == 201 : res.statusCode == 204;
+  }
+
+  Future<bool> uploadTenderAttachment({
+    required int tenderId,
+    required File file,
+  }) async {
+    final url = Uri.parse('$baseUrl/tender-attachments/');
+    final request = http.MultipartRequest('POST', url);
+
+    final token = storage.read('access_token');
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    request.fields['tender'] = tenderId.toString();
+    request.fields['description'] = 'Supporting document';
+    request.fields['size'] = (await file.length()).toString();
+    request.fields['content_type'] = file.path.endsWith('.pdf')
+        ? 'application/pdf'
+        : 'application/msword';
+
+    request.files.add(await http.MultipartFile.fromPath('file', file.path));
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    return response.statusCode == 201;
   }
 
   Future<Map<String, dynamic>> getProfile() async {
@@ -220,6 +292,83 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> createTender({
+    required String title,
+    required String description,
+    required double budgetMin,
+    required double budgetMax,
+    required String startDate,
+    required String deadline,
+    required String completionDeadline,
+    required int categoryId,
+    required int currencyId,
+    required int locationId,
+    required int statusId,
+  }) async {
+    final url = Uri.parse('$baseUrl/tenders/');
+
+    var response = await http.post(
+      url,
+      headers: _getHeaders(),
+      body: jsonEncode({
+        "title": title,
+        "description": description,
+        "budget_min": budgetMin.toStringAsFixed(2),
+        "budget_max": budgetMax.toStringAsFixed(2),
+        "start_date": startDate,
+        "deadline": deadline,
+        "completion_deadline": completionDeadline,
+        "category": categoryId,
+        "currency": currencyId,
+        "location": locationId,
+        "status": statusId,
+      }),
+    );
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.post(
+          url,
+          headers: _getHeaders(),
+          body: jsonEncode({/* same payload */}),
+        );
+      }
+    }
+
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 201) {
+      return {"success": true, "data": body};
+    } else {
+      return {"success": false, "message": body.toString()};
+    }
+  }
+
+  Future<bool> checkPassword(String password) async {
+    final url = Uri.parse('$baseUrl/check-password/');
+
+    var response = await http.post(
+      url,
+      headers: _getHeaders(),
+      body: jsonEncode({"password": password}),
+    );
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.post(
+          url,
+          headers: _getHeaders(),
+          body: jsonEncode({"password": password}),
+        );
+      }
+    }
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body['valid'] ?? false;
+    }
+    return false;
+  }
+
   Future<bool> editProfile({
     required String email,
     required String phone,
@@ -230,10 +379,6 @@ class ApiService {
   }) async {
     final userId = storage.read('user_id');
     final token = storage.read('access_token');
-
-    // check password here
-    //
-    //
 
     final response = await http.patch(
       Uri.parse('$baseUrl/users/$userId/'),

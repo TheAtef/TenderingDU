@@ -207,13 +207,37 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _DocumentAttachment(
-                        title: "Tender Official Document",
-                        onTap: () => Get.toNamed(
-                          '/pdf-viewer',
-                          arguments: {'url': data.pdfUrl, 'title': data.title},
+
+                      if (data.attachments.isEmpty)
+                        Text(
+                          "No supporting documents available.",
+                          style: TextStyle(
+                            color: colorScheme.onSurface.withOpacity(0.5),
+                            fontSize: 13,
+                          ),
+                        )
+                      else
+                        ...data.attachments.map(
+                          (attachment) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _DocumentAttachment(
+                              title: attachment.description.isNotEmpty
+                                  ? attachment.description
+                                  : "Supporting Document",
+                              subtitle:
+                                  "Tap to view (${attachment.formattedSize})",
+                              onTap: () => Get.toNamed(
+                                '/pdf-viewer',
+                                arguments: {
+                                  'url': attachment.fileUrl,
+                                  'title': attachment.description.isNotEmpty
+                                      ? attachment.description
+                                      : data.title,
+                                },
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -311,9 +335,14 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
 
 class _DocumentAttachment extends StatelessWidget {
   final String title;
+  final String subtitle; // Added subtitle parameter
   final VoidCallback onTap;
 
-  const _DocumentAttachment({required this.title, required this.onTap});
+  const _DocumentAttachment({
+    required this.title,
+    required this.subtitle, // Added to constructor
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -345,7 +374,7 @@ class _DocumentAttachment extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    "Tap to view document",
+                    subtitle, // Display dynamic subtitle/size
                     style: TextStyle(
                       color: colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 11,
