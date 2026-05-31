@@ -90,10 +90,20 @@ class SubmitBidView extends GetView<SubmitBidController> {
                       controller.contactCtrl,
                       false,
                     ),
-                    _customTextField("Email", controller.emailCtrl, false),
+                    _customTextField(
+                      "Email",
+                      controller.emailCtrl,
+                      false,
+                      validator: (v) {
+                        if (v == null || v.isEmpty)
+                          return "This field is required";
+                        if (!GetUtils.isEmail(v))
+                          return "Enter a valid email address";
+                        return null;
+                      },
+                    ),
                     _customTextField("Phone", controller.phoneCtrl, false),
                   ]),
-
                   _buildSection("Supporting Documents", [
                     Obx(() {
                       if (controller.fileName.value.isEmpty) {
@@ -103,7 +113,20 @@ class SubmitBidView extends GetView<SubmitBidController> {
                       }
                     }),
                   ]),
-
+                  const SizedBox(height: 16),
+                  Obx(
+                    () => CheckboxListTile(
+                      title: const Text(
+                        "I agree to the terms and conditions of this tender proposal",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      value: controller.agreedTerms.value,
+                      onChanged: (v) => controller.agreedTerms.value = v!,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      activeColor: colorScheme.primary,
+                    ),
+                  ),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -192,6 +215,7 @@ class SubmitBidView extends GetView<SubmitBidController> {
     TextEditingController ctrl,
     bool isNum, {
     int lines = 1,
+    String? Function(String?)? validator,
   }) => TextFormField(
     controller: ctrl,
     maxLines: lines,
@@ -200,7 +224,7 @@ class SubmitBidView extends GetView<SubmitBidController> {
       labelText: label,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     ),
-    validator: (v) => v!.isEmpty ? "This field is required" : null,
+    validator: validator ?? (v) => v!.isEmpty ? "This field is required" : null,
   );
 
   Widget _buildBottomBar(ColorScheme colorScheme) => Container(

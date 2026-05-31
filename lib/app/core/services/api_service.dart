@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
+import 'package:tendering_du/app/modules/submit_bid/submit_bid_model.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 
 class ApiService {
@@ -341,6 +342,60 @@ class ApiService {
     } else {
       return {"success": false, "message": body.toString()};
     }
+  }
+
+  Future<Map<String, dynamic>> submitBid(SubmitBidModel bidModel) async {
+    final url = Uri.parse('$baseUrl/bids/');
+
+    var response = await http.post(
+      url,
+      headers: _getHeaders(),
+      body: jsonEncode(bidModel.toJson()),
+    );
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.post(
+          url,
+          headers: _getHeaders(),
+          body: jsonEncode(bidModel.toJson()),
+        );
+      }
+    }
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      return {"success": true, "data": body};
+    }
+    return {"success": false, "message": body.toString()};
+  }
+
+  Future<bool> uploadBidDocument({
+    required int bidId,
+    required File file,
+  }) async {
+    final url = Uri.parse('$baseUrl/bid-documents/');
+    final request = http.MultipartRequest('POST', url);
+
+    final token = storage.read('access_token');
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    request.fields['bid'] = bidId.toString();
+    request.fields['description'] = 'Proposal document';
+    request.fields['size'] = (await file.length()).toString();
+    request.fields['content_type'] = file.path.endsWith('.pdf')
+        ? 'application/pdf'
+        : 'application/msword';
+
+    request.files.add(await http.MultipartFile.fromPath('file', file.path));
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    return response.statusCode == 201;
   }
 
   Future<bool> checkPassword(String password) async {

@@ -2,14 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:tendering_du/app/core/services/api_service.dart';
 import '../tender_details/tender_details_model.dart';
+import 'submit_bid_model.dart';
 
 class SubmitBidController extends GetxController {
   final TenderDetailsModel tender = Get.arguments;
-
+  final ApiService apiService = ApiService();
   final formKey = GlobalKey<FormState>();
 
-  // Controllers
   final amountCtrl = TextEditingController();
   final planCtrl = TextEditingController();
   final deliverablesCtrl = TextEditingController();
@@ -19,7 +20,6 @@ class SubmitBidController extends GetxController {
   final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
 
-  // Observables
   var currency = "USD".obs;
   var fileName = "".obs;
   var agreedTerms = false.obs;
@@ -64,12 +64,42 @@ class SubmitBidController extends GetxController {
     isSubmitting.value = true;
 
     try {
-      print("Uploading file: ${selectedFile!.path}");
+      final bidModel = SubmitBidModel(
+        tenderId: tender.id,
+        title: "Bid for ${tender.title}",
+        proposal: planCtrl.text,
+        totalPrice: double.parse(amountCtrl.text),
+        executionPlan: planCtrl.text,
+        deliverables: deliverablesCtrl.text,
+        estimatedDuration: durationCtrl.text,
+        companyName: companyCtrl.text,
+        contactPerson: contactCtrl.text,
+        contactEmail: emailCtrl.text,
+        contactPhone: phoneCtrl.text,
+      );
 
-      await Future.delayed(const Duration(seconds: 2));
+      final bidResponse = await apiService.submitBid(bidModel);
 
-      Get.back();
-      Get.snackbar("Success", "Proposal submitted successfully.");
+      if (bidResponse['success'] == true) {
+        final int bidId = bidResponse['data']['id'];
+
+        final bool docUploaded = await apiService.uploadBidDocument(
+          bidId: bidId,
+          file: selectedFile!,
+        );
+
+        if (docUploaded) {
+          Get.back();
+          Get.snackbar("Success", "Proposal submitted successfully.");
+        } else {
+          Get.snackbar(
+            "Error",
+            "Bid data created, but document upload failed.",
+          );
+        }
+      } else {
+        Get.snackbar("Error", bidResponse['message'] ?? "Submission failed.");
+      }
     } catch (e) {
       Get.snackbar("Error", "Failed to submit: ${e.toString()}");
     } finally {
