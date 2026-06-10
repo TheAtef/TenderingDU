@@ -144,11 +144,13 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     Color color;
     switch (status.toLowerCase()) {
-      case 'open':
-        color = Colors.green;
-        break;
+      case 'awarded':
       case 'closed':
         color = Colors.red;
+        break;
+      case 'pending':
+      case 'open':
+        color = Colors.green;
         break;
       default:
         color = Colors.orange;

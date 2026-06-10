@@ -1,7 +1,10 @@
 import 'package:get/get.dart';
-import 'package:tendering_du/app/modules/my_bids/my_bids_model.dart';
+import 'package:tendering_du/app/core/services/api_service.dart';
+import 'package:tendering_du/app/modules/my_bids/bid_model.dart';
 
 class BidsController extends GetxController {
+  final ApiService _apiService = ApiService();
+
   var appliedList = <Bid>[].obs;
   var historyList = <Bid>[].obs;
   var isLoading = true.obs;
@@ -9,42 +12,44 @@ class BidsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _fetchFromServer().then((bids) {
-      appliedList.assignAll(bids.$1);
-      historyList.assignAll(bids.$2);
-      isLoading.value = false;
-    });
+    fetchMyBids();
   }
 
-  Future<(List<Bid>, List<Bid>)> _fetchFromServer() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
+  Future<void> fetchMyBids() async {
+    try {
+      isLoading.value = true;
+      final rawData = await _apiService.getMyBids();
 
-    final categories = ['construction'.tr, 'it'.tr, 'healthcare'.tr];
-    final statuses = ['history'.tr, 'applied'.tr];
+      final parsedBids = rawData
+          .map((json) {
+            try {
+              return Bid.fromJson(json);
+            } catch (e) {
+              print("Error parsing my bids: $e");
+              return null;
+            }
+          })
+          .whereType<Bid>()
+          .toList();
 
-    List<Bid> mockDb = List.generate(20, (index) {
-      return Bid(
-        id: index,
-        title: 'Tender Project Title ${index + 1}',
-        description: 'Detailed description for tender ${index + 1}',
-        deadline: '${10 + (index % 15)} days left',
-        category: categories[index % categories.length],
-        status: statuses[index % statuses.length],
-        bidDetails: 'Bid details for tender ${index + 1}',
-        isWinningBid: statuses[index % statuses.length] == 'history'
-            ? index % 5 == 0
-            : false,
-      );
-    });
+      final applied = parsedBids
+          .where((b) => b.statusName.toLowerCase() == 'pending')
+          .toList();
 
-    var filtered = mockDb;
-    var appliedList = filtered
-        .where((t) => t.status.toLowerCase() == 'applied'.tr)
-        .toList();
-    var historyList = filtered
-        .where((t) => t.status.toLowerCase() == 'history'.tr)
-        .toList();
+      final history = parsedBids
+          .where(
+            (b) =>
+                b.statusName.toLowerCase() == 'awarded' ||
+                b.statusName.toLowerCase() == 'rejected',
+          )
+          .toList();
 
-    return (appliedList, historyList);
+      appliedList.assignAll(applied);
+      historyList.assignAll(history);
+    } catch (e) {
+      print("Error loading my bids: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

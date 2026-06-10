@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
+import 'package:tendering_du/app/modules/my_bids/bid_model.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_controller.dart';
 
 class ReceivedBidsView extends GetView<ReceivedBidsController> {
@@ -50,14 +51,40 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
   }
 
   Widget _buildList(dynamic theme) {
-    return Obx(
-      () => SliverPadding(
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(40),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      }
+
+      if (controller.bidsList.isEmpty) {
+        return SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(40),
+              child: Text(
+                "No bids received yet.".tr,
+                style: TextStyle(color: theme.textSecondary),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         sliver: SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
             final bid = controller.bidsList[index];
             return AnimationConfiguration.staggeredList(
               position: index,
+              duration: const Duration(milliseconds: 300),
               child: FadeInAnimation(
                 child: GestureDetector(
                   onTap: () => controller.goToDetails(bid),
@@ -67,13 +94,13 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
             );
           }, childCount: controller.bidsList.length),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
 class _SummaryCard extends StatelessWidget {
-  final Map<String, dynamic> bid;
+  final BidModel bid;
   final dynamic theme;
   const _SummaryCard({required this.bid, required this.theme});
 
@@ -94,7 +121,7 @@ class _SummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  bid['bidder'],
+                  bid.companyName.isNotEmpty ? bid.companyName : bid.userName,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -103,7 +130,14 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "\$${bid['amount']}",
+                  bid.tenderTitle,
+                  style: TextStyle(fontSize: 13, color: theme.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "\$${bid.totalPrice.toStringAsFixed(2)}",
                   style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,

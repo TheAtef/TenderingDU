@@ -15,11 +15,11 @@ class Attachment {
 
   factory Attachment.fromJson(Map<String, dynamic> json) {
     return Attachment(
-      id: json['id'] as int,
-      fileUrl: json['file'] ?? '',
-      description: json['description'] ?? '',
-      size: json['size'] ?? 0,
-      contentType: json['content_type'] ?? '',
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      fileUrl: json['file']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      size: (json['size'] as num?)?.toInt() ?? 0,
+      contentType: json['content_type']?.toString() ?? '',
     );
   }
 }
@@ -58,8 +58,27 @@ class Tender {
     Map<String, dynamic> json,
     Map<int, String> categoryMap,
   ) {
-    final int categoryId = json['category'] ?? 0;
-    final String categoryName = categoryMap[categoryId] ?? "General";
+    final int tenderId = (json['id'] as num?)?.toInt() ?? 0;
+
+    String categoryName = "General";
+    if (json['category'] != null) {
+      if (json['category'] is Map) {
+        categoryName = json['category']['name']?.toString() ?? "General";
+      } else if (json['category'] is int) {
+        categoryName = categoryMap[json['category']] ?? "General";
+      } else {
+        categoryName = json['category'].toString();
+      }
+    }
+
+    String statusName = "active";
+    if (json['status'] != null) {
+      if (json['status'] is Map) {
+        statusName = json['status']['name']?.toString() ?? "active";
+      } else {
+        statusName = json['status_name'] ?? json['status'].toString();
+      }
+    }
 
     var attachmentList = <Attachment>[];
     if (json['attachments'] != null) {
@@ -69,15 +88,15 @@ class Tender {
     }
 
     return Tender(
-      id: json['id'] as int,
-      title: json['title'] ?? 'No Title',
-      description: json['description'] ?? '',
+      id: tenderId,
+      title: json['title']?.toString() ?? 'No Title',
+      description: json['description']?.toString() ?? '',
       deadline: json['deadline'] != null
-          ? DateTime.tryParse(json['deadline'])
+          ? DateTime.tryParse(json['deadline'].toString())
           : null,
       category: categoryName,
-      status: json['status_name'] ?? 'active',
-      isFavourite: json['is_saved'] ?? false,
+      status: statusName,
+      isFavourite: json['is_saved'] == true,
       attachments: attachmentList,
     );
   }

@@ -17,17 +17,25 @@ class BidDetailsView extends GetView<BidDetailsController> {
       body: Stack(
         children: [
           const StaticBackground(),
-          Obx(
-            () => CustomScrollView(
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return CustomScrollView(
               slivers: [
                 _buildHeader(theme),
                 _buildMainInfo(theme),
                 _buildAttachments(theme),
                 const SliverToBoxAdapter(child: SizedBox(height: 120)),
               ],
-            ),
-          ),
-          _buildActionButtons(theme),
+            );
+          }),
+          Obx(() {
+            if (!controller.isLoading.value && controller.canPerformActions) {
+              return _buildActionButtons(theme);
+            }
+            return const SizedBox.shrink(); // Hide action panel for submitted / finalized bids
+          }),
         ],
       ),
     );
@@ -64,14 +72,19 @@ class BidDetailsView extends GetView<BidDetailsController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              data['bidder'] ?? '',
+              data.companyName.isNotEmpty ? data.companyName : data.userName,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: theme.textPrimary,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 4),
+            Text(
+              "Submitted for: ${data.tenderTitle}",
+              style: TextStyle(fontSize: 14, color: theme.textSecondary),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 const Icon(
@@ -81,16 +94,35 @@ class BidDetailsView extends GetView<BidDetailsController> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "\$${data['amount'] ?? '0'}",
+                  "\$${data.totalPrice.toStringAsFixed(2)}",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
                 ),
+                const SizedBox(width: 15),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.actionBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    data.statusName,
+                    style: const TextStyle(
+                      color: AppColors.actionBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Text(
               "Proposal".tr,
               style: TextStyle(
@@ -101,7 +133,7 @@ class BidDetailsView extends GetView<BidDetailsController> {
             ),
             const SizedBox(height: 10),
             Text(
-              data['proposal'] ?? '',
+              data.proposal,
               style: TextStyle(
                 color: theme.textSecondary,
                 fontSize: 15,
@@ -115,11 +147,15 @@ class BidDetailsView extends GetView<BidDetailsController> {
   }
 
   Widget _buildAttachments(dynamic theme) {
-    final List files = controller.bid['attachments'] ?? [];
+    final files = controller.bid.documents;
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
+          final doc = files[index];
+          final fileName = doc.description.isNotEmpty
+              ? doc.description
+              : "Bid Document ${doc.id}";
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
@@ -133,14 +169,11 @@ class BidDetailsView extends GetView<BidDetailsController> {
                 color: Colors.redAccent,
               ),
               title: Text(
-                files[index]['name'],
+                fileName,
                 style: TextStyle(color: theme.textPrimary, fontSize: 14),
               ),
               trailing: const Icon(Icons.open_in_new, size: 18),
-              onTap: () => controller.viewAttachment(
-                files[index]['url'],
-                files[index]['name'],
-              ),
+              onTap: () => controller.viewAttachment(doc.fileUrl, fileName),
             ),
           );
         }, childCount: files.length),
@@ -156,6 +189,7 @@ class BidDetailsView extends GetView<BidDetailsController> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
+          color: theme.cardColor.withOpacity(0.9),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: theme.borderColor),
         ),
@@ -166,7 +200,7 @@ class BidDetailsView extends GetView<BidDetailsController> {
                 label: "Reject",
                 color: Colors.redAccent,
                 onTap: () =>
-                    controller.handleBidAction(controller.bid['id'], "reject"),
+                    controller.handleBidAction(controller.bid.id, "reject"),
               ),
             ),
             const SizedBox(width: 10),
@@ -176,7 +210,7 @@ class BidDetailsView extends GetView<BidDetailsController> {
                 color: AppColors.actionBlue,
                 isPrimary: true,
                 onTap: () =>
-                    controller.handleBidAction(controller.bid['id'], "accept"),
+                    controller.handleBidAction(controller.bid.id, "accept"),
               ),
             ),
           ],

@@ -52,14 +52,21 @@ class HomeController extends GetxController {
 
   Future<void> fetchCategories() async {
     try {
-      final List<dynamic> fields = await _apiService.getFields();
+      final dynamic responseData = await _apiService.getFields();
 
       categoryLookup.clear();
       List<String> tempNames = [];
+      List<dynamic> fields = [];
+
+      if (responseData is Map && responseData.containsKey('results')) {
+        fields = responseData['results'] as List<dynamic>;
+      } else if (responseData is List) {
+        fields = responseData;
+      }
 
       for (var item in fields) {
         if (item['id'] != null && item['name'] != null) {
-          int id = item['id'];
+          int id = (item['id'] as num).toInt();
           String name = item['name'].toString();
 
           categoryLookup[id] = name;

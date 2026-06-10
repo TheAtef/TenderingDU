@@ -4,6 +4,7 @@ import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_controller.dart';
+import 'package:tendering_du/app/routes/app_routes.dart';
 
 class BidsView extends GetView<BidsController> {
   const BidsView({super.key});
@@ -30,7 +31,7 @@ class BidsView extends GetView<BidsController> {
                           context,
                         ).copyWith(iconTheme: const IconThemeData(size: 40)),
                         child: ExpansionTile(
-                          childrenPadding: EdgeInsets.only(bottom: 10),
+                          childrenPadding: const EdgeInsets.only(bottom: 10),
                           collapsedShape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
@@ -47,17 +48,16 @@ class BidsView extends GetView<BidsController> {
                           ),
                           title: Text(
                             'applied'.tr,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
                           subtitle: Text(
                             'applied_hint'.tr,
-                            style: TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14),
                           ),
                           initiallyExpanded: true,
-
                           children: [
                             Obx(() {
                               if (controller.isLoading.value) {
@@ -70,17 +70,18 @@ class BidsView extends GetView<BidsController> {
                               } else {
                                 return ListView.builder(
                                   shrinkWrap: true,
-                                  physics:
-                                      NeverScrollableScrollPhysics(), // Delegate scrolling to the parent
+                                  physics: const NeverScrollableScrollPhysics(),
                                   itemCount: controller.appliedList.length,
                                   itemBuilder: (context, index) {
                                     final item = controller.appliedList[index];
                                     return _ResultItem(
-                                      title: item.title,
+                                      title: item
+                                          .tenderTitle, // Use tenderTitle for better description
                                       category: item.category,
                                       deadline: item.deadline,
                                       onTap: () => Get.toNamed(
-                                        '/tender-details',
+                                        Routes
+                                            .BID_DETAILS, // FIX: route to BID_DETAILS instead of tender details
                                         arguments: item,
                                       ),
                                     );
@@ -93,7 +94,6 @@ class BidsView extends GetView<BidsController> {
                       ),
                     ),
                   ),
-
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(10, 20, 10, 30),
@@ -102,7 +102,7 @@ class BidsView extends GetView<BidsController> {
                           context,
                         ).copyWith(iconTheme: const IconThemeData(size: 40)),
                         child: ExpansionTile(
-                          childrenPadding: EdgeInsets.only(bottom: 10),
+                          childrenPadding: const EdgeInsets.only(bottom: 10),
                           collapsedShape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
@@ -119,14 +119,14 @@ class BidsView extends GetView<BidsController> {
                           ),
                           title: Text(
                             'history'.tr,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
                           subtitle: Text(
                             'history_hint'.tr,
-                            style: TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14),
                           ),
                           children: [
                             Obx(() {
@@ -140,17 +140,16 @@ class BidsView extends GetView<BidsController> {
                               } else {
                                 return ListView.builder(
                                   shrinkWrap: true,
-                                  physics:
-                                      NeverScrollableScrollPhysics(), // Delegate scrolling to the parent
+                                  physics: const NeverScrollableScrollPhysics(),
                                   itemCount: controller.historyList.length,
                                   itemBuilder: (context, index) {
                                     final item = controller.historyList[index];
                                     return _ResultItem(
-                                      title: item.title,
+                                      title: item.tenderTitle,
                                       category: item.category,
                                       result: item.isWinningBid,
                                       onTap: () => Get.toNamed(
-                                        '/tender-details',
+                                        Routes.BID_DETAILS,
                                         arguments: item,
                                       ),
                                     );
@@ -263,7 +262,7 @@ class _ResultItem extends StatelessWidget {
                 color: AppColors.actionBlue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.description_outlined,
                 color: AppColors.actionBlue,
               ),
@@ -291,7 +290,6 @@ class _ResultItem extends StatelessWidget {
                   if (result != null)
                     InfoPill(
                       icon: Icons.check_circle_outlined,
-
                       label: result == true ? "Won Tender" : "Lost Tender",
                     ),
                 ],

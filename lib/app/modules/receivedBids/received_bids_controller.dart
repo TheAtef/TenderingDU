@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/services/api_service.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+import '../my_bids/bid_model.dart';
 
 class ReceivedBidsController extends GetxController {
   final ApiService _apiService = ApiService();
 
-  var bidsList = <Map<String, dynamic>>[].obs;
+  var bidsList = <BidModel>[].obs;
   var isLoading = true.obs;
 
   @override
@@ -17,25 +18,23 @@ class ReceivedBidsController extends GetxController {
   Future<void> fetchBids() async {
     try {
       isLoading.value = true;
+      final rawData = await _apiService.getReceivedBids();
 
-      await Future.delayed(const Duration(milliseconds: 500));
-      bidsList.assignAll([
-        {
-          "id": 1,
-          "bidder": "Global Construction Ltd",
-          "amount": "240,000",
-          "date": "2 hours ago",
-          "duration": "6 Months",
-          "proposal":
-              "Comprehensive construction plan with high-durability materials.",
-          "attachments": [
-            {
-              "name": "Technical_Proposal.pdf",
-              "url": "https://example.com/file1.pdf",
-            },
-          ],
-        },
-      ]);
+      final parsedBids = rawData
+          .map((json) {
+            try {
+              return BidModel.fromJson(json);
+            } catch (e) {
+              print("Error parsing single bid: $e");
+              return null;
+            }
+          })
+          .whereType<BidModel>()
+          .toList();
+
+      bidsList.assignAll(parsedBids);
+    } catch (e) {
+      print("Error fetching bids: $e");
     } finally {
       isLoading.value = false;
     }
@@ -49,7 +48,7 @@ class ReceivedBidsController extends GetxController {
     Get.toNamed(Routes.PDF_VIEWER, arguments: {'url': url, 'title': name});
   }
 
-  void goToDetails(Map<String, dynamic> bid) {
+  void goToDetails(BidModel bid) {
     Get.toNamed(Routes.BID_DETAILS, arguments: bid);
   }
 }

@@ -216,7 +216,84 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> getFields() async {
+  Future<bool> acceptBid(int bidId) async {
+    final url = Uri.parse('$baseUrl/bids/$bidId/accept/');
+    final response = await http.post(url, headers: _getHeaders());
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        return acceptBid(bidId);
+      }
+    }
+    return response.statusCode == 200;
+  }
+
+  Future<bool> rejectBid(int bidId) async {
+    final url = Uri.parse('$baseUrl/bids/$bidId/reject/');
+    final response = await http.post(url, headers: _getHeaders());
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        return rejectBid(bidId);
+      }
+    }
+    return response.statusCode == 200;
+  }
+
+  Future<List<dynamic>> getTenderResults() async {
+    final url = Uri.parse('$baseUrl/tenders/?results=true');
+    final response = await _handleGet(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data is Map && data.containsKey('results')) {
+        return data['results'] as List<dynamic>;
+      }
+      return data as List<dynamic>;
+    } else {
+      print(
+        "API Error fetching tender results: ${response.statusCode} ${response.body}",
+      );
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getMyBids() async {
+    final url = Uri.parse('$baseUrl/bids/');
+    final response = await _handleGet(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data is Map && data.containsKey('results')) {
+        return data['results'] as List<dynamic>;
+      }
+      return data as List<dynamic>;
+    } else {
+      print(
+        "API Error fetching my bids: ${response.statusCode} ${response.body}",
+      );
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getReceivedBids() async {
+    final url = Uri.parse('$baseUrl/bids/?received=true');
+    final response = await _handleGet(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data is Map && data.containsKey('results')) {
+        return data['results'] as List<dynamic>;
+      }
+      return data as List<dynamic>;
+    } else {
+      print("API Error: ${response.statusCode} ${response.body}");
+      return [];
+    }
+  }
+
+  Future<dynamic> getFields() async {
     final url = Uri.parse('$baseUrl/categories/');
     final response = await _handleGet(url);
     return response.statusCode == 200 ? json.decode(response.body) : [];
@@ -308,22 +385,24 @@ class ApiService {
   }) async {
     final url = Uri.parse('$baseUrl/tenders/');
 
+    final payload = {
+      "title": title,
+      "description": description,
+      "budget_min": budgetMin.toStringAsFixed(2),
+      "budget_max": budgetMax.toStringAsFixed(2),
+      "start_date": startDate,
+      "deadline": deadline,
+      "completion_deadline": completionDeadline,
+      "category": categoryId,
+      "currency": currencyId,
+      "location": locationId,
+      "status": statusId,
+    };
+
     var response = await http.post(
       url,
       headers: _getHeaders(),
-      body: jsonEncode({
-        "title": title,
-        "description": description,
-        "budget_min": budgetMin.toStringAsFixed(2),
-        "budget_max": budgetMax.toStringAsFixed(2),
-        "start_date": startDate,
-        "deadline": deadline,
-        "completion_deadline": completionDeadline,
-        "category": categoryId,
-        "currency": currencyId,
-        "location": locationId,
-        "status": statusId,
-      }),
+      body: jsonEncode(payload),
     );
 
     if (response.statusCode == 401) {
@@ -331,7 +410,7 @@ class ApiService {
         response = await http.post(
           url,
           headers: _getHeaders(),
-          body: jsonEncode({/* same payload */}),
+          body: jsonEncode(payload),
         );
       }
     }

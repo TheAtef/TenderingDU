@@ -329,9 +329,7 @@ class _CategoryChips extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Obx(() {
         final theme = ThemeController.to;
-
         final categories = ["all".tr, ...controller.categoryList];
-
         final activeCategory = controller.activeFilters["category"];
 
         return Container(
@@ -348,7 +346,7 @@ class _CategoryChips extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
-                  if (categories[i] == "All") {
+                  if (i == 0) {
                     controller.clearAllFilters();
                   } else {
                     controller.applyFilter("category", categories[i]);
