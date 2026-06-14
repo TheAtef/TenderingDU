@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 // Represents an attached document from the backend TenderAttachment table
 class Attachment {
   final int id;

@@ -6,8 +6,12 @@ import 'package:tendering_du/app/modules/create_tender/create_tender_binding.dar
 import 'package:tendering_du/app/modules/create_tender/create_tender_view.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_binding.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_view.dart';
+import 'package:tendering_du/app/modules/otp/otp_binding.dart';
+import 'package:tendering_du/app/modules/otp/otp_view.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_binding.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_view.dart';
+import 'package:tendering_du/app/modules/settings/change_password_binding.dart';
+import 'package:tendering_du/app/modules/settings/change_password_view.dart';
 import 'package:tendering_du/app/modules/settings/settings_binding.dart';
 import 'package:tendering_du/app/modules/settings/settings_view.dart';
 import 'package:tendering_du/app/modules/splash/splash_view.dart';
@@ -137,6 +141,16 @@ class AppPages {
       name: Routes.CREATE_TENDER,
       page: () => const CreateTenderView(),
       binding: CreateTenderBinding(),
+    ),
+    GetPage(
+      name: Routes.CHANGE_PASSWORD,
+      page: () => const ChangePasswordView(),
+      binding: ChangePasswordBinding(),
+    ),
+    GetPage(
+      name: Routes.OTP_PAGE,
+      page: () => const OtpView(),
+      binding: OtpBinding(),
     ),
   ];
 }

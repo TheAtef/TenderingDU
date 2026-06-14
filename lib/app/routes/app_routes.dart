@@ -16,4 +16,6 @@ abstract class Routes {
   static const RECEIVED_BIDS = '/received-bids';
   static const BID_DETAILS = '/bid-details';
   static const CREATE_TENDER = '/create-tender';
+  static const CHANGE_PASSWORD = '/change-password';
+  static const OTP_PAGE = '/otp-page';
 }

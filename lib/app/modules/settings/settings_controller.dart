@@ -1,15 +1,16 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
-import 'package:tendering_du/app/modules/settings/change_password_binding.dart';
-import 'package:tendering_du/app/modules/settings/change_password_view.dart';
+import 'package:tendering_du/app/routes/app_routes.dart';
 
 class SettingsController extends GetxController {
   ThemeController get themeController => Get.find<ThemeController>();
   final pushNotifications = true.obs;
   final emailNotifications = false.obs;
   final deadlineReminders = true.obs;
-  final selectedLanguage = "العربية".obs;
+  final selectedLanguage = "English".obs;
   final languages = ["English", "العربية"];
   bool get isDarkMode => themeController.isDarkMode;
   Future<void> toggleTheme(bool value) async {
@@ -28,8 +29,8 @@ class SettingsController extends GetxController {
     }
   }
 
-  void changePassword() {
-    // We use Get.to with binding to keep the architecture clean
-    Get.to(() => const ChangePasswordView(), binding: ChangePasswordBinding());
+  void otpPage() {
+    final storage = GetStorage();
+    Get.toNamed(Routes.OTP_PAGE, arguments: {'email': storage.read('email')});
   }
 }

@@ -67,6 +67,7 @@ class RegisterController extends GetxController {
         final data = result['data'];
         final user = data['user'];
 
+        await storage.write('email', emailCtrl.text.trim());
         await storage.write('is_verified', user['is_verified'] ?? false);
         await storage.write('user_id', user['id']);
 
@@ -86,8 +87,12 @@ class RegisterController extends GetxController {
           'Account created successfully',
           snackPosition: SnackPosition.BOTTOM,
         );
+        Get.offAllNamed(
+          Routes.OTP_PAGE,
+          arguments: {'email': emailCtrl.text.trim()},
+        );
 
-        Get.offAllNamed(Routes.ONBOARDING);
+        // Get.offAllNamed(Routes.ONBOARDING);
       } else {
         Get.snackbar(
           'Registration Failed',

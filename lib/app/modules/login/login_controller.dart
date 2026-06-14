@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import '../../core/services/api_service.dart';
 
 class LoginController extends GetxController {
   final ApiService _apiService = Get.find<ApiService>();
+  final storage = GetStorage();
 
   final formKey = GlobalKey<FormState>();
   final identifierCtrl = TextEditingController();
@@ -27,6 +29,7 @@ class LoginController extends GetxController {
       );
 
       if (result['success']) {
+        await storage.write('email', identifierCtrl.text.trim());
         bool isVerified = result['is_verified'] ?? false;
 
         if (isVerified) {

@@ -79,6 +79,40 @@ class ApiService {
     return {"success": false, "message": body['detail'] ?? "Login failed"};
   }
 
+  Future<Map<String, dynamic>> sendOtp({required String email}) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/send-otp/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": email}),
+    );
+
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {"success": true, "data": body['message']};
+    }
+    return {"success": false, "message": body['error'] ?? "Service failed"};
+  }
+
+  Future<Map<String, dynamic>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/verify-otp/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": email, "code": otp}),
+    );
+
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {"success": true, "data": body['message']};
+    }
+    return {
+      "success": false,
+      "message": body['error'] ?? "Verification failed",
+    };
+  }
+
   Future<Map<String, dynamic>> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -141,7 +175,6 @@ class ApiService {
     final response = await _handleGet(url);
 
     if (response.statusCode == 200) {
-      print(response.body);
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load tender details');

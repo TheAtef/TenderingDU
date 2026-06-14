@@ -301,7 +301,7 @@ class _SecuritySection extends StatelessWidget {
                 color: ThemeController.to.textSecondary,
               ),
             ),
-            onTap: controller.changePassword,
+            onTap: controller.otpPage,
           ),
         ],
       ),
