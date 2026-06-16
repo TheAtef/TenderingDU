@@ -570,4 +570,22 @@ class ApiService {
       return false;
     }
   }
+
+  Future<List<dynamic>> getNotifications() async {
+    final url = Uri.parse('$baseUrl/notifications/');
+    final response = await _handleGet(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print(data);
+      // if (data is Map && data.containsKey('results')) {
+      //   return data['results'] as List<dynamic>;
+      // }
+
+      return data as List<dynamic>;
+    } else {
+      print("API Error: ${response.statusCode} ${response.body}");
+      return [];
+    }
+  }
 }

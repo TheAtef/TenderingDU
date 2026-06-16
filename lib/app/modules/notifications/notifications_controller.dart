@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tendering_du/app/core/services/api_service.dart';
+import 'package:tendering_du/app/core/storage/local_storage.dart';
 import 'notifications_model.dart';
 
 class NotificationsController extends GetxController {
   final scrollCtrl = ScrollController();
-
+  final _apiService = ApiService();
   var isLoading = true.obs;
   var activeFilter = 'All'.obs;
   var notificationsList = <NotificationModel>[].obs;
@@ -23,47 +25,20 @@ class NotificationsController extends GetxController {
 
   Future<void> fetchNotifications() async {
     isLoading.value = true;
+    _apiService
+        .getNotifications()
+        .then((response) {
+          if (response.isNotEmpty) {
+            notificationsList.assignAll(
+              response.map((json) => NotificationModel.fromJson(json)).toList(),
+            );
+          }
+        })
+        .catchError((error) {
+          Get.snackbar('Error', 'Failed to fetch notifications: $error');
+        });
 
-    await Future.delayed(const Duration(milliseconds: 1500));
-
-    notificationsList.assignAll([
-      NotificationModel(
-        id: '1',
-        title: 'New Tender Match',
-        message:
-            'A new tender "Highway Construction Phase 2" matches your profile criteria.',
-        timeAgo: '10 mins ago',
-        type: 'tender',
-        isRead: false,
-      ),
-      NotificationModel(
-        id: '2',
-        title: 'Bid Submitted Successfully',
-        message:
-            'Your bid for "IT Infrastructure Upgrade" has been received and is under review.',
-        timeAgo: '2 hours ago',
-        type: 'success',
-        isRead: false,
-      ),
-      NotificationModel(
-        id: '3',
-        title: 'Deadline Approaching',
-        message:
-            'The submission deadline for "Healthcare Software System" is in 2 days.',
-        timeAgo: '1 day ago',
-        type: 'alert',
-        isRead: true,
-      ),
-      NotificationModel(
-        id: '4',
-        title: 'System Maintenance',
-        message:
-            'The portal will be down for scheduled maintenance this Saturday at 12:00 AM.',
-        timeAgo: '2 days ago',
-        type: 'info',
-        isRead: true,
-      ),
-    ]);
+    await Future.delayed(const Duration(milliseconds: 500));
 
     isLoading.value = false;
   }
@@ -79,12 +54,18 @@ class NotificationsController extends GetxController {
   void markAllAsRead() {
     for (var note in notificationsList) {
       note.isRead = true;
+      StorageService.saveNotificationReadStatus(note.id, note.isRead);
     }
+
     notificationsList.refresh();
   }
 
   void toggleReadStatus(NotificationModel notification) {
     notification.isRead = !notification.isRead;
+    StorageService.saveNotificationReadStatus(
+      notification.id,
+      notification.isRead,
+    );
     notificationsList.refresh();
   }
 

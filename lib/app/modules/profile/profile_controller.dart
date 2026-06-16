@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tendering_du/app/core/services/api_service.dart';
 import 'package:tendering_du/app/modules/profile/profile_model.dart';
 
@@ -7,6 +8,7 @@ class ProfileController extends GetxController {
   final profile = Rxn<ProfileModel>();
   final ScrollController scrollCtrl = ScrollController();
   var isLoading = true.obs;
+  GetStorage _storage = GetStorage();
 
   // Edit Form Key
   GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
@@ -141,8 +143,8 @@ class ProfileController extends GetxController {
     try {
       // await Future.delayed(const Duration(milliseconds: 1500));
       final getProfileResult = await _apiService.getProfile();
-      print(getProfileResult);
       profile.value = ProfileModel.fromJson(getProfileResult);
+      await _storage.write('username', getProfileResult['username']);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load profile from server.');
     } finally {

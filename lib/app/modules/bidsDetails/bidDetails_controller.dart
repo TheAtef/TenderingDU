@@ -23,7 +23,6 @@ class BidDetailsController extends GetxController {
   }
 
   bool get canPerformActions {
-    final loggedInUserId = storage.read('user_id')?.toString();
     if (bid.userName == storage.read('username') ||
         bid.statusName.toLowerCase() != 'pending') {
       return false;

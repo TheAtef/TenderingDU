@@ -75,7 +75,6 @@ class HomeController extends GetxController {
       }
 
       categoryList.assignAll(tempNames);
-      print("Mapped ${categoryLookup.length} categories successfully.");
     } catch (e) {
       print("Error fetching categories: $e");
     }
@@ -88,8 +87,6 @@ class HomeController extends GetxController {
         query: searchQuery.value,
         category: activeFilters['category'],
       );
-
-      print("Raw Data from Tenders API: ${data.length} items found.");
 
       var items = data
           .map((json) {
