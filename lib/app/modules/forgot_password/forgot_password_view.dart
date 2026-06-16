@@ -67,7 +67,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                               const SizedBox(height: 12),
                               Obx(
                                 () => Text(
-                                  "Enter your registered email or phone to receive a password reset link.",
+                                  "Enter your registered email to receive a six-digit code to prove your ownership.",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 15,
@@ -84,8 +84,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                               child: Column(
                                 children: [
                                   _AuthTextField(
-                                    hintText:
-                                        "Email or Syrian Mobile (e.g. 09x...)",
+                                    hintText: "Email",
                                     icon: Icons.person_outline_rounded,
                                     controller: controller.identifierCtrl,
                                     validator: Validators.emailOrSyrianMobile,
@@ -123,7 +122,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                                                     ),
                                               )
                                             : const Text(
-                                                "Send Reset Link",
+                                                "Send Verification Code",
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,

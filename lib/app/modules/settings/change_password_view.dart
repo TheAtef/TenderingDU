@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
-import 'package:tendering_du/app/routes/app_routes.dart';
 import 'change_password_controller.dart';
 
 class ChangePasswordView extends GetView<ChangePasswordController> {
@@ -19,7 +18,7 @@ class ChangePasswordView extends GetView<ChangePasswordController> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: theme.textPrimary),
-          onPressed: () => Get.offNamed(Routes.SETTINGS),
+          onPressed: () => Get.back(),
         ),
         title: Text(
           "Change Password",

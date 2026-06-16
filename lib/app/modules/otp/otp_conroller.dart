@@ -8,7 +8,6 @@ class OtpController extends GetxController {
 
   final formKey = GlobalKey<FormState>();
   final otpCtrl = TextEditingController();
-
   var isLoading = true.obs;
 
   @override
@@ -91,10 +90,6 @@ class OtpController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // void navigateToRegister() {
-  //   Get.toNamed(Routes.REGISTER);
-  // }
 
   @override
   void onClose() {
