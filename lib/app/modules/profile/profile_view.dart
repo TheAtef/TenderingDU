@@ -7,6 +7,7 @@ import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/modules/profile/profile_controller.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/validators.dart';
+import 'package:tendering_du/app/core/utils/responsive_layout.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -15,13 +16,316 @@ class ProfileView extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     Get.lazyPut<ProfileController>(() => ProfileController());
 
-    return CustomScrollView(
-      controller: controller.scrollCtrl,
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        _HeroHeader(controller: controller),
-        _PersonalInfoCard(controller: controller),
-      ],
+    return ResponsiveLayout(
+      mobile: _buildMobileLayout(context),
+      desktop: _buildDesktopLayout(context),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: CustomScrollView(
+          controller: controller.scrollCtrl,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            _HeroHeader(controller: controller),
+            _PersonalInfoCard(controller: controller),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 320,
+            child: _DesktopProfileSidebar(controller: controller),
+          ),
+          const SizedBox(width: 40),
+
+          Expanded(child: _DesktopProfileDetails(controller: controller)),
+        ],
+      ),
+    );
+  }
+}
+
+class _DesktopProfileSidebar extends StatelessWidget {
+  final ProfileController controller;
+  const _DesktopProfileSidebar({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: theme.borderColor),
+        boxShadow: theme.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircleAvatar(
+            radius: 60,
+            backgroundColor: AppColors.actionBlue,
+            child: Text(
+              'JD',
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    '${controller.profile.value?.firstName ?? ''} ${controller.profile.value?.lastName ?? ''}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: theme.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  controller.profile.value?.isVerified == true
+                      ? Icons.verified_rounded
+                      : Icons.error_outline_rounded,
+                  color: controller.profile.value?.isVerified == true
+                      ? AppColors.actionBlue
+                      : Theme.of(context).colorScheme.error,
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Account Owner",
+            style: TextStyle(fontSize: 16, color: theme.textSecondary),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _openEditDialog(context, controller),
+              icon: const Icon(Icons.edit_rounded, size: 18),
+              label: const Text("Edit Profile"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.actionBlue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DesktopProfileDetails extends StatelessWidget {
+  final ProfileController controller;
+  const _DesktopProfileDetails({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final profile = controller.profile.value;
+      if (profile == null) {
+        return Center(
+          child: Text(
+            'No profile data available.',
+            style: TextStyle(color: ThemeController.to.textPrimary),
+          ),
+        );
+      }
+
+      final cards = [
+        {
+          "icon": Icons.email_rounded,
+          "label": "email".tr,
+          "value": profile.email,
+        },
+        {
+          "icon": Icons.phone_rounded,
+          "label": "phone_no_hint".tr,
+          "value": profile.phone,
+        },
+        {
+          "icon": Icons.calendar_today_rounded,
+          "label": "birth_no_hint".tr,
+          "value": profile.birthdate,
+        },
+        {
+          "icon": Icons.wc_rounded,
+          "label": "sex".tr,
+          "value": profile.sex.capitalizeFirst ?? '',
+        },
+        {
+          "icon": Icons.business_rounded,
+          "label": "company".tr,
+          "value": profile.company,
+        },
+        {
+          "icon": Icons.numbers_rounded,
+          "label": "crn".tr,
+          "value": profile.CRN,
+        },
+      ];
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Personal Information",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: ThemeController.to.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          AnimationLimiter(
+            child: Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              children: AnimationConfiguration.toStaggeredList(
+                duration: const Duration(milliseconds: 500),
+                childAnimationBuilder: (widget) => SlideAnimation(
+                  verticalOffset: 50,
+                  child: FadeInAnimation(child: widget),
+                ),
+                children: cards
+                    .map((data) => _DesktopInfoCard(data: data))
+                    .toList(),
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+class _DesktopInfoCard extends StatelessWidget {
+  final Map<String, dynamic> data;
+  const _DesktopInfoCard({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+    return Container(
+      width: 300,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.borderColor),
+        boxShadow: theme.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.actionBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              data["icon"] as IconData,
+              color: AppColors.actionBlue,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data["label"] as String,
+                  style: TextStyle(fontSize: 14, color: theme.textSecondary),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  data["value"] as String,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: theme.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _openEditDialog(BuildContext context, ProfileController controller) {
+  controller.populateEditFields();
+  if (ResponsiveLayout.isDesktop(context)) {
+    Get.dialog(
+      const Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: EditProfileWebDialog(),
+      ),
+    );
+  } else {
+    Get.bottomSheet(
+      const EditProfileBottomSheet(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      enterBottomSheetDuration: const Duration(milliseconds: 400),
+      exitBottomSheetDuration: const Duration(milliseconds: 300),
     );
   }
 }
@@ -57,20 +361,7 @@ class _HeroHeader extends StatelessWidget {
                     AnimatedTap(
                       child: _GlassIconButton(
                         icon: Icons.edit_rounded,
-                        onTap: () {
-                          controller.populateEditFields();
-                          Get.bottomSheet(
-                            const EditProfileBottomSheet(),
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            enterBottomSheetDuration: const Duration(
-                              milliseconds: 400,
-                            ),
-                            exitBottomSheetDuration: const Duration(
-                              milliseconds: 300,
-                            ),
-                          );
-                        },
+                        onTap: () => _openEditDialog(context, controller),
                       ),
                     ),
                   ],
@@ -312,218 +603,191 @@ class _ShimmerCard extends StatelessWidget {
   }
 }
 
-class EditProfileBottomSheet extends GetView<ProfileController> {
-  const EditProfileBottomSheet({super.key});
+class _EditProfileFormContent extends GetView<ProfileController> {
+  const _EditProfileFormContent();
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeController.to;
-
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-      child: Container(
-        height: Get.height * 0.85,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        decoration: BoxDecoration(
-          color: theme.backgroundColor.withOpacity(
-            theme.isDarkMode ? 0.8 : 0.95,
+    return Column(
+      children: [
+        Container(
+          width: 50,
+          height: 5,
+          margin: const EdgeInsets.only(bottom: 24),
+          decoration: BoxDecoration(
+            color: theme.textSecondary.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(10),
           ),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          border: Border.all(color: theme.borderColor.withOpacity(0.3)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.actionBlue.withOpacity(0.1),
-              blurRadius: 40,
-              spreadRadius: 10,
-            ),
-          ],
         ),
-        child: Column(
-          children: [
-            Container(
-              width: 50,
-              height: 5,
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: theme.textSecondary.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            Text(
-              "Edit Personal Info",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 30),
-            Expanded(
-              child: Form(
-                key: controller.editFormKey,
-                child: AnimationLimiter(
-                  child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                    children: AnimationConfiguration.toStaggeredList(
-                      duration: const Duration(milliseconds: 500),
-                      childAnimationBuilder: (widget) => SlideAnimation(
-                        verticalOffset: 50,
-                        child: FadeInAnimation(child: widget),
-                      ),
+        Text(
+          "Edit Personal Info",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: theme.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 30),
+        Expanded(
+          child: Form(
+            key: controller.editFormKey,
+            child: AnimationLimiter(
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: AnimationConfiguration.toStaggeredList(
+                  duration: const Duration(milliseconds: 500),
+                  childAnimationBuilder: (widget) => SlideAnimation(
+                    verticalOffset: 50,
+                    child: FadeInAnimation(child: widget),
+                  ),
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: _buildModernTextField(
-                                'First Name',
-                                Icons.person_rounded,
-                                controller.editFirstNameCtrl,
-                                theme,
-                                validator: (val) =>
-                                    Validators.name(val, isLastName: false),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildModernTextField(
-                                'Last Name',
-                                Icons.person_rounded,
-                                controller.editLastNameCtrl,
-                                theme,
-                                validator: (val) =>
-                                    Validators.name(val, isLastName: true),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _buildModernTextField(
-                          'Email Address',
-                          Icons.email_rounded,
-                          controller.editEmailCtrl,
-                          theme,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: Validators.email,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildModernTextField(
-                          'Syrian Phone Number',
-                          Icons.phone_rounded,
-                          controller.editPhoneCtrl,
-                          theme,
-                          keyboardType: TextInputType.phone,
-                          validator: Validators.syrianMobile,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: _buildModernTextField(
-                                'Birthdate (YYYY-MM-DD)',
-                                Icons.calendar_month_rounded,
-                                controller.editBirthdateCtrl,
-                                theme,
-                                validator: Validators.birthdate,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildModernDropdown(
-                                'Sex',
-                                Icons.wc_rounded,
-                                controller.editSexCtrl,
-                                theme,
-                                ['Male', 'Female'],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Obx(
-                          () => _buildModernTextField(
-                            'Enter Password to Confirm Edit',
-                            Icons.lock_rounded,
-                            controller.editPasswordCtrl,
+                        Expanded(
+                          child: _buildModernTextField(
+                            'First Name',
+                            Icons.person_rounded,
+                            controller.editFirstNameCtrl,
                             theme,
-                            obscureText: controller.isPasswordHidden.value,
-                            validator: (val) {
-                              if (val == null || val.trim().isEmpty) {
-                                return 'Password is required to apply changes';
-                              }
-                              return null;
-                            },
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.isPasswordHidden.value
-                                    ? Icons.visibility_off_rounded
-                                    : Icons.visibility_rounded,
-                                color: theme.textSecondary,
-                              ),
-                              onPressed: controller.togglePasswordVisibility,
-                            ),
+                            validator: (val) =>
+                                Validators.name(val, isLastName: false),
                           ),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ), // extra padding for scrolling
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildModernTextField(
+                            'Last Name',
+                            Icons.person_rounded,
+                            controller.editLastNameCtrl,
+                            theme,
+                            validator: (val) =>
+                                Validators.name(val, isLastName: true),
+                          ),
+                        ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    _buildModernTextField(
+                      'Email Address',
+                      Icons.email_rounded,
+                      controller.editEmailCtrl,
+                      theme,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: Validators.email,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildModernTextField(
+                      'Syrian Phone Number',
+                      Icons.phone_rounded,
+                      controller.editPhoneCtrl,
+                      theme,
+                      keyboardType: TextInputType.phone,
+                      validator: Validators.syrianMobile,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _buildModernTextField(
+                            'Birthdate (YYYY-MM-DD)',
+                            Icons.calendar_month_rounded,
+                            controller.editBirthdateCtrl,
+                            theme,
+                            validator: Validators.birthdate,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildModernDropdown(
+                            'Sex',
+                            Icons.wc_rounded,
+                            controller.editSexCtrl,
+                            theme,
+                            ['Male', 'Female'],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Obx(
+                      () => _buildModernTextField(
+                        'Enter Password to Confirm Edit',
+                        Icons.lock_rounded,
+                        controller.editPasswordCtrl,
+                        theme,
+                        obscureText: controller.isPasswordHidden.value,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Password is required to apply changes';
+                          }
+                          return null;
+                        },
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            controller.isPasswordHidden.value
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                            color: theme.textSecondary,
+                          ),
+                          onPressed: controller.togglePasswordVisibility,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => Get.back(),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  side: BorderSide(color: theme.borderColor),
+                ),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: theme.textSecondary, fontSize: 16),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: controller.saveProfileChanges,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.actionBlue,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  "Save Changes",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Get.back(),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      side: BorderSide(color: theme.borderColor),
-                    ),
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(
-                        color: theme.textSecondary,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: controller.saveProfileChanges,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.actionBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      "Save Changes",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -608,6 +872,77 @@ class EditProfileBottomSheet extends GetView<ProfileController> {
           if (val != null) txtController.text = val;
         },
         validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+      ),
+    );
+  }
+}
+
+class EditProfileBottomSheet extends StatelessWidget {
+  const EditProfileBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Container(
+            height: Get.height > 800 ? 800 : Get.height * 0.85,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              color: theme.backgroundColor.withOpacity(
+                theme.isDarkMode ? 0.8 : 0.95,
+              ),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(36),
+              ),
+              border: Border.all(color: theme.borderColor.withOpacity(0.3)),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.actionBlue.withOpacity(0.1),
+                  blurRadius: 40,
+                  spreadRadius: 10,
+                ),
+              ],
+            ),
+            child: const _EditProfileFormContent(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EditProfileWebDialog extends StatelessWidget {
+  const EditProfileWebDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 800),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: theme.backgroundColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: theme.borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 40,
+                spreadRadius: 10,
+              ),
+            ],
+          ),
+          child: const _EditProfileFormContent(),
+        ),
       ),
     );
   }

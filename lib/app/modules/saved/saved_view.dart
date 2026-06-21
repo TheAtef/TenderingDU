@@ -5,6 +5,7 @@ import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
+import 'package:tendering_du/app/core/utils/responsive_layout.dart';
 import 'saved_controller.dart';
 
 class SavedView extends GetView<SavedController> {
@@ -43,50 +44,77 @@ class SavedView extends GetView<SavedController> {
               );
             }
 
+            final isDesktop = ResponsiveLayout.isDesktop(context);
+
             return AnimationLimiter(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 10,
-                ),
-                itemCount: controller.savedList.length,
-                itemBuilder: (context, index) {
-                  final tender = controller.savedList[index];
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 400),
-                    child: SlideAnimation(
-                      verticalOffset: 50,
-                      child: FadeInAnimation(
-                        child: GestureDetector(
-                          onTap: () => Get.toNamed(
-                            Routes.TENDER_DETAILS,
-                            arguments: tender,
-                          ),
-                          child: _TenderCard(
-                            title: tender.title,
-                            category: tender.category,
-                            deadline: tender.deadline is DateTime
-                                ? tender.deadline.toString().split(
-                                    ' ',
-                                  )[0] // Formats "2026-05-22 16:46:55" to "2026-05-22"
-                                : tender
-                                      .deadline, // Keeps it as is if it's already a String
-                            isBookmarked: true,
-                            onBookmark: () =>
-                                controller.removeFromSaved(tender),
-                          ),
-                        ),
+              child: isDesktop
+                  ? GridView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 10,
                       ),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 450,
+                            mainAxisExtent: 180,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                          ),
+                      itemCount: controller.savedList.length,
+                      itemBuilder: (context, index) {
+                        return _buildAnimatedCard(
+                          controller.savedList[index],
+                          index,
+                          isDesktop,
+                        );
+                      },
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 10,
+                      ),
+                      itemCount: controller.savedList.length,
+                      itemBuilder: (context, index) {
+                        return _buildAnimatedCard(
+                          controller.savedList[index],
+                          index,
+                          isDesktop,
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             );
           }),
         ),
         const SizedBox(height: 100),
       ],
+    );
+  }
+
+  Widget _buildAnimatedCard(dynamic tender, int index, bool isDesktop) {
+    return AnimationConfiguration.staggeredList(
+      position: index,
+      duration: const Duration(milliseconds: 400),
+      child: SlideAnimation(
+        verticalOffset: 50,
+        child: FadeInAnimation(
+          child: GestureDetector(
+            onTap: () => Get.toNamed(Routes.TENDER_DETAILS, arguments: tender),
+            child: _TenderCard(
+              title: tender.title,
+              category: tender.category,
+              deadline: tender.deadline is DateTime
+                  ? tender.deadline.toString().split(' ')[0]
+                  : tender.deadline,
+              isBookmarked: true,
+              onBookmark: () => controller.removeFromSaved(tender),
+              margin: isDesktop
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.only(bottom: 16),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -95,6 +123,7 @@ class _TenderCard extends StatelessWidget {
   final String title, category, deadline;
   final bool isBookmarked;
   final VoidCallback onBookmark;
+  final EdgeInsetsGeometry? margin;
 
   const _TenderCard({
     required this.title,
@@ -102,6 +131,7 @@ class _TenderCard extends StatelessWidget {
     required this.deadline,
     required this.isBookmarked,
     required this.onBookmark,
+    this.margin,
   });
 
   @override
@@ -109,7 +139,7 @@ class _TenderCard extends StatelessWidget {
     return Obx(() {
       final theme = ThemeController.to;
       return Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: margin ?? const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: theme.cardColor,
@@ -131,30 +161,41 @@ class _TenderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  category,
-                  style: const TextStyle(
-                    color: AppColors.actionBlue,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Text(
+                    category,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.actionBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                   onPressed: onBookmark,
-                  icon: Icon(Icons.favorite, color: Colors.red, size: 20),
+                  icon: const Icon(Icons.favorite, color: Colors.red, size: 20),
                 ),
               ],
             ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: theme.textPrimary,
-                height: 1.3,
+            const SizedBox(height: 8),
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: theme.textPrimary,
+                  height: 1.3,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            const Spacer(),
             Row(
               children: [
                 const InfoPill(icon: Icons.attach_money, label: "\$2.5M"),

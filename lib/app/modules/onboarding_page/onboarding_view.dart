@@ -17,52 +17,58 @@ class OnboardingView extends GetView<OnboardingController> {
       body: Stack(
         children: [
           const StaticBackground(),
-          SafeArea(
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, top: 8.0),
-                    child: TextButton(
-                      onPressed: controller.skip,
-                      child: Obx(
-                        () => Text(
-                          "Skip",
-                          style: TextStyle(
-                            color: ThemeController.to.textSecondary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16.0, top: 8.0),
+                        child: TextButton(
+                          onPressed: controller.skip,
+                          child: Obx(
+                            () => Text(
+                              "Skip",
+                              style: TextStyle(
+                                color: ThemeController.to.textSecondary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                    Expanded(
+                      child: PageView.builder(
+                        controller: controller.pageController,
+                        onPageChanged: controller.onPageChanged,
+                        itemCount: controller.items.length,
+                        itemBuilder: (context, index) {
+                          return _OnboardingPage(item: controller.items[index]);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 32,
+                      ),
+                      child: Column(
+                        children: [
+                          _AnimatedDots(controller: controller),
+                          const SizedBox(height: 32),
+                          _NextButton(controller: controller),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: PageView.builder(
-                    controller: controller.pageController,
-                    onPageChanged: controller.onPageChanged,
-                    itemCount: controller.items.length,
-                    itemBuilder: (context, index) {
-                      return _OnboardingPage(item: controller.items[index]);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 32,
-                  ),
-                  child: Column(
-                    children: [
-                      _AnimatedDots(controller: controller),
-                      const SizedBox(height: 32),
-                      _NextButton(controller: controller),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -84,7 +90,6 @@ class _OnboardingPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon Container with Glow
             SlideAnimation(
               verticalOffset: 50.0,
               child: FadeInAnimation(

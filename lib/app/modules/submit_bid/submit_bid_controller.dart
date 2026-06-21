@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
@@ -25,18 +27,27 @@ class SubmitBidController extends GetxController {
   var agreedTerms = false.obs;
   var isSubmitting = false.obs;
 
-  File? selectedFile;
+  File? selectedMobileFile;
+  Uint8List? selectedWebFile;
 
   Future<void> pickFile() async {
     try {
       FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
+        withData: true,
       );
 
-      if (result != null && result.files.single.path != null) {
-        selectedFile = File(result.files.single.path!);
+      if (result != null) {
         fileName.value = result.files.single.name;
+
+        if (kIsWeb) {
+          selectedWebFile = result.files.single.bytes;
+        } else {
+          if (result.files.single.path != null) {
+            selectedMobileFile = File(result.files.single.path!);
+          }
+        }
       }
     } catch (e) {
       Get.snackbar("Error", "Could not pick file: ${e.toString()}");
@@ -44,7 +55,8 @@ class SubmitBidController extends GetxController {
   }
 
   void removeFile() {
-    selectedFile = null;
+    selectedMobileFile = null;
+    selectedWebFile = null;
     fileName.value = "";
   }
 
@@ -56,7 +68,7 @@ class SubmitBidController extends GetxController {
       return;
     }
 
-    if (selectedFile == null) {
+    if (selectedMobileFile == null && selectedWebFile == null) {
       Get.snackbar("Error", "Please attach your proposal document.");
       return;
     }
@@ -85,7 +97,9 @@ class SubmitBidController extends GetxController {
 
         final bool docUploaded = await apiService.uploadBidDocument(
           bidId: bidId,
-          file: selectedFile!,
+          mobileFile: selectedMobileFile,
+          webFileBytes: selectedWebFile,
+          fileName: fileName.value,
         );
 
         if (docUploaded) {

@@ -31,7 +31,6 @@ class HomeController extends GetxController {
       time: const Duration(milliseconds: 500),
     );
 
-    // Listen for filter changes
     ever(activeFilters, (_) => refreshAll());
   }
 
@@ -76,7 +75,7 @@ class HomeController extends GetxController {
 
       categoryList.assignAll(tempNames);
     } catch (e) {
-      print("Error fetching categories: $e");
+      debugPrint("Error fetching categories: $e");
     }
   }
 
@@ -93,7 +92,7 @@ class HomeController extends GetxController {
             try {
               return Tender.fromJson(json, categoryLookup);
             } catch (e) {
-              print("Error parsing single tender: $e");
+              debugPrint("Error parsing single tender: $e");
               return null;
             }
           })
@@ -102,7 +101,7 @@ class HomeController extends GetxController {
 
       tenderList.assignAll(items);
     } catch (e) {
-      print("General Error fetching tenders: $e");
+      debugPrint("General Error fetching tenders: $e");
     } finally {
       isLoading.value = false;
     }

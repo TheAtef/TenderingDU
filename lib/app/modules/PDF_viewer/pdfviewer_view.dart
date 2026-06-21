@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart'
-    as sf; // Add prefix here
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart' as sf;
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/modules/PDF_viewer/pdfviewer_controller.dart';
 
@@ -25,20 +24,36 @@ class PdfViewerView extends GetView<PdfViewerController> {
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
-      body: Obx(() {
-        if (controller.pdfUrl.value.isEmpty) {
-          return const Center(child: Text("No URL found"));
-        }
 
-        return sf.SfPdfViewer.network(
-          controller.pdfUrl.value,
-          controller: controller.sfPdfController,
-          onDocumentLoadFailed: (details) {
-            print("PDF LOAD FAILED: ${details.description}");
-            Get.snackbar("Error", "Could not load PDF: ${details.description}");
-          },
-        );
-      }),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: Obx(() {
+            if (controller.pdfUrl.value.isEmpty) {
+              return Center(
+                child: Text(
+                  "No URL found",
+                  style: TextStyle(color: theme.textPrimary),
+                ),
+              );
+            }
+
+            return sf.SfPdfViewer.network(
+              controller.pdfUrl.value,
+              controller: controller.sfPdfController,
+              onDocumentLoadFailed: (details) {
+                debugPrint("PDF LOAD FAILED: ${details.description}");
+                Get.snackbar(
+                  "Error",
+                  "Could not load PDF: ${details.description}",
+                  backgroundColor: Colors.redAccent,
+                  colorText: Colors.white,
+                );
+              },
+            );
+          }),
+        ),
+      ),
     );
   }
 }

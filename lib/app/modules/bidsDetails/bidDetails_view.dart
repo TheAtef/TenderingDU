@@ -17,25 +17,36 @@ class BidDetailsView extends GetView<BidDetailsController> {
       body: Stack(
         children: [
           const StaticBackground(),
-          Obx(() {
-            if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return CustomScrollView(
-              slivers: [
-                _buildHeader(theme),
-                _buildMainInfo(theme),
-                _buildAttachments(theme),
-                const SliverToBoxAdapter(child: SizedBox(height: 120)),
-              ],
-            );
-          }),
-          Obx(() {
-            if (!controller.isLoading.value && controller.canPerformActions) {
-              return _buildActionButtons(theme);
-            }
-            return const SizedBox.shrink(); // Hide action panel for submitted / finalized bids
-          }),
+
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Stack(
+                children: [
+                  Obx(() {
+                    if (controller.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return CustomScrollView(
+                      slivers: [
+                        _buildHeader(theme),
+                        _buildMainInfo(theme),
+                        _buildAttachments(theme),
+                        const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                      ],
+                    );
+                  }),
+                  Obx(() {
+                    if (!controller.isLoading.value &&
+                        controller.canPerformActions) {
+                      return _buildActionButtons(theme);
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

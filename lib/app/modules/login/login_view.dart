@@ -16,192 +16,202 @@ class LoginView extends GetView<LoginController> {
       body: Stack(
         children: [
           const StaticBackground(),
-          SafeArea(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 20.0,
-                    ),
-                    child: Form(
-                      key: controller.formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 48),
-                          Column(
+
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: SafeArea(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 20.0,
+                        ),
+                        child: Form(
+                          key: controller.formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Icon(
-                                Icons.gavel_rounded,
-                                size: 75,
-                                color: AppColors.actionBlue,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                "app_title".tr,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.5,
-                                  color: AppColors.actionBlue,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Obx(
-                                () => Text(
-                                  "welcome_back".tr,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: ThemeController.to.textPrimary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Obx(
-                                () => Text(
-                                  "login_inst".tr,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: ThemeController.to.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 48),
-                          _GlassCard(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24.0),
-                              child: Column(
+                              const SizedBox(height: 48),
+                              Column(
                                 children: [
-                                  _AuthTextField(
-                                    hintText: "email_phone".tr,
-                                    icon: Icons.person_outline_rounded,
-                                    controller: controller.identifierCtrl,
-                                    validator: Validators.emailOrSyrianMobile,
+                                  const Icon(
+                                    Icons.gavel_rounded,
+                                    size: 75,
+                                    color: AppColors.actionBlue,
                                   ),
-                                  const SizedBox(height: 20),
-                                  Obx(
-                                    () => _AuthTextField(
-                                      hintText: "password".tr,
-                                      icon: Icons.lock_outline_rounded,
-                                      controller: controller.passwordCtrl,
-                                      isPassword: true,
-                                      obscureText:
-                                          controller.isPasswordHidden.value,
-                                      onTogglePassword:
-                                          controller.togglePasswordVisibility,
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return 'password_required'.tr;
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Get.toNamed('/forgot-password');
-                                      },
-                                      child: Text(
-                                        "forgot_password".tr,
-                                        style: TextStyle(
-                                          color: AppColors.actionBlue,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    "app_title".tr,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.5,
+                                      color: AppColors.actionBlue,
                                     ),
                                   ),
                                   const SizedBox(height: 12),
                                   Obx(
-                                    () => AnimatedTap(
-                                      child: ElevatedButton(
-                                        onPressed: controller.isLoading.value
-                                            ? null
-                                            : controller.login,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.actionBlue,
-                                          minimumSize: const Size(
-                                            double.infinity,
-                                            55,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                          ),
-                                          elevation: 8,
-                                          shadowColor: AppColors.actionBlue
-                                              .withOpacity(0.5),
-                                        ),
-                                        child: controller.isLoading.value
-                                            ? const SizedBox(
-                                                height: 24,
-                                                width: 24,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color: Colors.white,
-                                                      strokeWidth: 2,
-                                                    ),
-                                              )
-                                            : Text(
-                                                "login".tr,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                                    () => Text(
+                                      "welcome_back".tr,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: ThemeController.to.textPrimary,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 24),
-                                  TextButton(
-                                    onPressed: controller.navigateToRegister,
-                                    child: Obx(
-                                      () => RichText(
-                                        text: TextSpan(
-                                          text: "dont_have_account".tr,
-                                          style: TextStyle(
-                                            color: ThemeController
-                                                .to
-                                                .textSecondary,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: "signup".tr,
-                                              style: TextStyle(
-                                                color: AppColors.actionBlue,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                  const SizedBox(height: 6),
+                                  Obx(
+                                    () => Text(
+                                      "login_inst".tr,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: ThemeController.to.textSecondary,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
+                              const SizedBox(height: 48),
+                              _GlassCard(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(24.0),
+                                  child: Column(
+                                    children: [
+                                      _AuthTextField(
+                                        hintText: "email_phone".tr,
+                                        icon: Icons.person_outline_rounded,
+                                        controller: controller.identifierCtrl,
+                                        validator:
+                                            Validators.emailOrSyrianMobile,
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Obx(
+                                        () => _AuthTextField(
+                                          hintText: "password".tr,
+                                          icon: Icons.lock_outline_rounded,
+                                          controller: controller.passwordCtrl,
+                                          isPassword: true,
+                                          obscureText:
+                                              controller.isPasswordHidden.value,
+                                          onTogglePassword: controller
+                                              .togglePasswordVisibility,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'password_required'.tr;
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            Get.toNamed('/forgot-password');
+                                          },
+                                          child: Text(
+                                            "forgot_password".tr,
+                                            style: const TextStyle(
+                                              color: AppColors.actionBlue,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Obx(
+                                        () => AnimatedTap(
+                                          child: ElevatedButton(
+                                            onPressed:
+                                                controller.isLoading.value
+                                                ? null
+                                                : controller.login,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.actionBlue,
+                                              minimumSize: const Size(
+                                                double.infinity,
+                                                55,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              elevation: 8,
+                                              shadowColor: AppColors.actionBlue
+                                                  .withOpacity(0.5),
+                                            ),
+                                            child: controller.isLoading.value
+                                                ? const SizedBox(
+                                                    height: 24,
+                                                    width: 24,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 2,
+                                                        ),
+                                                  )
+                                                : Text(
+                                                    "login".tr,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      TextButton(
+                                        onPressed:
+                                            controller.navigateToRegister,
+                                        child: Obx(
+                                          () => RichText(
+                                            text: TextSpan(
+                                              text: "dont_have_account".tr,
+                                              style: TextStyle(
+                                                color: ThemeController
+                                                    .to
+                                                    .textSecondary,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: "signup".tr,
+                                                  style: const TextStyle(
+                                                    color: AppColors.actionBlue,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],

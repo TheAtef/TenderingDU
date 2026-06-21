@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
+import 'package:tendering_du/app/core/utils/responsive_layout.dart';
+import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'tender_details_controller.dart';
 
 class TenderDetailsView extends GetView<TenderDetailsController> {
@@ -10,6 +12,13 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobile: _buildMobileLayout(context),
+      desktop: _buildDesktopLayout(context),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -331,64 +340,515 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
       }),
     );
   }
+
+  Widget _buildDesktopLayout(BuildContext context) {
+    final theme = ThemeController.to;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: theme.backgroundColor,
+      body: Stack(
+        children: [
+          const StaticBackground(),
+
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: colorScheme.primary,
+                    ),
+                  );
+                }
+                if (controller.isError.value) {
+                  return const Center(child: Text("Error loading data"));
+                }
+
+                final data = controller.tenderDetails;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 40,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () => Get.back(),
+                        borderRadius: BorderRadius.circular(12),
+                        hoverColor: colorScheme.primary.withOpacity(0.1),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_back_rounded,
+                                color: theme.textPrimary,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Back to Tenders",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 7,
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 60,
+                                    bottom: 60,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: colorScheme.primary
+                                                  .withOpacity(0.15),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              data.category,
+                                              style: TextStyle(
+                                                color: colorScheme.primary,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          _StatusChip(status: data.status),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 24),
+                                      Text(
+                                        data.title,
+                                        style: TextStyle(
+                                          fontSize: 42,
+                                          fontWeight: FontWeight.w800,
+                                          color: theme.textPrimary,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 40),
+
+                                      _DesktopSectionTitle("Description"),
+                                      Text(
+                                        data.description,
+                                        style: TextStyle(
+                                          color: theme.textSecondary,
+                                          fontSize: 16,
+                                          height: 1.6,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 40),
+
+                                      _DesktopSectionTitle("Requirements"),
+                                      ...data.requirements.map(
+                                        (req) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 16,
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.check_circle,
+                                                color: colorScheme.primary,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: Text(
+                                                  req,
+                                                  style: TextStyle(
+                                                    color: theme.textSecondary,
+                                                    fontSize: 15,
+                                                    height: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 40),
+
+                                      _DesktopSectionTitle("Attachments"),
+                                      if (data.attachments.isEmpty)
+                                        Text(
+                                          "No supporting documents available.",
+                                          style: TextStyle(
+                                            color: theme.textSecondary,
+                                            fontSize: 15,
+                                          ),
+                                        )
+                                      else
+                                        Wrap(
+                                          spacing: 16,
+                                          runSpacing: 16,
+                                          children: data.attachments
+                                              .map(
+                                                (attachment) => ConstrainedBox(
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                        maxWidth: 300,
+                                                      ),
+                                                  child: _DocumentAttachment(
+                                                    title:
+                                                        attachment
+                                                            .description
+                                                            .isNotEmpty
+                                                        ? attachment.description
+                                                        : "Supporting Document",
+                                                    subtitle:
+                                                        "Click to view (${attachment.formattedSize})",
+                                                    onTap: () => Get.toNamed(
+                                                      '/pdf-viewer',
+                                                      arguments: {
+                                                        'url':
+                                                            attachment.fileUrl,
+                                                        'title': data.title,
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 380,
+                              child: Container(
+                                padding: const EdgeInsets.all(32),
+                                decoration: BoxDecoration(
+                                  color: theme.cardColor,
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(color: theme.borderColor),
+                                  boxShadow: theme.isDarkMode
+                                      ? null
+                                      : [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.04,
+                                            ),
+                                            blurRadius: 20,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Estimated Budget",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.textSecondary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "${data.budgetMin} - ${data.budgetMax} ${data.currency}",
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 32),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 55,
+                                      child: ElevatedButton(
+                                        onPressed: controller.submitBid,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: colorScheme.primary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          elevation: 0,
+                                        ),
+                                        child: controller.isSubmitting.value
+                                            ? const SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                            : const Text(
+                                                "Submit Bid",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 55,
+                                      child: OutlinedButton.icon(
+                                        onPressed: controller.toggleFavourite,
+                                        icon: Icon(
+                                          controller.isFavourite.value
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
+                                          color: controller.isFavourite.value
+                                              ? colorScheme.error
+                                              : theme.textPrimary,
+                                        ),
+                                        label: Text(
+                                          controller.isFavourite.value
+                                              ? "Saved to Favorites"
+                                              : "Save to Favorites",
+                                          style: TextStyle(
+                                            color: theme.textPrimary,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(
+                                            color: theme.borderColor,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 32),
+                                    Divider(color: theme.borderColor),
+                                    const SizedBox(height: 24),
+                                    _DesktopDetailRow(
+                                      icon: Icons.location_on_outlined,
+                                      title: "Location",
+                                      value: data.location,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    _DesktopDetailRow(
+                                      icon: Icons.calendar_today_rounded,
+                                      title: "Start Date",
+                                      value: data.startDate,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    _DesktopDetailRow(
+                                      icon: Icons.timer_outlined,
+                                      title: "Deadline",
+                                      value: data.deadline,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DesktopSectionTitle extends StatelessWidget {
+  final String title;
+  const _DesktopSectionTitle(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: ThemeController.to.textPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopDetailRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+
+  const _DesktopDetailRow({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontSize: 13, color: theme.textSecondary),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _DocumentAttachment extends StatelessWidget {
   final String title;
-  final String subtitle; // Added subtitle parameter
+  final String subtitle;
   final VoidCallback onTap;
 
   const _DocumentAttachment({
     required this.title,
-    required this.subtitle, // Added to constructor
+    required this.subtitle,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: colorScheme.surface.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.picture_as_pdf, color: colorScheme.primary, size: 24),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    subtitle, // Display dynamic subtitle/size
-                    style: TextStyle(
-                      color: colorScheme.onSurface.withOpacity(0.6),
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
+    final theme = ThemeController.to;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.borderColor),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colorScheme.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.picture_as_pdf,
+                  color: colorScheme.error,
+                  size: 24,
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: colorScheme.onSurface.withOpacity(0.4),
-              size: 20,
-            ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: theme.textPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: theme.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.open_in_new_rounded,
+                color: theme.textSecondary,
+                size: 18,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -474,7 +934,7 @@ class _StatusChip extends StatelessWidget {
         status.toUpperCase(),
         style: TextStyle(
           color: color,
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: FontWeight.bold,
         ),
       ),

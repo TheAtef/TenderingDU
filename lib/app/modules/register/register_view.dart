@@ -30,7 +30,13 @@ class RegisterView extends GetView<RegisterController> {
       body: Stack(
         children: [
           const _StaticBackground(),
-          SafeArea(child: _WizardForm(controller: controller)),
+
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SafeArea(child: _WizardForm(controller: controller)),
+            ),
+          ),
         ],
       ),
     );
@@ -74,7 +80,6 @@ class _WizardFormState extends State<_WizardForm> {
   void _nextPage() {
     FocusScope.of(context).unfocus();
 
-    // Validation logic per step
     if (_currentPage == 0) {
       if (!_step1Key.currentState!.validate()) return;
       if (widget.controller.selectedSex.value == null) {
@@ -276,9 +281,9 @@ class _WizardFormState extends State<_WizardForm> {
                         ),
                       ),
                     ),
-                  ), // Closes Form
-                ), // Closes SingleChildScrollView
-              ), // Closes _WizardStep
+                  ),
+                ),
+              ),
               _WizardStep(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
@@ -342,9 +347,9 @@ class _WizardFormState extends State<_WizardForm> {
                         ),
                       ),
                     ),
-                  ), // Closes Form
-                ), // Closes SingleChildScrollView
-              ), // Closes _WizardStep
+                  ),
+                ),
+              ),
               _WizardStep(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
@@ -466,7 +471,7 @@ class _WizardFormState extends State<_WizardForm> {
                                                 )
                                               : Text(
                                                   "register".tr,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,
@@ -499,7 +504,7 @@ class _WizardFormState extends State<_WizardForm> {
                                       children: [
                                         TextSpan(
                                           text: "login".tr,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: AppColors.actionBlue,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -510,18 +515,18 @@ class _WizardFormState extends State<_WizardForm> {
                                 ),
                               ),
                             ),
-                          ], // closes Column children
-                        ), // closes Column
-                      ), // closes Padding
-                    ), // closes GlassCard
-                  ), // closes Form
-                ), // closes SingleChildScrollView
-              ), // closes _WizardStep
-            ], // closes PageView children
-          ), // closes PageView
-        ), // closes Expanded
-      ], // closes Column children
-    ); // closes return Column
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -669,7 +674,6 @@ class _AuthDropdown extends StatelessWidget {
   }
 }
 
-// Below are exact copies from the login view to ensure independence without a shared widgets file
 class _StaticBackground extends StatelessWidget {
   const _StaticBackground();
   @override

@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/modules/submit_bid/submit_bid_model.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiService {
-  final String baseUrl = "http://10.0.2.2:8000";
+  final String baseUrl = kIsWeb
+      ? "http://127.0.0.1:8000"
+      : "http://10.0.2.2:8000";
+
   final storage = GetStorage();
 
   Map<String, String> _getHeaders() {
@@ -357,7 +362,9 @@ class ApiService {
 
   Future<bool> uploadTenderAttachment({
     required int tenderId,
-    required File file,
+    File? mobileFile,
+    Uint8List? webFileBytes,
+    required String fileName,
   }) async {
     final url = Uri.parse('$baseUrl/tender-attachments/');
     final request = http.MultipartRequest('POST', url);
@@ -369,12 +376,28 @@ class ApiService {
 
     request.fields['tender'] = tenderId.toString();
     request.fields['description'] = 'Supporting document';
-    request.fields['size'] = (await file.length()).toString();
-    request.fields['content_type'] = file.path.endsWith('.pdf')
+
+    int size = 0;
+    if (kIsWeb && webFileBytes != null) {
+      size = webFileBytes.length;
+    } else if (mobileFile != null) {
+      size = await mobileFile.length();
+    }
+    request.fields['size'] = size.toString();
+
+    request.fields['content_type'] = fileName.toLowerCase().endsWith('.pdf')
         ? 'application/pdf'
         : 'application/msword';
 
-    request.files.add(await http.MultipartFile.fromPath('file', file.path));
+    if (kIsWeb && webFileBytes != null) {
+      request.files.add(
+        http.MultipartFile.fromBytes('file', webFileBytes, filename: fileName),
+      );
+    } else if (mobileFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('file', mobileFile.path),
+      );
+    }
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
@@ -485,7 +508,9 @@ class ApiService {
 
   Future<bool> uploadBidDocument({
     required int bidId,
-    required File file,
+    File? mobileFile,
+    Uint8List? webFileBytes,
+    required String fileName,
   }) async {
     final url = Uri.parse('$baseUrl/bid-documents/');
     final request = http.MultipartRequest('POST', url);
@@ -497,12 +522,28 @@ class ApiService {
 
     request.fields['bid'] = bidId.toString();
     request.fields['description'] = 'Proposal document';
-    request.fields['size'] = (await file.length()).toString();
-    request.fields['content_type'] = file.path.endsWith('.pdf')
+
+    int size = 0;
+    if (kIsWeb && webFileBytes != null) {
+      size = webFileBytes.length;
+    } else if (mobileFile != null) {
+      size = await mobileFile.length();
+    }
+    request.fields['size'] = size.toString();
+
+    request.fields['content_type'] = fileName.toLowerCase().endsWith('.pdf')
         ? 'application/pdf'
         : 'application/msword';
 
-    request.files.add(await http.MultipartFile.fromPath('file', file.path));
+    if (kIsWeb && webFileBytes != null) {
+      request.files.add(
+        http.MultipartFile.fromBytes('file', webFileBytes, filename: fileName),
+      );
+    } else if (mobileFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('file', mobileFile.path),
+      );
+    }
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
@@ -578,10 +619,6 @@ class ApiService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       print(data);
-      // if (data is Map && data.containsKey('results')) {
-      //   return data['results'] as List<dynamic>;
-      // }
-
       return data as List<dynamic>;
     } else {
       print("API Error: ${response.statusCode} ${response.body}");

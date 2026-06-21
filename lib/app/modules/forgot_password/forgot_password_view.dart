@@ -16,132 +16,144 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
       body: Stack(
         children: [
           const StaticBackground(),
-          SafeArea(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 20.0,
-                    ),
-                    child: Form(
-                      key: controller.formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                              ),
-                              color: AppColors.actionBlue,
-                              onPressed: () => Get.back(),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Column(
+
+          // ADDED: Center and ConstrainedBox for Web/Desktop responsiveness
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 500,
+              ), // Max width of 500px
+              child: SafeArea(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 20.0,
+                        ),
+                        child: Form(
+                          key: controller.formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Icon(
-                                Icons.lock_reset_rounded,
-                                size: 75,
-                                color: AppColors.actionBlue,
-                              ),
-                              const SizedBox(height: 16),
-                              Obx(
-                                () => Text(
-                                  "Reset Password",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.0,
-                                    color: ThemeController.to.textPrimary,
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios_new_rounded,
                                   ),
+                                  color: AppColors.actionBlue,
+                                  onPressed: () => Get.back(),
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                              Obx(
-                                () => Text(
-                                  "Enter your registered email to receive a six-digit code to prove your ownership.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: ThemeController.to.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 48),
-                          _GlassCard(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24.0),
-                              child: Column(
+                              const SizedBox(height: 24),
+                              Column(
                                 children: [
-                                  _AuthTextField(
-                                    hintText: "Email",
-                                    icon: Icons.person_outline_rounded,
-                                    controller: controller.identifierCtrl,
-                                    validator: Validators.emailOrSyrianMobile,
+                                  const Icon(
+                                    Icons.lock_reset_rounded,
+                                    size: 75,
+                                    color: AppColors.actionBlue,
                                   ),
-                                  const SizedBox(height: 32),
+                                  const SizedBox(height: 16),
                                   Obx(
-                                    () => _AnimatedTap(
-                                      child: ElevatedButton(
-                                        onPressed: controller.isLoading.value
-                                            ? null
-                                            : controller.resetPassword,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.actionBlue,
-                                          minimumSize: const Size(
-                                            double.infinity,
-                                            55,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                          ),
-                                          elevation: 8,
-                                          shadowColor: AppColors.actionBlue
-                                              .withOpacity(0.5),
-                                        ),
-                                        child: controller.isLoading.value
-                                            ? const SizedBox(
-                                                height: 24,
-                                                width: 24,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color: Colors.white,
-                                                      strokeWidth: 2,
-                                                    ),
-                                              )
-                                            : const Text(
-                                                "Send Verification Code",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                                    () => Text(
+                                      "Reset Password",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 1.0,
+                                        color: ThemeController.to.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Obx(
+                                    () => Text(
+                                      "Enter your registered email to receive a six-digit code to prove your ownership.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: ThemeController.to.textSecondary,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
+                              const SizedBox(height: 48),
+                              _GlassCard(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(24.0),
+                                  child: Column(
+                                    children: [
+                                      _AuthTextField(
+                                        hintText: "Email",
+                                        icon: Icons.person_outline_rounded,
+                                        controller: controller.identifierCtrl,
+                                        validator:
+                                            Validators.emailOrSyrianMobile,
+                                      ),
+                                      const SizedBox(height: 32),
+                                      Obx(
+                                        () => _AnimatedTap(
+                                          child: ElevatedButton(
+                                            onPressed:
+                                                controller.isLoading.value
+                                                ? null
+                                                : controller.resetPassword,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.actionBlue,
+                                              minimumSize: const Size(
+                                                double.infinity,
+                                                55,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              elevation: 8,
+                                              shadowColor: AppColors.actionBlue
+                                                  .withOpacity(0.5),
+                                            ),
+                                            child: controller.isLoading.value
+                                                ? const SizedBox(
+                                                    height: 24,
+                                                    width: 24,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 2,
+                                                        ),
+                                                  )
+                                                : const Text(
+                                                    "Send Verification Code",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],

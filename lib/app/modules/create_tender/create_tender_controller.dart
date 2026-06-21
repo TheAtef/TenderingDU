@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,7 +12,6 @@ class CreateTenderController extends GetxController {
   void setActivity(String? val) => selectedActivity.value = val;
 
   final RxBool isLoading = false.obs;
-
   final formKey = GlobalKey<FormState>();
 
   // Controllers
@@ -25,18 +26,28 @@ class CreateTenderController extends GetxController {
   var fileName = "".obs;
   var isSubmitting = false.obs;
 
-  File? selectedFile;
+  File? selectedMobileFile; // Changed
+  Uint8List? selectedWebFile; // Added for Web
 
   Future<void> pickFile() async {
     try {
       FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
+        withData: true, // CRITICAL FOR WEB
       );
 
-      if (result != null && result.files.single.path != null) {
-        selectedFile = File(result.files.single.path!);
+      if (result != null) {
         fileName.value = result.files.single.name;
+
+        // Split logic based on platform
+        if (kIsWeb) {
+          selectedWebFile = result.files.single.bytes;
+        } else {
+          if (result.files.single.path != null) {
+            selectedMobileFile = File(result.files.single.path!);
+          }
+        }
       }
     } catch (e) {
       Get.snackbar("Error", "Could not pick file: ${e.toString()}");
@@ -44,14 +55,15 @@ class CreateTenderController extends GetxController {
   }
 
   void removeFile() {
-    selectedFile = null;
+    selectedMobileFile = null;
+    selectedWebFile = null;
     fileName.value = "";
   }
 
   Future<void> submitBidApi() async {
     if (!formKey.currentState!.validate()) return;
 
-    if (selectedFile == null) {
+    if (selectedMobileFile == null && selectedWebFile == null) {
       Get.snackbar("Error", "Please attach your tender document.");
       return;
     }
@@ -95,7 +107,9 @@ class CreateTenderController extends GetxController {
 
         final bool fileUploaded = await _apiService.uploadTenderAttachment(
           tenderId: newTenderId,
-          file: selectedFile!,
+          mobileFile: selectedMobileFile,
+          webFileBytes: selectedWebFile,
+          fileName: fileName.value,
         );
 
         if (fileUploaded) {
