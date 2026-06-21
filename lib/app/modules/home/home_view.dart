@@ -42,8 +42,12 @@ class HomeView extends GetView<HomeController> {
   Widget _buildMobileLayout() {
     return Stack(
       children: [
-        const StaticBackground(),
-        Obx(() => _buildIndexedContent(controller.currentIndex.value, false)),
+        const Positioned.fill(child: StaticBackground()),
+        Positioned.fill(
+          child: Obx(
+            () => _buildIndexedContent(controller.currentIndex.value, false),
+          ),
+        ),
         Positioned(
           bottom: 30,
           left: 0,
@@ -957,8 +961,23 @@ class _TenderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = ResponsiveLayout.isDesktop(context);
+
     return Obx(() {
       final theme = ThemeController.to;
+
+      Widget titleWidget = Text(
+        title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: theme.textPrimary,
+          height: 1.3,
+        ),
+      );
+
       return Container(
         margin: margin ?? const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
@@ -978,6 +997,7 @@ class _TenderCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: isDesktop ? MainAxisSize.max : MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1007,20 +1027,8 @@ class _TenderCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: Text(
-                title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textPrimary,
-                  height: 1.3,
-                ),
-              ),
-            ),
-            const Spacer(),
+            if (isDesktop) Expanded(child: titleWidget) else titleWidget,
+            if (isDesktop) const Spacer() else const SizedBox(height: 16),
             Row(
               children: [
                 const InfoPill(icon: Icons.attach_money, label: "\$2.5M"),
