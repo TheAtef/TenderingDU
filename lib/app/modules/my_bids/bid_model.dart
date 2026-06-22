@@ -39,6 +39,7 @@ class BidModel {
   final String userName;
   final String statusName;
   final String tenderTitle;
+  final String tenderOwner;
   final List<BidDocumentModel> documents;
   final DateTime? creationDate;
 
@@ -57,6 +58,7 @@ class BidModel {
     required this.userName,
     required this.statusName,
     required this.tenderTitle,
+    required this.tenderOwner,
     required this.documents,
     this.creationDate,
   });
@@ -91,6 +93,7 @@ class BidModel {
       userName: json['user_name']?.toString() ?? '',
       statusName: json['status_name']?.toString() ?? 'Pending',
       tenderTitle: json['tender_title']?.toString() ?? 'N/A',
+      tenderOwner: json['tender_owner_username']?.toString() ?? '',
       documents: docList,
       creationDate: json['creation_date'] != null
           ? DateTime.tryParse(json['creation_date'].toString())

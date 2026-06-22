@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
-import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/core/utils/responsive_layout.dart';
 import 'package:tendering_du/app/modules/tender_details/tender_details_model.dart';
 import 'tender_results_controller.dart';

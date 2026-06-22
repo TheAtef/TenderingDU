@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:tendering_du/app/core/services/api_service.dart'; // Ensure this path is correct
@@ -30,7 +29,6 @@ class TenderDetailsController extends GetxController {
     isError.value = false;
     try {
       final data = await _apiService.getTenderDetails(basicTender.id);
-      print(jsonEncode(data));
       tenderDetails = TenderDetailsModel.fromJson(data);
       isFavourite.value = tenderDetails.isFavourite;
     } catch (e) {

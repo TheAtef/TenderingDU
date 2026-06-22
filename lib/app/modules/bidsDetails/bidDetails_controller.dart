@@ -23,11 +23,11 @@ class BidDetailsController extends GetxController {
   }
 
   bool get canPerformActions {
-    if (bid.userName == storage.read('username') ||
-        bid.statusName.toLowerCase() != 'pending') {
-      return false;
+    if (bid.tenderOwner == storage.read('username') &&
+        bid.statusName.toLowerCase() == 'pending') {
+      return true;
     }
-    return true;
+    return false;
   }
 
   void viewAttachment(String url, String name) {

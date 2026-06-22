@@ -33,7 +33,10 @@ class SubmitBidView extends GetView<SubmitBidController> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(colorScheme, isDesktop: false),
+      bottomNavigationBar: SizedBox(
+        height: 100,
+        child: _buildBottomBar(colorScheme, isDesktop: false),
+      ),
     );
   }
 

@@ -618,7 +618,6 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print(data);
       return data as List<dynamic>;
     } else {
       print("API Error: ${response.statusCode} ${response.body}");

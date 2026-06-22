@@ -598,13 +598,17 @@ class _ModernNotificationCard extends StatelessWidget {
     Color iconColor;
 
     switch (notification.type) {
-      case 'tender':
+      case 'new_bid':
         iconData = Icons.description_outlined;
         iconColor = AppColors.actionBlue;
         break;
-      case 'success':
+      case 'bid_accepted':
         iconData = Icons.check_circle_outline;
         iconColor = AppColors.successGreen;
+        break;
+      case 'bid_rejected':
+        iconData = Icons.cancel_outlined;
+        iconColor = AppColors.errorRed;
         break;
       case 'alert':
         iconData = Icons.warning_amber_rounded;
