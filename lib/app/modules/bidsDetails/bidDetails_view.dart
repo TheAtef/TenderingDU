@@ -17,7 +17,6 @@ class BidDetailsView extends GetView<BidDetailsController> {
       body: Stack(
         children: [
           const StaticBackground(),
-
           Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 800),
@@ -28,10 +27,12 @@ class BidDetailsView extends GetView<BidDetailsController> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     return CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         _buildHeader(theme),
                         _buildMainInfo(theme),
-                        _buildAttachments(theme),
+                        _buildExtendedInfo(theme),
+                        _buildAttachmentsSection(theme),
                         const SliverToBoxAdapter(child: SizedBox(height: 120)),
                       ],
                     );
@@ -95,19 +96,19 @@ class BidDetailsView extends GetView<BidDetailsController> {
               "Submitted for: ${data.tenderTitle}",
               style: TextStyle(fontSize: 14, color: theme.textSecondary),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               children: [
                 const Icon(
                   Icons.monetization_on,
                   color: Colors.green,
-                  size: 20,
+                  size: 24,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   "\$${data.totalPrice.toStringAsFixed(2)}",
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
@@ -134,15 +135,8 @@ class BidDetailsView extends GetView<BidDetailsController> {
               ],
             ),
             const SizedBox(height: 24),
-            Text(
-              "Proposal".tr,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: theme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 10),
+            _buildSectionTitle("Main Proposal", theme),
+            const SizedBox(height: 8),
             Text(
               data.proposal,
               style: TextStyle(
@@ -151,43 +145,104 @@ class BidDetailsView extends GetView<BidDetailsController> {
                 height: 1.5,
               ),
             ),
+            const SizedBox(height: 16),
+            Divider(color: theme.borderColor),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAttachments(dynamic theme) {
+  Widget _buildExtendedInfo(dynamic theme) {
+    final data = controller.bid;
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Technical Details", theme),
+            const SizedBox(height: 16),
+            _buildDetailCard(
+              "Execution Plan / Methodology",
+              data.executionPlan,
+              theme,
+            ),
+            _buildDetailCard("Deliverables", data.deliverables, theme),
+            _buildDetailCard(
+              "Estimated Duration",
+              data.estimatedDuration,
+              theme,
+            ),
+
+            const SizedBox(height: 16),
+            Divider(color: theme.borderColor),
+            const SizedBox(height: 16),
+
+            _buildSectionTitle("Bidder Information", theme),
+            const SizedBox(height: 16),
+            _buildContactRow(
+              Icons.person,
+              "Contact Person",
+              data.contactPerson,
+              theme,
+            ),
+            _buildContactRow(Icons.email, "Email", data.contactEmail, theme),
+            _buildContactRow(Icons.phone, "Phone", data.contactPhone, theme),
+
+            const SizedBox(height: 24),
+            Divider(color: theme.borderColor),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentsSection(dynamic theme) {
     final files = controller.bid.documents;
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate((context, index) {
-          final doc = files[index];
-          final fileName = doc.description.isNotEmpty
-              ? doc.description
-              : "Bid Document ${doc.id}";
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: theme.cardColor,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: theme.borderColor),
-            ),
-            child: ListTile(
-              leading: const Icon(
-                Icons.picture_as_pdf,
-                color: Colors.redAccent,
-              ),
-              title: Text(
-                fileName,
-                style: TextStyle(color: theme.textPrimary, fontSize: 14),
-              ),
-              trailing: const Icon(Icons.open_in_new, size: 18),
-              onTap: () => controller.viewAttachment(doc.fileUrl, fileName),
-            ),
-          );
-        }, childCount: files.length),
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Supporting Documents", theme),
+            const SizedBox(height: 16),
+            if (files.isEmpty)
+              Text(
+                "No documents attached.",
+                style: TextStyle(color: theme.textSecondary, fontSize: 14),
+              )
+            else
+              ...files.map((doc) {
+                final fileName = doc.description.isNotEmpty
+                    ? doc.description
+                    : "Bid Document ${doc.id}";
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: theme.borderColor),
+                  ),
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.picture_as_pdf,
+                      color: Colors.redAccent,
+                    ),
+                    title: Text(
+                      fileName,
+                      style: TextStyle(color: theme.textPrimary, fontSize: 14),
+                    ),
+                    trailing: const Icon(Icons.open_in_new, size: 18),
+                    onTap: () =>
+                        controller.viewAttachment(doc.fileUrl, fileName),
+                  ),
+                );
+              }).toList(),
+          ],
+        ),
       ),
     );
   }
@@ -200,9 +255,16 @@ class BidDetailsView extends GetView<BidDetailsController> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: theme.cardColor.withOpacity(0.9),
+          color: theme.cardColor.withOpacity(0.95),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: theme.borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -226,6 +288,95 @@ class BidDetailsView extends GetView<BidDetailsController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, dynamic theme) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: theme.textPrimary,
+      ),
+    );
+  }
+
+  Widget _buildDetailCard(String title, String content, dynamic theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: theme.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: theme.borderColor),
+            ),
+            child: Text(
+              content.isNotEmpty ? content : "Not specified",
+              style: TextStyle(
+                color: theme.textSecondary,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactRow(
+    IconData icon,
+    String title,
+    String value,
+    dynamic theme,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.actionBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppColors.actionBlue, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontSize: 12, color: theme.textSecondary),
+              ),
+              Text(
+                value.isNotEmpty ? value : "Not specified",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: theme.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

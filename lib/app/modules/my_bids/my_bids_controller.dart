@@ -5,8 +5,8 @@ import 'package:tendering_du/app/modules/my_bids/bid_model.dart';
 class BidsController extends GetxController {
   final ApiService _apiService = ApiService();
 
-  var appliedList = <Bid>[].obs;
-  var historyList = <Bid>[].obs;
+  var appliedList = <BidModel>[].obs;
+  var historyList = <BidModel>[].obs;
   var isLoading = true.obs;
 
   @override
@@ -23,13 +23,13 @@ class BidsController extends GetxController {
       final parsedBids = rawData
           .map((json) {
             try {
-              return Bid.fromJson(json);
+              return BidModel.fromJson(json);
             } catch (e) {
               print("Error parsing my bids: $e");
               return null;
             }
           })
-          .whereType<Bid>()
+          .whereType<BidModel>()
           .toList();
 
       final applied = parsedBids
@@ -40,7 +40,8 @@ class BidsController extends GetxController {
           .where(
             (b) =>
                 b.statusName.toLowerCase() == 'awarded' ||
-                b.statusName.toLowerCase() == 'rejected',
+                b.statusName.toLowerCase() == 'rejected' ||
+                b.statusName.toLowerCase() == 'closed',
           )
           .toList();
 

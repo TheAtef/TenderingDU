@@ -138,7 +138,7 @@ class ProfileController extends GetxController {
     try {
       final getProfileResult = await _apiService.getProfile();
       profile.value = ProfileModel.fromJson(getProfileResult);
-      print("RAW PROFILE JSON: $getProfileResult");
+      print("raw profile: $getProfileResult");
       await _storage.write('username', getProfileResult['username']);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load profile from server.');

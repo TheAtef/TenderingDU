@@ -43,6 +43,11 @@ class RegisterController extends GetxController {
       return;
     }
 
+    if (companyCtrl.text.trim().isNotEmpty && selectedActivity.value == null) {
+      Get.snackbar('error'.tr, 'Please select a company activity');
+      return;
+    }
+
     isLoading.value = true;
 
     try {
@@ -59,6 +64,8 @@ class RegisterController extends GetxController {
         lastName: lNameCtrl.text.trim(),
         password: passwordCtrl.text.trim(),
         username: username,
+        companyName: companyCtrl.text.trim(),
+        categoryName: selectedActivity.value,
       );
 
       isLoading.value = false;

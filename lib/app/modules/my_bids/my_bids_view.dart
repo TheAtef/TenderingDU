@@ -4,8 +4,10 @@ import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/core/utils/responsive_layout.dart';
-import 'package:tendering_du/app/modules/my_bids/my_bids_controller.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+
+// Make sure this points to the correct file where BidsController is located!
+import 'package:tendering_du/app/modules/my_bids/my_bids_controller.dart';
 
 class BidsView extends GetView<BidsController> {
   const BidsView({super.key});
@@ -88,8 +90,9 @@ class BidsView extends GetView<BidsController> {
                                 final item = controller.appliedList[index];
                                 return _ResultItem(
                                   title: item.tenderTitle,
-                                  category: item.category,
-                                  deadline: item.deadline,
+                                  subLabel:
+                                      "Bid Amount: \$${item.totalPrice.toStringAsFixed(2)}",
+                                  duration: item.estimatedDuration,
                                   onTap: () => Get.toNamed(
                                     Routes.BID_DETAILS,
                                     arguments: item,
@@ -153,8 +156,11 @@ class BidsView extends GetView<BidsController> {
                                 final item = controller.historyList[index];
                                 return _ResultItem(
                                   title: item.tenderTitle,
-                                  category: item.category,
-                                  result: item.isWinningBid,
+                                  subLabel:
+                                      "Bid Amount: \$${item.totalPrice.toStringAsFixed(2)}",
+                                  result:
+                                      item.statusName.toLowerCase() ==
+                                      'awarded',
                                   onTap: () => Get.toNamed(
                                     Routes.BID_DETAILS,
                                     arguments: item,
@@ -385,9 +391,11 @@ class BidsView extends GetView<BidsController> {
                   final item = list[index];
                   return _DesktopResultItem(
                     title: item.tenderTitle,
-                    category: item.category,
-                    deadline: isHistory ? null : item.deadline,
-                    result: isHistory ? item.isWinningBid : null,
+                    subLabel: "Amount: \$${item.totalPrice.toStringAsFixed(2)}",
+                    duration: isHistory ? null : item.estimatedDuration,
+                    result: isHistory
+                        ? (item.statusName.toLowerCase() == 'awarded')
+                        : null,
                     onTap: () =>
                         Get.toNamed(Routes.BID_DETAILS, arguments: item),
                   );
@@ -436,16 +444,16 @@ class _Header extends StatelessWidget {
 
 class _ResultItem extends StatelessWidget {
   final String title;
-  final String category;
-  final String? deadline;
+  final String subLabel;
+  final String? duration;
   final bool? result;
   final VoidCallback onTap;
 
   const _ResultItem({
     required this.title,
-    required this.category,
+    required this.subLabel,
     required this.onTap,
-    this.deadline,
+    this.duration,
     this.result,
   });
 
@@ -489,12 +497,12 @@ class _ResultItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "${"category".tr}: $category",
-                    style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                    subLabel,
+                    style: TextStyle(fontSize: 13, color: theme.textSecondary),
                   ),
-                  const SizedBox(height: 4),
-                  if (deadline != null)
-                    InfoPill(icon: Icons.schedule, label: deadline!),
+                  const SizedBox(height: 8),
+                  if (duration != null && duration!.isNotEmpty)
+                    InfoPill(icon: Icons.schedule, label: duration!),
                   if (result != null)
                     InfoPill(
                       icon: Icons.check_circle_outlined,
@@ -513,16 +521,16 @@ class _ResultItem extends StatelessWidget {
 
 class _DesktopResultItem extends StatelessWidget {
   final String title;
-  final String category;
-  final String? deadline;
+  final String subLabel;
+  final String? duration;
   final bool? result;
   final VoidCallback onTap;
 
   const _DesktopResultItem({
     required this.title,
-    required this.category,
+    required this.subLabel,
     required this.onTap,
-    this.deadline,
+    this.duration,
     this.result,
   });
 
@@ -573,7 +581,7 @@ class _DesktopResultItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        category,
+                        subLabel,
                         style: TextStyle(
                           fontSize: 13,
                           color: theme.textSecondary,
@@ -583,8 +591,8 @@ class _DesktopResultItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                if (deadline != null)
-                  InfoPill(icon: Icons.schedule, label: deadline!),
+                if (duration != null && duration!.isNotEmpty)
+                  InfoPill(icon: Icons.schedule, label: duration!),
                 if (result != null)
                   Container(
                     padding: const EdgeInsets.symmetric(

@@ -553,137 +553,145 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                             ),
                             SizedBox(
                               width: 380,
-                              child: Container(
-                                padding: const EdgeInsets.all(32),
-                                decoration: BoxDecoration(
-                                  color: theme.cardColor,
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(color: theme.borderColor),
-                                  boxShadow: theme.isDarkMode
-                                      ? null
-                                      : [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.04,
-                                            ),
-                                            blurRadius: 20,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ],
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Estimated Budget",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: theme.textSecondary,
-                                      ),
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.only(
+                                  bottom: 60,
+                                ), // Adds space at bottom when
+                                child: Container(
+                                  padding: const EdgeInsets.all(32),
+                                  decoration: BoxDecoration(
+                                    color: theme.cardColor,
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: theme.borderColor,
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "${data.budgetMin} - ${data.budgetMax} ${data.currency}",
-                                      style: TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.textPrimary,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 32),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      height: 55,
-                                      child: ElevatedButton(
-                                        onPressed: controller.submitBid,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: colorScheme.primary,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          elevation: 0,
-                                        ),
-                                        child: controller.isSubmitting.value
-                                            ? const SizedBox(
-                                                height: 20,
-                                                width: 20,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color: Colors.white,
-                                                      strokeWidth: 2,
-                                                    ),
-                                              )
-                                            : const Text(
-                                                "Submit Bid",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                    boxShadow: theme.isDarkMode
+                                        ? null
+                                        : [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.04,
                                               ),
+                                              blurRadius: 20,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Estimated Budget",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: theme.textSecondary,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      height: 55,
-                                      child: OutlinedButton.icon(
-                                        onPressed: controller.toggleFavourite,
-                                        icon: Icon(
-                                          controller.isFavourite.value
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color: controller.isFavourite.value
-                                              ? colorScheme.error
-                                              : theme.textPrimary,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "${data.budgetMin} - ${data.budgetMax} ${data.currency}",
+                                        style: TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.textPrimary,
                                         ),
-                                        label: Text(
-                                          controller.isFavourite.value
-                                              ? "Saved to Favorites"
-                                              : "Save to Favorites",
-                                          style: TextStyle(
-                                            color: theme.textPrimary,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
+                                      ),
+                                      const SizedBox(height: 32),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        height: 55,
+                                        child: ElevatedButton(
+                                          onPressed: controller.submitBid,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                colorScheme.primary,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            elevation: 0,
                                           ),
+                                          child: controller.isSubmitting.value
+                                              ? const SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        color: Colors.white,
+                                                        strokeWidth: 2,
+                                                      ),
+                                                )
+                                              : const Text(
+                                                  "Submit Bid",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                         ),
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: theme.borderColor,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        height: 55,
+                                        child: OutlinedButton.icon(
+                                          onPressed: controller.toggleFavourite,
+                                          icon: Icon(
+                                            controller.isFavourite.value
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: controller.isFavourite.value
+                                                ? colorScheme.error
+                                                : theme.textPrimary,
                                           ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
+                                          label: Text(
+                                            controller.isFavourite.value
+                                                ? "Saved to Favorites"
+                                                : "Save to Favorites",
+                                            style: TextStyle(
+                                              color: theme.textPrimary,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(
+                                              color: theme.borderColor,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
 
-                                    const SizedBox(height: 32),
-                                    Divider(color: theme.borderColor),
-                                    const SizedBox(height: 24),
-                                    _DesktopDetailRow(
-                                      icon: Icons.location_on_outlined,
-                                      title: "Location",
-                                      value: data.location,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    _DesktopDetailRow(
-                                      icon: Icons.calendar_today_rounded,
-                                      title: "Start Date",
-                                      value: data.startDate,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    _DesktopDetailRow(
-                                      icon: Icons.timer_outlined,
-                                      title: "Deadline",
-                                      value: data.deadline,
-                                    ),
-                                  ],
+                                      const SizedBox(height: 32),
+                                      Divider(color: theme.borderColor),
+                                      const SizedBox(height: 24),
+                                      _DesktopDetailRow(
+                                        icon: Icons.location_on_outlined,
+                                        title: "Location",
+                                        value: data.location,
+                                      ),
+                                      const SizedBox(height: 20),
+                                      _DesktopDetailRow(
+                                        icon: Icons.calendar_today_rounded,
+                                        title: "Start Date",
+                                        value: data.startDate,
+                                      ),
+                                      const SizedBox(height: 20),
+                                      _DesktopDetailRow(
+                                        icon: Icons.timer_outlined,
+                                        title: "Deadline",
+                                        value: data.deadline,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
