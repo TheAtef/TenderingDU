@@ -1,4 +1,6 @@
 // Represents an attached document from the backend TenderAttachment table
+import 'package:tendering_du/app/modules/my_bids/bid_model.dart';
+
 class Attachment {
   final int id;
   final String fileUrl;
@@ -51,6 +53,7 @@ class TenderDetailsModel {
   final String location;
   final List<String> requirements;
   final List<Attachment> attachments;
+  final List<BidModel> bids;
   bool isFavourite;
 
   TenderDetailsModel({
@@ -67,6 +70,7 @@ class TenderDetailsModel {
     required this.location,
     required this.requirements,
     required this.attachments,
+    required this.bids,
     this.isFavourite = false,
   });
 
@@ -133,6 +137,13 @@ class TenderDetailsModel {
           .toList();
     }
 
+    var bidsList = <BidModel>[];
+    if (json['bids'] != null) {
+      bidsList = (json['bids'] as List)
+          .map((x) => BidModel.fromJson(x))
+          .toList();
+    }
+
     return TenderDetailsModel(
       id: json['id'] ?? 0,
       title: json['title']?.toString() ?? '',
@@ -149,6 +160,7 @@ class TenderDetailsModel {
           ? List<String>.from(json['requirements'].map((x) => x.toString()))
           : [],
       attachments: attachmentList,
+      bids: bidsList,
       isFavourite: json['is_saved'] == true,
     );
   }

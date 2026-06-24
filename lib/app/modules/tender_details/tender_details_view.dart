@@ -5,6 +5,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/core/utils/responsive_layout.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/routes/app_routes.dart';
 import 'tender_details_controller.dart';
 
 class TenderDetailsView extends GetView<TenderDetailsController> {
@@ -216,7 +217,6 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                         ),
                       ),
                       const SizedBox(height: 8),
-
                       if (data.attachments.isEmpty)
                         Text(
                           "No supporting documents available.",
@@ -243,6 +243,48 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                                       ? attachment.description
                                       : data.title,
                                 },
+                              ),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Applied bids",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (data.bids.isEmpty)
+                        Text(
+                          "No Bids applied to this tender yet, be the first!",
+                          style: TextStyle(
+                            color: colorScheme.onSurface.withOpacity(0.5),
+                            fontSize: 13,
+                          ),
+                        )
+                      else
+                        ...data.bids.map(
+                          (bid) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(bid.title),
+                              subtitle: Text(
+                                bid.companyName.isNotEmpty
+                                    ? bid.companyName
+                                    : bid.userName,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Text(
+                                bid.statusName,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onTap: () => Get.toNamed(
+                                Routes.BID_DETAILS,
+                                arguments: bid,
                               ),
                             ),
                           ),
