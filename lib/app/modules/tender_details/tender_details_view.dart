@@ -271,7 +271,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                             padding: const EdgeInsets.only(bottom: 10),
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,
-                              title: Text(bid.title),
+                              title: Text(bid.tenderTitle),
                               subtitle: Text(
                                 bid.companyName.isNotEmpty
                                     ? bid.companyName

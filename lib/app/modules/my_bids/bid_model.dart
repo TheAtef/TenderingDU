@@ -33,6 +33,8 @@ class BidModel {
   final String contactPerson;
   final String contactEmail;
   final String contactPhone;
+  final String tenderOwner;
+
   final List<BidDocumentModel> documents;
 
   BidModel({
@@ -50,6 +52,7 @@ class BidModel {
     required this.contactEmail,
     required this.contactPhone,
     required this.documents,
+    required this.tenderOwner,
   });
 
   factory BidModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +70,7 @@ class BidModel {
       contactPerson: json['contact_person'] ?? 'Not specified',
       contactEmail: json['contact_email'] ?? 'Not specified',
       contactPhone: json['contact_phone'] ?? 'Not specified',
+      tenderOwner: json['tender_owner_username']?.toString() ?? '',
 
       documents:
           (json['documents'] as List<dynamic>?)
