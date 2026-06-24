@@ -29,9 +29,11 @@ class ProfileModel {
       phone: json['phone'] ?? '',
       birthdate: json['birth_date']?.toString() ?? '',
       sex: json['gender'] ?? '',
-      company: json['company'] ?? '',
+
+      company: json['company_name'] ?? 'No Company',
+
       CRN: json['cr_number'] ?? '',
-      isVerified: json['is_verified'],
+      isVerified: json['is_verified'] ?? false,
     );
   }
 }

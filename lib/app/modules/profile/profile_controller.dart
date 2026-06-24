@@ -10,10 +10,8 @@ class ProfileController extends GetxController {
   var isLoading = true.obs;
   GetStorage _storage = GetStorage();
 
-  // Edit Form Key
   GlobalKey<FormState> editFormKey = GlobalKey<FormState>();
 
-  // Edit Text Controllers
   final editFirstNameCtrl = TextEditingController();
   final editLastNameCtrl = TextEditingController();
   final editEmailCtrl = TextEditingController();
@@ -27,8 +25,8 @@ class ProfileController extends GetxController {
   void togglePasswordVisibility() => isPasswordHidden.toggle();
 
   void populateEditFields() {
-    if (Get.isBottomSheetOpen ?? false) return; // Prevent double sheets
-    editFormKey = GlobalKey<FormState>(); // Renew the key on every open
+    if (Get.isBottomSheetOpen ?? false) return;
+    editFormKey = GlobalKey<FormState>();
 
     final cur = profile.value;
     if (cur != null) {
@@ -47,7 +45,6 @@ class ProfileController extends GetxController {
     final cur = profile.value;
     if (cur == null) return;
 
-    // Fixed logical check: Change '||' to '&&' so that updating any single field is allowed.
     if (editEmailCtrl.text.trim() == cur.email &&
         editPhoneCtrl.text.trim() == cur.phone &&
         editBirthdateCtrl.text.trim() == cur.birthdate &&
@@ -64,11 +61,10 @@ class ProfileController extends GetxController {
     }
 
     if (editFormKey.currentState?.validate() ?? false) {
-      isLoading.value = true; // Turn on loader
+      isLoading.value = true;
       final ApiService _apiService = ApiService();
 
       try {
-        // 1. Verify the password first
         final bool isPasswordCorrect = await _apiService.checkPassword(
           editPasswordCtrl.text.trim(),
         );
@@ -84,7 +80,6 @@ class ProfileController extends GetxController {
           return;
         }
 
-        // 2. If password is correct, apply profile updates
         final bool success = await _apiService.editProfile(
           email: editEmailCtrl.text.trim(),
           phone: editPhoneCtrl.text.trim(),
@@ -141,9 +136,9 @@ class ProfileController extends GetxController {
     final ApiService _apiService = ApiService();
 
     try {
-      // await Future.delayed(const Duration(milliseconds: 1500));
       final getProfileResult = await _apiService.getProfile();
       profile.value = ProfileModel.fromJson(getProfileResult);
+      print("RAW PROFILE JSON: $getProfileResult");
       await _storage.write('username', getProfileResult['username']);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load profile from server.');
