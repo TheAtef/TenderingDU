@@ -250,7 +250,7 @@ class _DesktopTopNavBar extends StatelessWidget {
               ),
               onSelected: (value) async {
                 if (value == 'profile') controller.changeTab(3);
-                if (value == 'my_bids') Get.toNamed(Routes.MYBIDS);
+                if (value == 'my_tenders') Get.toNamed(Routes.MYTENDERS);
                 if (value == 'received_bids') {
                   Get.lazyPut(() => ReceivedBidsController());
                   Get.to(() => const ReceivedBidsView());
@@ -274,9 +274,9 @@ class _DesktopTopNavBar extends StatelessWidget {
                   ),
                 ),
                 PopupMenuItem(
-                  value: 'my_bids',
+                  value: 'my_tenders',
                   child: Text(
-                    "my_bids".tr,
+                    "my_tenders".tr,
                     style: TextStyle(color: theme.textPrimary),
                   ),
                 ),
@@ -1241,10 +1241,10 @@ class _Drawer extends StatelessWidget {
                 ),
                 _DrawerItem(
                   icon: Icons.monetization_on_rounded,
-                  title: "my_bids".tr,
+                  title: "my_tenders".tr,
                   onTap: () {
                     Get.back();
-                    Get.toNamed(Routes.MYBIDS);
+                    Get.toNamed(Routes.MYTENDERS);
                   },
                 ),
                 _DrawerItem(

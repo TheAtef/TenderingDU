@@ -10,6 +10,7 @@ abstract class Routes {
   static const TENDER_DETAILS = '/tender-details';
   static const SETTINGS = '/settings';
   static const MYBIDS = '/my-bids';
+  static const MYTENDERS = '/my-tenders';
   static const SUBMITBID = '/submit-bid';
   static const PDF_VIEWER = '/pdf-viewer';
   static const WAITING_APPROVAL = '/waiting-approval';

@@ -6,6 +6,8 @@ import 'package:tendering_du/app/modules/create_tender/create_tender_binding.dar
 import 'package:tendering_du/app/modules/create_tender/create_tender_view.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_binding.dart';
 import 'package:tendering_du/app/modules/my_bids/my_bids_view.dart';
+import 'package:tendering_du/app/modules/my_tenders/my_tenders_binding.dart';
+import 'package:tendering_du/app/modules/my_tenders/my_tenders_view.dart';
 import 'package:tendering_du/app/modules/otp/otp_binding.dart';
 import 'package:tendering_du/app/modules/otp/otp_view.dart';
 import 'package:tendering_du/app/modules/receivedBids/received_bids_binding.dart';
@@ -105,6 +107,11 @@ class AppPages {
       name: Routes.MYBIDS,
       page: () => const BidsView(),
       binding: BidsBinding(),
+    ),
+    GetPage(
+      name: Routes.MYTENDERS,
+      page: () => const MyTendersView(),
+      binding: MyTendersBinding(),
     ),
     GetPage(
       name: '/submit-bid',

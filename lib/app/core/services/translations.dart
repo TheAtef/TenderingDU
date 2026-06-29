@@ -94,6 +94,7 @@ class TranslationsService extends Translations {
       'menu': 'Menu',
       'tenders_results': 'Tenders Results',
       'my_bids': 'My Bids',
+      'my_tenders': 'My Tenders',
       'logout': 'Logout',
 
       //Tenders Results
@@ -239,6 +240,7 @@ class TranslationsService extends Translations {
       'menu': 'القائمة',
       'tenders_results': 'نتائج المناقصات',
       'my_bids': 'عروضي',
+      'my_tenders': 'مناقصاتي',
       'logout': 'تسجيل الخروج',
 
       //Tenders Results
