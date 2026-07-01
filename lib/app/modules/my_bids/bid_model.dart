@@ -1,4 +1,3 @@
-// A small model to handle the nested documents
 class BidDocumentModel {
   final int id;
   final String fileUrl;
@@ -13,7 +12,7 @@ class BidDocumentModel {
   factory BidDocumentModel.fromJson(Map<String, dynamic> json) {
     return BidDocumentModel(
       id: json['id'] ?? 0,
-      fileUrl: json['file'] ?? '', // Django returns the URL in the 'file' key
+      fileUrl: json['file'] ?? '',
       description: json['description'] ?? '',
     );
   }
@@ -34,7 +33,7 @@ class BidModel {
   final String contactEmail;
   final String contactPhone;
   final String tenderOwner;
-
+  final List<BidEvaluationModel> evaluations;
   final List<BidDocumentModel> documents;
 
   BidModel({
@@ -53,9 +52,14 @@ class BidModel {
     required this.contactPhone,
     required this.documents,
     required this.tenderOwner,
+    required this.evaluations,
   });
 
   factory BidModel.fromJson(Map<String, dynamic> json) {
+    var evalList = json['evaluations'] as List? ?? [];
+    List<BidEvaluationModel> parsedEvaluations = evalList
+        .map((e) => BidEvaluationModel.fromJson(e))
+        .toList();
     return BidModel(
       id: json['id'] ?? 0,
       userName: json['user_name'] ?? 'Unknown',
@@ -71,12 +75,40 @@ class BidModel {
       contactEmail: json['contact_email'] ?? 'Not specified',
       contactPhone: json['contact_phone'] ?? 'Not specified',
       tenderOwner: json['tender_owner_username']?.toString() ?? '',
-
+      evaluations: parsedEvaluations,
       documents:
           (json['documents'] as List<dynamic>?)
               ?.map((e) => BidDocumentModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+    );
+  }
+}
+
+class BidEvaluationModel {
+  final int id;
+  final double score;
+  final String comments;
+  final String decision;
+  final DateTime? evaluatedAt;
+
+  BidEvaluationModel({
+    required this.id,
+    required this.score,
+    required this.comments,
+    required this.decision,
+    this.evaluatedAt,
+  });
+
+  factory BidEvaluationModel.fromJson(Map<String, dynamic> json) {
+    return BidEvaluationModel(
+      id: json['id'] as int? ?? 0,
+      score: double.tryParse(json['score']?.toString() ?? '0.0') ?? 0.0,
+      comments: json['comments'] ?? '',
+      decision: json['decision'] ?? 'Pending',
+      evaluatedAt: json['evaluated_at'] != null
+          ? DateTime.tryParse(json['evaluated_at'])
+          : null,
     );
   }
 }

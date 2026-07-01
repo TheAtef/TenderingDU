@@ -14,6 +14,7 @@ class SubmitBidController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
   final amountCtrl = TextEditingController();
+  final proposalCtrl = TextEditingController();
   final planCtrl = TextEditingController();
   final deliverablesCtrl = TextEditingController();
   final durationCtrl = TextEditingController();
@@ -22,13 +23,25 @@ class SubmitBidController extends GetxController {
   final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
 
-  var currency = "USD".obs;
+  var currency = "USD".obs; //
   var fileName = "".obs;
   var agreedTerms = false.obs;
   var isSubmitting = false.obs;
 
   File? selectedMobileFile;
   Uint8List? selectedWebFile;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _extractTenderCurrency();
+  }
+
+  void _extractTenderCurrency() {
+    if (tender.currency != null) {
+      currency.value = tender.currency;
+    }
+  }
 
   Future<void> pickFile() async {
     try {
@@ -79,15 +92,15 @@ class SubmitBidController extends GetxController {
       final bidModel = SubmitBidModel(
         tenderId: tender.id,
         title: "Bid for ${tender.title}",
-        proposal: planCtrl.text,
-        totalPrice: double.parse(amountCtrl.text),
-        executionPlan: planCtrl.text,
-        deliverables: deliverablesCtrl.text,
-        estimatedDuration: durationCtrl.text,
-        companyName: companyCtrl.text,
-        contactPerson: contactCtrl.text,
-        contactEmail: emailCtrl.text,
-        contactPhone: phoneCtrl.text,
+        proposal: proposalCtrl.text.trim(),
+        totalPrice: double.tryParse(amountCtrl.text) ?? 0.0,
+        executionPlan: planCtrl.text.trim(),
+        deliverables: deliverablesCtrl.text.trim(),
+        estimatedDuration: durationCtrl.text.trim(),
+        companyName: companyCtrl.text.trim(),
+        contactPerson: contactCtrl.text.trim(),
+        contactEmail: emailCtrl.text.trim(),
+        contactPhone: phoneCtrl.text.trim(),
       );
 
       final bidResponse = await apiService.submitBid(bidModel);
@@ -124,6 +137,7 @@ class SubmitBidController extends GetxController {
   @override
   void onClose() {
     amountCtrl.dispose();
+    proposalCtrl.dispose();
     planCtrl.dispose();
     deliverablesCtrl.dispose();
     durationCtrl.dispose();

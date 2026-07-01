@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
+import 'package:tendering_du/app/modules/billingPage/billing_view.dart';
 import 'package:tendering_du/app/modules/create_tender/create_tender_controller.dart';
 import 'package:tendering_du/app/modules/create_tender/create_tender_view.dart';
 import 'package:tendering_du/app/modules/profile/profile_view.dart';
@@ -252,6 +253,7 @@ class _DesktopTopNavBar extends StatelessWidget {
                 if (value == 'profile') controller.changeTab(3);
                 if (value == 'my_bids') Get.toNamed(Routes.MYBIDS);
                 if (value == 'my_tenders') Get.toNamed(Routes.MYTENDERS);
+                if (value == 'billing') Get.to(() => const BillingView());
                 if (value == 'received_bids') {
                   Get.lazyPut(() => ReceivedBidsController());
                   Get.to(() => const ReceivedBidsView());
@@ -285,6 +287,13 @@ class _DesktopTopNavBar extends StatelessWidget {
                   value: 'my_tenders',
                   child: Text(
                     "my_tenders".tr,
+                    style: TextStyle(color: theme.textPrimary),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'billing',
+                  child: Text(
+                    "billing_invoices".tr,
                     style: TextStyle(color: theme.textPrimary),
                   ),
                 ),
@@ -1261,6 +1270,14 @@ class _Drawer extends StatelessWidget {
                   onTap: () {
                     Get.back();
                     Get.toNamed(Routes.MYTENDERS);
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.account_balance_wallet_rounded,
+                  title: "billing_invoices".tr,
+                  onTap: () {
+                    Get.back();
+                    Get.to(() => const BillingView());
                   },
                 ),
                 _DrawerItem(

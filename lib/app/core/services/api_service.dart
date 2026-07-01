@@ -84,6 +84,49 @@ class ApiService {
     return {"success": false, "message": body['detail'] ?? "Login failed"};
   }
 
+  Future<Map<String, dynamic>> payTender({
+    required int tenderId,
+    required String paymentMethod,
+    required String paymentReference,
+    required double amount,
+  }) async {
+    final url = Uri.parse('$baseUrl/tenders/$tenderId/pay/');
+    final payload = {
+      "payment_method": paymentMethod,
+      "payment_reference": paymentReference,
+      "amount": amount.toStringAsFixed(2),
+    };
+
+    var response = await http.post(
+      url,
+      headers: _getHeaders(),
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.post(
+          url,
+          headers: _getHeaders(),
+          body: jsonEncode(payload),
+        );
+      }
+    }
+
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {
+        "success": true,
+        "message": body['message'] ?? "Payment processed successfully.",
+      };
+    } else {
+      return {
+        "success": false,
+        "message": body['error'] ?? "Payment execution failed.",
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> sendOtp({required String email}) async {
     final response = await http.post(
       Uri.parse('$baseUrl/send-otp/'),
@@ -480,6 +523,26 @@ class ApiService {
       return {"success": true, "data": body};
     } else {
       return {"success": false, "message": body.toString()};
+    }
+  }
+
+  Future<List<dynamic>> getMyTenders() async {
+    final url = Uri.parse('$baseUrl/tenders/my-tenders/');
+    final response = await _handleGet(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data is Map && data.containsKey('results')) {
+        return data['results'] as List<dynamic>;
+      }
+
+      return data as List<dynamic>;
+    } else {
+      print(
+        "API Error fetching my tenders: ${response.statusCode} ${response.body}",
+      );
+      return [];
     }
   }
 

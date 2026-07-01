@@ -96,7 +96,7 @@ class TranslationsService extends Translations {
       'my_bids': 'My Bids',
       'my_tenders': 'My Tenders',
       'logout': 'Logout',
-
+      'billing_invoices': 'Billing & Invoices',
       //Tenders Results
       'budget': 'Budget',
       'deadline': 'Deadline',
@@ -197,7 +197,7 @@ class TranslationsService extends Translations {
       'confirm_password': 'تأكيد كلمة المرور',
       'register': 'تسجيل',
       'have_acc': 'تملك حساب؟ ',
-
+      'billing_invoices': 'الفواتير والدفع',
       //validators
       'error': 'خطأ',
       'select_sex': 'اختر جنسك',

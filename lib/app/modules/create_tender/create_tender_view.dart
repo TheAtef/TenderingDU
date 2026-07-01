@@ -131,7 +131,6 @@ class CreateTenderView extends GetView<CreateTenderController> {
                   ),
                 ),
                 const SizedBox(width: 60),
-
                 Expanded(
                   flex: 2,
                   child: Container(
@@ -270,24 +269,19 @@ class _FormFields extends StatelessWidget {
                 false,
                 lines: 3,
               ),
-              Obx(
-                () => DropdownButtonFormField<String>(
-                  value: controller.selectedActivity.value,
-                  dropdownColor: ThemeController.to.cardColor,
-                  decoration: InputDecoration(
-                    labelText: "category".tr,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  items: controller.activities
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (v) => controller.selectedActivity.value = v!,
-                  validator: (value) =>
-                      value == null ? "select_category".tr : null,
-                ),
-              ),
+              if (isDesktop)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: _buildCategoryDropdown()),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildStatusDropdown()),
+                  ],
+                )
+              else ...[
+                _buildCategoryDropdown(),
+                _buildStatusDropdown(),
+              ],
             ]),
 
             _buildSection("pricing".tr, [
@@ -296,10 +290,17 @@ class _FormFields extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 2,
                       child: _customTextField(
-                        "expected_budget".tr,
-                        controller.budgetCtrl,
+                        "Min Budget",
+                        controller.budgetMinCtrl,
+                        true,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _customTextField(
+                        "Max Budget",
+                        controller.budgetMaxCtrl,
                         true,
                       ),
                     ),
@@ -308,11 +309,8 @@ class _FormFields extends StatelessWidget {
                   ],
                 )
               else ...[
-                _customTextField(
-                  "expected_budget".tr,
-                  controller.budgetCtrl,
-                  true,
-                ),
+                _customTextField("Min Budget", controller.budgetMinCtrl, true),
+                _customTextField("Max Budget", controller.budgetMaxCtrl, true),
                 _buildCurrencyDropdown(),
               ],
             ]),
@@ -322,6 +320,13 @@ class _FormFields extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Expanded(
+                      child: _DatePicker(
+                        label: "Start Date",
+                        dateController: controller.startDateCtrl,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: _DatePicker(
                         label: "applying_deadline".tr,
@@ -339,6 +344,10 @@ class _FormFields extends StatelessWidget {
                 )
               else ...[
                 _DatePicker(
+                  label: "Start Date",
+                  dateController: controller.startDateCtrl,
+                ),
+                _DatePicker(
                   label: "applying_deadline".tr,
                   dateController: controller.applyDeadCtrl,
                 ),
@@ -347,6 +356,10 @@ class _FormFields extends StatelessWidget {
                   dateController: controller.finishDeadCtrl,
                 ),
               ],
+            ]),
+
+            _buildSection("Location Details", [
+              _customTextField("Location", controller.locationCtrl, false),
             ]),
 
             _buildSection("supporting_documents".tr, [
@@ -360,6 +373,42 @@ class _FormFields extends StatelessWidget {
             ]),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryDropdown() {
+    return Obx(
+      () => DropdownButtonFormField<String>(
+        value: controller.selectedActivity.value,
+        dropdownColor: ThemeController.to.cardColor,
+        decoration: InputDecoration(
+          labelText: "category".tr,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        items: controller.activities
+            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+            .toList(),
+        onChanged: (v) => controller.selectedActivity.value = v!,
+        validator: (value) => value == null ? "select_category".tr : null,
+      ),
+    );
+  }
+
+  Widget _buildStatusDropdown() {
+    return Obx(
+      () => DropdownButtonFormField<String>(
+        value: controller.selectedStatus.value,
+        dropdownColor: ThemeController.to.cardColor,
+        decoration: InputDecoration(
+          labelText: "Status",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        items: controller.statuses
+            .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+            .toList(),
+        onChanged: (v) => controller.selectedStatus.value = v!,
+        validator: (value) => value == null ? "Select status" : null,
       ),
     );
   }
@@ -488,12 +537,12 @@ class _DatePicker extends StatelessWidget {
         DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
-          firstDate: DateTime.now(),
-          lastDate: DateTime(2030),
+          firstDate: DateTime(2020),
+          lastDate: DateTime(2035),
         );
         if (pickedDate != null) {
           String formattedDate =
-              "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
           dateController.text = formattedDate;
         }
       },

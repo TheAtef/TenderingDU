@@ -1,4 +1,3 @@
-// Represents an attached document from the backend TenderAttachment table
 import 'package:tendering_du/app/modules/my_bids/bid_model.dart';
 
 class Attachment {
@@ -51,7 +50,6 @@ class TenderDetailsModel {
   final String startDate;
   final String deadline;
   final String location;
-  final List<String> requirements;
   final List<Attachment> attachments;
   final List<BidModel> bids;
   bool isFavourite;
@@ -68,7 +66,6 @@ class TenderDetailsModel {
     required this.startDate,
     required this.deadline,
     required this.location,
-    required this.requirements,
     required this.attachments,
     required this.bids,
     this.isFavourite = false,
@@ -156,9 +153,7 @@ class TenderDetailsModel {
       startDate: formatApiDate(json['start_date']),
       deadline: formatApiDate(json['deadline']),
       location: locationText,
-      requirements: json['requirements'] != null
-          ? List<String>.from(json['requirements'].map((x) => x.toString()))
-          : [],
+
       attachments: attachmentList,
       bids: bidsList,
       isFavourite: json['is_saved'] == true,

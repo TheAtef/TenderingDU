@@ -170,43 +170,7 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                           height: 1.6,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Text(
-                        "Requirements",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ...data.requirements.map(
-                        (req) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.check_circle,
-                                color: colorScheme.primary,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  req,
-                                  style: TextStyle(
-                                    color: colorScheme.onSurface.withOpacity(
-                                      0.7,
-                                    ),
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+
                       const SizedBox(height: 20),
                       Text(
                         "Attachments",
@@ -510,38 +474,6 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
                                           color: theme.textSecondary,
                                           fontSize: 16,
                                           height: 1.6,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 40),
-
-                                      _DesktopSectionTitle("Requirements"),
-                                      ...data.requirements.map(
-                                        (req) => Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 16,
-                                          ),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Icon(
-                                                Icons.check_circle,
-                                                color: colorScheme.primary,
-                                                size: 20,
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Text(
-                                                  req,
-                                                  style: TextStyle(
-                                                    color: theme.textSecondary,
-                                                    fontSize: 15,
-                                                    height: 1.5,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
                                         ),
                                       ),
                                       const SizedBox(height: 40),

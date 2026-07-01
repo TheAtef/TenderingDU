@@ -293,15 +293,25 @@ class _FormFields extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: _customTextField(
                         "Total Bid Amount",
                         controller.amountCtrl,
                         true,
+                        validator: (v) {
+                          if (v == null || v.isEmpty)
+                            return "This field is required";
+                          final parsedValue = double.tryParse(v);
+                          if (parsedValue == null)
+                            return "Enter a valid number";
+                          if (parsedValue <= 0)
+                            return "Bid amount must be positive";
+                          return null;
+                        },
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Expanded(child: _buildCurrencyDropdown()),
+                    Expanded(flex: 1, child: _buildCurrencyDropdown()),
                   ],
                 )
               else ...[
@@ -309,12 +319,25 @@ class _FormFields extends StatelessWidget {
                   "Total Bid Amount",
                   controller.amountCtrl,
                   true,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return "This field is required";
+                    final parsedValue = double.tryParse(v);
+                    if (parsedValue == null) return "Enter a valid number";
+                    if (parsedValue <= 0) return "Bid amount must be positive";
+                    return null;
+                  },
                 ),
                 _buildCurrencyDropdown(),
               ],
             ]),
 
             _buildSection("Technical Proposal", [
+              _customTextField(
+                "Proposal Abstract / Brief",
+                controller.proposalCtrl,
+                false,
+                lines: 2,
+              ),
               _customTextField(
                 "Execution Plan / Methodology",
                 controller.planCtrl,
@@ -456,7 +479,7 @@ class _FormFields extends StatelessWidget {
           labelText: "Currency",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        items: ["USD", "EUR", "JD"]
+        items: ["USD", "SYP", "AED"]
             .map(
               (c) => DropdownMenuItem(
                 value: c,

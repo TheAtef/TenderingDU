@@ -245,10 +245,11 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                           children: [
                             Expanded(flex: 2, child: _TableHead("Applicant")),
                             Expanded(
-                              flex: 3,
+                              flex: 2,
                               child: _TableHead("Tender Reference"),
                             ),
                             Expanded(flex: 1, child: _TableHead("Bid Amount")),
+                            Expanded(flex: 1, child: _TableHead("Evaluation")),
                             Expanded(
                               flex: 1,
                               child: _TableHead("Actions", alignRight: true),
@@ -397,7 +398,7 @@ class _DesktopTableRow extends StatelessWidget {
               ),
 
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Text(
                   bid.tenderTitle,
                   style: TextStyle(fontSize: 15, color: theme.textSecondary),
@@ -431,6 +432,8 @@ class _DesktopTableRow extends StatelessWidget {
                 ),
               ),
 
+              Expanded(flex: 1, child: _buildDesktopEvaluationCell()),
+
               Expanded(
                 flex: 1,
                 child: Align(
@@ -458,6 +461,70 @@ class _DesktopTableRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDesktopEvaluationCell() {
+    if (bid.evaluations.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.centerLeft,
+        child: const Text(
+          "Not Evaluated",
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+    }
+
+    final evaluation = bid.evaluations.first;
+    Color badgeColor;
+    switch (evaluation.decision) {
+      case 'Accepted':
+        badgeColor = Colors.green;
+        break;
+      case 'Rejected':
+        badgeColor = Colors.red;
+        break;
+      default:
+        badgeColor = Colors.orange;
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: badgeColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            "${evaluation.score.toStringAsFixed(1)} pts",
+            style: TextStyle(
+              color: badgeColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          evaluation.decision,
+          style: TextStyle(
+            color: badgeColor,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -507,10 +574,53 @@ class _MobileSummaryCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                if (bid.evaluations.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _buildMobileEvaluationRow(),
+                ],
               ],
             ),
           ),
           const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileEvaluationRow() {
+    final evaluation = bid.evaluations.first;
+    Color decisionColor;
+    switch (evaluation.decision) {
+      case 'Accepted':
+        decisionColor = Colors.green;
+        break;
+      case 'Rejected':
+        decisionColor = Colors.red;
+        break;
+      default:
+        decisionColor = Colors.orange;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: decisionColor.withOpacity(0.05),
+        border: Border.all(color: decisionColor.withOpacity(0.15)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.assessment_outlined, size: 14, color: decisionColor),
+          const SizedBox(width: 6),
+          Text(
+            "Score: ${evaluation.score.toStringAsFixed(1)} pts (${evaluation.decision})",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: decisionColor,
+            ),
+          ),
         ],
       ),
     );

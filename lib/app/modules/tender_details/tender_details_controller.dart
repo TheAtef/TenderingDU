@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:tendering_du/app/core/services/api_service.dart'; // Ensure this path is correct
+import 'package:tendering_du/app/core/services/api_service.dart';
 import 'package:tendering_du/app/modules/home/home_model.dart';
 import 'tender_details_model.dart';
 
