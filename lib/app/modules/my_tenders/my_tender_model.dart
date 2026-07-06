@@ -22,16 +22,43 @@ class MyTenderModel {
   });
 
   factory MyTenderModel.fromJson(Map<String, dynamic> json) {
+    String resolveName(dynamic value, {String fallback = ''}) {
+      if (value == null) return fallback;
+      if (value is Map) {
+        return value['name']?.toString() ??
+            value['title']?.toString() ??
+            value['label']?.toString() ??
+            fallback;
+      }
+      return value.toString();
+    }
+
+    String resolveDate(dynamic value) {
+      if (value == null) return '';
+      final dateText = value.toString();
+      return dateText.contains('T') ? dateText.split('T')[0] : dateText;
+    }
+
     return MyTenderModel(
-      id: json['id'] ?? 0,
-      title: json['title'] ?? '',
-      category: json['category'] ?? '',
-      status: json['status'] ?? 'Draft',
-      budget: json['budget'] ?? '',
-      deadline: json['deadline'] ?? '',
-      bidsCount: json['bids_count'] ?? 0,
-      description: json['description'] ?? '',
-      isPinned: json['is_pinned'] ?? false,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      title: json['title']?.toString() ?? '',
+      category:
+          json['category_name']?.toString() ??
+          resolveName(json['category'], fallback: ''),
+      status:
+          json['status_name']?.toString() ??
+          resolveName(json['status'], fallback: 'Draft'),
+      budget:
+          json['budget']?.toString() ??
+          json['budget_max']?.toString() ??
+          json['budget_min']?.toString() ??
+          '',
+      deadline: resolveDate(json['deadline']),
+      bidsCount:
+          (json['bids_count'] as num?)?.toInt() ??
+          (json['bids'] is List ? (json['bids'] as List).length : 0),
+      description: json['description']?.toString() ?? '',
+      isPinned: json['is_pinned'] == true,
     );
   }
 }
