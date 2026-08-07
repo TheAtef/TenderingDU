@@ -50,11 +50,11 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
             GlassIconButton(icon: Icons.arrow_back, onTap: () => Get.back()),
             const SizedBox(height: 30),
             Text(
-              "Incoming Bids".tr,
+              "incoming_bids".tr,
               style: TextStyle(fontSize: 16, color: theme.textSecondary),
             ),
             Text(
-              "Manage Offers".tr,
+              "manage_offers".tr,
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
             child: Padding(
               padding: const EdgeInsets.all(40),
               child: Text(
-                "No bids received yet.".tr,
+                "no_bids_received".tr,
                 style: TextStyle(color: theme.textSecondary),
               ),
             ),
@@ -162,7 +162,7 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Manage Offers".tr,
+                        "manage_offers".tr,
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w800,
@@ -171,7 +171,7 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Incoming Bids".tr,
+                        "incoming_bids".tr,
                         style: TextStyle(
                           fontSize: 16,
                           color: theme.textSecondary,
@@ -188,7 +188,7 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                       size: 18,
                     ),
                     label: Text(
-                      "Filter",
+                      "Filter".tr,
                       style: TextStyle(color: theme.textPrimary),
                     ),
                     style: OutlinedButton.styleFrom(
@@ -205,7 +205,6 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                 ],
               ),
               const SizedBox(height: 40),
-
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -243,21 +242,29 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                         ),
                         child: Row(
                           children: [
-                            Expanded(flex: 2, child: _TableHead("Applicant")),
                             Expanded(
                               flex: 2,
-                              child: _TableHead("Tender Reference"),
+                              child: _TableHead("applicant".tr),
                             ),
-                            Expanded(flex: 1, child: _TableHead("Bid Amount")),
-                            Expanded(flex: 1, child: _TableHead("Evaluation")),
+                            Expanded(
+                              flex: 2,
+                              child: _TableHead("tender_reference".tr),
+                            ),
                             Expanded(
                               flex: 1,
-                              child: _TableHead("Actions", alignRight: true),
+                              child: _TableHead("bid_amount".tr),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: _TableHead("evaluation".tr),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: _TableHead("actions".tr, alignRight: true),
                             ),
                           ],
                         ),
                       ),
-
                       Expanded(
                         child: Obx(() {
                           if (controller.isLoading.value) {
@@ -265,7 +272,6 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                               child: CircularProgressIndicator(),
                             );
                           }
-
                           if (controller.bidsList.isEmpty) {
                             return Center(
                               child: Column(
@@ -278,7 +284,7 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    "No bids received yet.".tr,
+                                    "no_bids_received".tr,
                                     style: TextStyle(
                                       color: theme.textSecondary,
                                       fontSize: 16,
@@ -288,16 +294,14 @@ class ReceivedBidsView extends GetView<ReceivedBidsController> {
                               ),
                             );
                           }
-
                           return ListView.separated(
                             physics: const BouncingScrollPhysics(),
                             itemCount: controller.bidsList.length,
                             separatorBuilder: (context, index) =>
                                 Divider(height: 1, color: theme.borderColor),
                             itemBuilder: (context, index) {
-                              final bid = controller.bidsList[index];
                               return _DesktopTableRow(
-                                bid: bid,
+                                bid: controller.bidsList[index],
                                 controller: controller,
                                 theme: theme,
                               );
@@ -353,7 +357,6 @@ class _DesktopTableRow extends StatelessWidget {
     final applicantName = bid.companyName.isNotEmpty
         ? bid.companyName
         : bid.userName;
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -396,7 +399,6 @@ class _DesktopTableRow extends StatelessWidget {
                   ],
                 ),
               ),
-
               Expanded(
                 flex: 2,
                 child: Text(
@@ -406,7 +408,6 @@ class _DesktopTableRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-
               Expanded(
                 flex: 1,
                 child: Align(
@@ -431,28 +432,16 @@ class _DesktopTableRow extends StatelessWidget {
                   ),
                 ),
               ),
-
               Expanded(flex: 1, child: _buildDesktopEvaluationCell()),
-
               Expanded(
                 flex: 1,
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () => controller.goToDetails(bid),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.actionBlue,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      "View Details",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    child: Text(
+                      "view_details".tr,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -472,10 +461,9 @@ class _DesktopTableRow extends StatelessWidget {
           color: Colors.grey.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        alignment: Alignment.centerLeft,
-        child: const Text(
-          "Not Evaluated",
-          style: TextStyle(
+        child: Text(
+          "not_evaluated".tr,
+          style: const TextStyle(
             color: Colors.grey,
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -483,20 +471,10 @@ class _DesktopTableRow extends StatelessWidget {
         ),
       );
     }
-
     final evaluation = bid.evaluations.first;
-    Color badgeColor;
-    switch (evaluation.decision) {
-      case 'Accepted':
-        badgeColor = Colors.green;
-        break;
-      case 'Rejected':
-        badgeColor = Colors.red;
-        break;
-      default:
-        badgeColor = Colors.orange;
-    }
-
+    Color badgeColor = evaluation.decision == 'Accepted'
+        ? Colors.green
+        : (evaluation.decision == 'Rejected' ? Colors.red : Colors.orange);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -507,7 +485,7 @@ class _DesktopTableRow extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            "${evaluation.score.toStringAsFixed(1)} pts",
+            "${"score".tr}: ${evaluation.score.toStringAsFixed(1)}",
             style: TextStyle(
               color: badgeColor,
               fontWeight: FontWeight.bold,
@@ -517,7 +495,7 @@ class _DesktopTableRow extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          evaluation.decision,
+          evaluation.decision.tr,
           style: TextStyle(
             color: badgeColor,
             fontSize: 12,
@@ -532,7 +510,6 @@ class _DesktopTableRow extends StatelessWidget {
 class _MobileSummaryCard extends StatelessWidget {
   final BidModel bid;
   final ThemeController theme;
-
   const _MobileSummaryCard({required this.bid, required this.theme});
 
   @override
@@ -589,36 +566,27 @@ class _MobileSummaryCard extends StatelessWidget {
 
   Widget _buildMobileEvaluationRow() {
     final evaluation = bid.evaluations.first;
-    Color decisionColor;
-    switch (evaluation.decision) {
-      case 'Accepted':
-        decisionColor = Colors.green;
-        break;
-      case 'Rejected':
-        decisionColor = Colors.red;
-        break;
-      default:
-        decisionColor = Colors.orange;
-    }
-
+    Color color = evaluation.decision == 'Accepted'
+        ? Colors.green
+        : (evaluation.decision == 'Rejected' ? Colors.red : Colors.orange);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: decisionColor.withOpacity(0.05),
-        border: Border.all(color: decisionColor.withOpacity(0.15)),
+        color: color.withOpacity(0.05),
+        border: Border.all(color: color.withOpacity(0.15)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.assessment_outlined, size: 14, color: decisionColor),
+          Icon(Icons.assessment_outlined, size: 14, color: color),
           const SizedBox(width: 6),
           Text(
-            "Score: ${evaluation.score.toStringAsFixed(1)} pts (${evaluation.decision})",
+            "${"score".tr}: ${evaluation.score.toStringAsFixed(1)} pts (${evaluation.decision.tr})",
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: decisionColor,
+              color: color,
             ),
           ),
         ],

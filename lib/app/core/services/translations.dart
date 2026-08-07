@@ -79,6 +79,7 @@ class TranslationsService extends Translations {
       'search': 'Search',
       'search_hint': 'Search tenders, categories...',
       'profile': 'Profile',
+      'received_bids': 'Received Bids',
 
       //Saved
       'saved_tenders': 'Saved Tenders',
@@ -148,7 +149,20 @@ class TranslationsService extends Translations {
       'new': 'New',
       'unread': 'Unread',
       'alerts': 'Alerts',
-
+      //recived bids
+      'incoming_bids': 'Incoming Bids',
+      'manage_offers': 'Manage Offers',
+      'no_bids_received': 'No bids received yet.',
+      'applicant': 'Applicant',
+      'tender_reference': 'Tender Reference',
+      'bid_amount': 'Bid Amount',
+      'evaluation': 'Evaluation',
+      'actions': 'Actions',
+      'view_details': 'View Details',
+      'not_evaluated': 'Not Evaluated',
+      'score': 'Score',
+      'accepted': 'Accepted',
+      'rejected': 'Rejected',
       // Add more English translations here
     },
     'ar_SY': {
@@ -225,6 +239,7 @@ class TranslationsService extends Translations {
       'search': 'البحث',
       'search_hint': 'ابحث عن مناقصات أو تصنيفات...',
       'profile': 'الملف الشخصي',
+      'received_bids': 'رؤية العروض',
 
       //Saved
       'saved_tenders': 'المناقصات المحفوطة',
@@ -294,6 +309,20 @@ class TranslationsService extends Translations {
       'new': 'جديد',
       'unread': 'غير مقروء',
       'alerts': 'تنبيهات',
+      //recived bids
+      'incoming_bids': 'العروض الواردة',
+      'manage_offers': 'إدارة العروض',
+      'no_bids_received': 'لم يتم استلام أي عروض بعد.',
+      'applicant': 'مقدم العرض',
+      'tender_reference': 'مرجع المناقصة',
+      'bid_amount': 'قيمة العرض',
+      'evaluation': 'التقييم',
+      'actions': 'الإجراءات',
+      'view_details': 'عرض التفاصيل',
+      'not_evaluated': 'غير مقيم',
+      'score': 'النتيجة',
+      'accepted': 'مقبول',
+      'rejected': 'مرفوض',
     },
     // Add more languages here
   };
