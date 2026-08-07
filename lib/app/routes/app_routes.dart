@@ -8,6 +8,7 @@ abstract class Routes {
   static const HOME = '/home';
   static const NOTIFICATIONS = '/notifications';
   static const TENDER_DETAILS = '/tender-details';
+  static const MY_TENDER_DETAILS = '/my-tender-details';
   static const SETTINGS = '/settings';
   static const MYBIDS = '/my-bids';
   static const MYTENDERS = '/my-tenders';
