@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "477879153863",
+    "project_id": "tenderingapp",
+    "storage_bucket": "tenderingapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477879153863:android:4359d4d7282c7d0625bae2",
+        "android_client_info": {
+          "package_name": "com.tendering_du.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjfKNV6kcKqmjcq78UbWen8zh0Wos_IgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

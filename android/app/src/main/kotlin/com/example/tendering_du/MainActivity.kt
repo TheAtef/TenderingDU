@@ -1,4 +1,4 @@
-package com.example.tendering_du
+package com.tendering_du.app
 
 import io.flutter.embedding.android.FlutterActivity
 

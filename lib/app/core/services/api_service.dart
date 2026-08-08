@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
@@ -58,6 +59,28 @@ class ApiService {
     return response;
   }
 
+  Future<bool> updateFcmToken(String fcmToken) async {
+    final url = Uri.parse('$baseUrl/users/update-fcm/');
+
+    var response = await http.post(
+      url,
+      headers: _getHeaders(),
+      body: jsonEncode({"fcm_token": fcmToken}),
+    );
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.post(
+          url,
+          headers: _getHeaders(),
+          body: jsonEncode({"fcm_token": fcmToken}),
+        );
+      }
+    }
+
+    return response.statusCode == 200;
+  }
+
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -74,6 +97,16 @@ class ApiService {
       await storage.write('access_token', body['access']);
       await storage.write('refresh_token', body['refresh']);
       await storage.write('user_id', body['user_id']);
+
+      try {
+        final fcmToken = await FirebaseMessaging.instance.getToken();
+        if (fcmToken != null) {
+          await updateFcmToken(fcmToken);
+        }
+      } catch (e) {
+        print("Error syncing FCM token post-login: $e");
+      }
+      // ---------------------------------------------------------
 
       return {
         "success": true,
@@ -230,8 +263,20 @@ class ApiService {
   }
 
   Future<void> logout() async {
+    try {
+      final refresh = storage.read('refresh_token');
+      if (refresh != null) {
+        await http.post(
+          Uri.parse('$baseUrl/log-out/'),
+          headers: _getHeaders(),
+          body: jsonEncode({"refresh": refresh}),
+        );
+      }
+    } catch (_) {}
+
     await storage.remove('access_token');
     await storage.remove('refresh_token');
+    await storage.remove('user_id');
   }
 
   Future<Map<String, dynamic>> register({
