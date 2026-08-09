@@ -17,6 +17,7 @@ void main() async {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      await GetStorage.init();
       try {
         await Firebase.initializeApp();
         print("Firebase initialized successfully.");
@@ -24,19 +25,12 @@ void main() async {
         print("Firebase init error: $e");
       }
       usePathUrlStrategy();
+      Get.put(ApiService(), permanent: true);
       try {
         await NotificationService().initialize();
       } catch (e) {
         print("NotificationService init error: $e");
       }
-
-      try {
-        await GetStorage.init();
-      } catch (e) {
-        print("GetStorage init error: $e");
-      }
-
-      Get.put(ApiService(), permanent: true);
       runApp(const MyApp());
     },
     (error, stack) {
@@ -50,6 +44,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = false;
+    try {
+      isDarkMode = StorageService.getDarkMode();
+    } catch (_) {}
     return GetMaterialApp(
       title: 'TenderingDU',
       debugShowCheckedModeBanner: false,
@@ -61,9 +59,13 @@ class MyApp extends StatelessWidget {
       fallbackLocale: const Locale('en', 'US'),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: StorageService.getDarkMode()
-          ? ThemeMode.dark
-          : ThemeMode.light,
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      builder: (context, child) {
+        return Container(
+          color: Colors.white,
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

@@ -8,11 +8,10 @@ import 'package:get/get.dart';
 import 'package:tendering_du/app/modules/submit_bid/submit_bid_model.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:async';
 
 class ApiService {
-  final String baseUrl = kIsWeb
-      ? "http://127.0.0.1:8000"
-      : "http://10.0.2.2:8000";
+  final String baseUrl = "http://127.0.0.1:8000";
 
   final storage = GetStorage();
 
@@ -98,15 +97,7 @@ class ApiService {
       await storage.write('refresh_token', body['refresh']);
       await storage.write('user_id', body['user_id']);
 
-      try {
-        final fcmToken = await FirebaseMessaging.instance.getToken();
-        if (fcmToken != null) {
-          await updateFcmToken(fcmToken);
-        }
-      } catch (e) {
-        print("Error syncing FCM token post-login: $e");
-      }
-      // ---------------------------------------------------------
+      unawaited(_syncFcmTokenInBackground());
 
       return {
         "success": true,
@@ -115,6 +106,18 @@ class ApiService {
       };
     }
     return {"success": false, "message": body['detail'] ?? "Login failed"};
+  }
+
+  Future<void> _syncFcmTokenInBackground() async {
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        print("Syncing FCM Token post-login: $fcmToken");
+        await updateFcmToken(fcmToken);
+      }
+    } catch (e) {
+      print("Error syncing FCM token post-login: $e");
+    }
   }
 
   Future<Map<String, dynamic>> payTender({
