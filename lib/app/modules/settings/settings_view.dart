@@ -53,7 +53,6 @@ class SettingsView extends GetView<SettingsController> {
                     _SectionTitle(title: "general".tr),
                     _GeneralSection(controller: controller),
                     const SizedBox(height: 24),
-                    _AppVersion(),
                   ]),
                 ),
               ),
@@ -128,7 +127,6 @@ class SettingsView extends GetView<SettingsController> {
                       ),
                     ),
                     const Spacer(),
-                    _AppVersion(),
                   ],
                 ),
               ),
@@ -634,19 +632,6 @@ class _ActionTile extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _AppVersion extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final theme = ThemeController.to;
-      return Text(
-        "app_version".tr,
-        style: TextStyle(color: theme.textSecondary, fontSize: 13),
-      );
-    });
   }
 }
 

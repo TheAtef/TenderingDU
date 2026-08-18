@@ -4,6 +4,7 @@ import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/utils/responsive_layout.dart';
 import 'package:tendering_du/app/modules/tender_details/tender_details_model.dart';
+import 'package:tendering_du/app/modules/home/home_model.dart' as home;
 import 'tender_results_controller.dart';
 
 class TenderResultsView extends GetView<TenderResultsController> {
@@ -54,7 +55,6 @@ class TenderResultsView extends GetView<TenderResultsController> {
       backgroundColor: theme.backgroundColor,
       body: Stack(
         children: [
-          // const StaticBackground(),
           Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1300),
@@ -110,7 +110,7 @@ class TenderResultsView extends GetView<TenderResultsController> {
                         ),
                         const Spacer(),
                         OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => controller.fetchTenders(),
                           icon: Icon(
                             Icons.refresh_rounded,
                             color: theme.textPrimary,
@@ -201,7 +201,6 @@ class TenderResultsView extends GetView<TenderResultsController> {
                                 ],
                               ),
                             ),
-
                             Expanded(
                               child: Obx(() {
                                 if (controller.isLoading.value) {
@@ -292,12 +291,36 @@ class _DesktopTableRow extends StatelessWidget {
 
   const _DesktopTableRow({required this.item, required this.theme});
 
+  void _navigateToDetails() {
+    final tender = home.Tender(
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      deadline: DateTime.tryParse(item.deadline),
+      category: item.category,
+      status: item.status,
+      isFavourite: item.isFavourite,
+      attachments: item.attachments
+          .map(
+            (a) => home.Attachment(
+              id: a.id,
+              fileUrl: a.fileUrl,
+              description: a.description,
+              size: a.size,
+              contentType: a.contentType,
+            ),
+          )
+          .toList(),
+    );
+    Get.toNamed('/tender-details', arguments: tender);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => Get.toNamed('/tender-details', arguments: item),
+        onTap: _navigateToDetails,
         hoverColor: AppColors.actionBlue.withOpacity(0.05),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
@@ -376,7 +399,6 @@ class _DesktopTableRow extends StatelessWidget {
                   style: TextStyle(fontSize: 14, color: theme.textSecondary),
                 ),
               ),
-
               Expanded(
                 flex: 1,
                 child: Align(
@@ -384,14 +406,12 @@ class _DesktopTableRow extends StatelessWidget {
                   child: _StatusBadge(status: item.status),
                 ),
               ),
-
               Expanded(
                 flex: 1,
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () =>
-                        Get.toNamed('/tender-details', arguments: item),
+                    onPressed: _navigateToDetails,
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.actionBlue,
                       padding: const EdgeInsets.symmetric(
@@ -421,10 +441,34 @@ class _TenderCard extends StatelessWidget {
   final TenderDetailsModel item;
   const _TenderCard({required this.item});
 
+  void _navigateToDetails() {
+    final tender = home.Tender(
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      deadline: DateTime.tryParse(item.deadline),
+      category: item.category,
+      status: item.status,
+      isFavourite: item.isFavourite,
+      attachments: item.attachments
+          .map(
+            (a) => home.Attachment(
+              id: a.id,
+              fileUrl: a.fileUrl,
+              description: a.description,
+              size: a.size,
+              contentType: a.contentType,
+            ),
+          )
+          .toList(),
+    );
+    Get.toNamed('/tender-details', arguments: tender);
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed('/tender-details', arguments: item),
+      onTap: _navigateToDetails,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(20),

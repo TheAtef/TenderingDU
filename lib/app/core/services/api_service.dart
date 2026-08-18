@@ -23,6 +23,30 @@ class ApiService {
     };
   }
 
+  Future<Map<String, dynamic>> getUserStats() async {
+    final url = Uri.parse('$baseUrl/user-stats/');
+
+    try {
+      final response = await _handleGet(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return {
+          "active_tenders": data['active_tenders'] ?? 0,
+          "applied_bids": data['applied_bids'] ?? 0,
+        };
+      } else {
+        print(
+          "API Error fetching user stats: ${response.statusCode} ${response.body}",
+        );
+        return {"active_tenders": 0, "applied_bids": 0};
+      }
+    } catch (e) {
+      print("Exception fetching user stats: $e");
+      return {"active_tenders": 0, "applied_bids": 0};
+    }
+  }
+
   Future<bool> refreshToken() async {
     final refresh = storage.read('refresh_token');
     if (refresh == null) return false;

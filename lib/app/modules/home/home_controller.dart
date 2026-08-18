@@ -20,7 +20,8 @@ class HomeController extends GetxController {
   final TextEditingController searchTextController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
   final ScrollController scrollCtrl = ScrollController();
-
+  var activeTendersCount = 0.obs;
+  var appliedBidsCount = 0.obs;
   @override
   void onReady() {
     super.onReady();
@@ -46,6 +47,7 @@ class HomeController extends GetxController {
     isLoading.value = true;
     await fetchCategories();
     await fetchNextPage();
+    fetchUserStats();
     isLoading.value = false;
   }
 
@@ -111,6 +113,7 @@ class HomeController extends GetxController {
     isRefreshing.value = true;
     await fetchCategories();
     await fetchNextPage();
+    fetchUserStats();
     isRefreshing.value = false;
   }
 
@@ -134,6 +137,16 @@ class HomeController extends GetxController {
         backgroundColor: Colors.red.withOpacity(0.8),
         colorText: Colors.white,
       );
+    }
+  }
+
+  Future<void> fetchUserStats() async {
+    try {
+      final stats = await _apiService.getUserStats();
+      activeTendersCount.value = stats['active_tenders'] ?? 0;
+      appliedBidsCount.value = stats['applied_bids'] ?? 0;
+    } catch (e) {
+      debugPrint("General Error fetching stats: $e");
     }
   }
 

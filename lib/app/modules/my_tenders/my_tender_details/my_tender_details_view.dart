@@ -5,6 +5,7 @@ import 'package:tendering_du/app/core/constants/app_colors.dart';
 import 'package:tendering_du/app/core/theme/theme_controller.dart';
 import 'package:tendering_du/app/core/utils/widgets.dart';
 import 'package:tendering_du/app/routes/app_routes.dart';
+import 'package:tendering_du/app/modules/my_bids/bid_model.dart'; // Ensure this path is correct
 
 import 'my_tender_details_controller.dart';
 
@@ -40,6 +41,22 @@ class MyTenderDetailsView extends GetView<MyTenderDetailsController> {
                   final data = controller.tenderDetails;
                   final bidsCount = data.bids.length;
                   final attachmentsCount = data.attachments.length;
+
+                  final sortedBids = List.from(data.bids)
+                    ..sort((a, b) {
+                      if (a.statusName.toLowerCase() == 'awarded') return -1;
+                      if (b.statusName.toLowerCase() == 'awarded') return 1;
+                      return 0;
+                    });
+
+                  // Extract the winning bid if it exists
+                  final BidModel? winningBid = sortedBids
+                      .where(
+                        (b) =>
+                            b.statusName.toLowerCase() == 'awarded' ||
+                            b.statusName.toLowerCase() == 'accepted',
+                      )
+                      .firstOrNull;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,6 +100,13 @@ class MyTenderDetailsView extends GetView<MyTenderDetailsController> {
                               attachmentsCount: attachmentsCount,
                             ),
                             const SizedBox(height: 16),
+
+                            // SHOW WINNER BANNER IF A BID IS AWARDED
+                            if (winningBid != null) ...[
+                              _WinnerCard(bid: winningBid),
+                              const SizedBox(height: 16),
+                            ],
+
                             _SectionCard(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +143,7 @@ class MyTenderDetailsView extends GetView<MyTenderDetailsController> {
                                 children: [
                                   const _SectionTitle('Bids'),
                                   const SizedBox(height: 10),
-                                  if (data.bids.isEmpty)
+                                  if (sortedBids.isEmpty)
                                     Text(
                                       'No bids on this tender yet.',
                                       style: TextStyle(
@@ -127,7 +151,7 @@ class MyTenderDetailsView extends GetView<MyTenderDetailsController> {
                                       ),
                                     )
                                   else
-                                    ...data.bids.map(
+                                    ...sortedBids.map(
                                       (bid) => Padding(
                                         padding: const EdgeInsets.only(
                                           bottom: 12,
@@ -393,6 +417,99 @@ class MyTenderDetailsView extends GetView<MyTenderDetailsController> {
   }
 }
 
+// WINNER CARD WIDGET
+class _WinnerCard extends StatelessWidget {
+  final BidModel bid;
+  const _WinnerCard({required this.bid});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeController.to;
+    final winnerName = bid.companyName.isNotEmpty
+        ? bid.companyName
+        : bid.userName;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.green.withOpacity(0.4), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.emoji_events_rounded,
+                color: Colors.green,
+                size: 26,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "WINNING BID",
+                style: TextStyle(
+                  color: Colors.green.shade700,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            winnerName,
+            style: TextStyle(
+              color: theme.textPrimary,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                Icons.payments_outlined,
+                size: 16,
+                color: theme.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                "Amount: \$${bid.totalPrice.toStringAsFixed(2)}",
+                style: TextStyle(
+                  color: theme.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          if (bid.contactEmail.isNotEmpty &&
+              bid.contactEmail != 'Not specified') ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  Icons.email_outlined,
+                  size: 16,
+                  color: theme.textSecondary,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  bid.contactEmail,
+                  style: TextStyle(color: theme.textSecondary, fontSize: 14),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _SectionTitle extends StatelessWidget {
   final String title;
 
@@ -623,6 +740,13 @@ Color _statusColor(String status) {
       return const Color(0xFF1E88E5);
     case 'closed':
       return const Color(0xFF546E7A);
+    case 'awarded':
+    case 'accepted':
+      return Colors.green;
+    case 'rejected':
+      return Colors.red;
+    case 'pending':
+      return Colors.orange;
     default:
       return const Color(0xFFE65100);
   }

@@ -511,57 +511,72 @@ class _DesktopQuickStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = [
-      ["active".tr, "24", const Color(0xFF667EEA), Icons.local_fire_department],
-      ["applied".tr, "8", const Color(0xFF4FACFE), Icons.check_circle_outline],
-    ];
+    return Obx(() {
+      final data = [
+        [
+          "active".tr,
+          controller.activeTendersCount.value.toString(),
+          const Color(0xFF667EEA),
+          Icons.local_fire_department,
+        ],
+        [
+          "applied".tr,
+          controller.appliedBidsCount.value.toString(),
+          const Color(0xFF4FACFE),
+          Icons.check_circle_outline,
+        ],
+      ];
 
-    return Column(
-      children: data.map((item) {
-        return InkWell(
-          onTap: () {
-            if (item[0] == "Active") controller.applyFilter("status", "active");
-            if (item[0] == "Applied")
-              controller.applyFilter("status", "applied");
-          },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: (item[2] as Color).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: (item[2] as Color).withOpacity(0.2)),
-            ),
-            child: Row(
-              children: [
-                Icon(item[3] as IconData, color: item[2] as Color, size: 32),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item[1] as String,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: item[2] as Color,
+      return Column(
+        children: data.map((item) {
+          return InkWell(
+            onTap: () {
+              if (item[0] == "active".tr || item[0] == "Active") {
+                controller.applyFilter("status", "active");
+              }
+              if (item[0] == "applied".tr || item[0] == "Applied") {
+                controller.applyFilter("status", "applied");
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: (item[2] as Color).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: (item[2] as Color).withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  Icon(item[3] as IconData, color: item[2] as Color, size: 32),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item[1] as String, // Uses real count
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: item[2] as Color,
+                        ),
                       ),
-                    ),
-                    Text(
-                      item[0] as String,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: ThemeController.to.textSecondary,
+                      Text(
+                        item[0] as String,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: ThemeController.to.textSecondary,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }).toList(),
-    );
+          );
+        }).toList(),
+      );
+    });
   }
 }
 
@@ -715,38 +730,46 @@ class _QuickStatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = [
-      ["active".tr, "24", const Color(0xFF667EEA)],
-      ["applied".tr, "8", const Color(0xFF4FACFE)],
-    ];
-
     return SliverToBoxAdapter(
       child: SizedBox(
         height: 110,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                switch (data[index][0]) {
-                  case "Active":
+        child: Obx(() {
+          final data = [
+            [
+              "active".tr,
+              controller.activeTendersCount.value.toString(),
+              const Color(0xFF667EEA),
+            ],
+            [
+              "applied".tr,
+              controller.appliedBidsCount.value.toString(),
+              const Color(0xFF4FACFE),
+            ],
+          ];
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  final label = data[index][0] as String;
+                  if (label == "active".tr || label == "Active") {
                     controller.applyFilter("status", "active");
-                    break;
-                  case "Applied":
+                  } else if (label == "applied".tr || label == "Applied") {
                     controller.applyFilter("status", "applied");
-                    break;
-                }
-              },
-              child: _StatCard(
-                label: data[index][0] as String,
-                value: data[index][1] as String,
-                color: data[index][2] as Color,
-              ),
-            );
-          },
-        ),
+                  }
+                },
+                child: _StatCard(
+                  label: data[index][0] as String,
+                  value: data[index][1] as String,
+                  color: data[index][2] as Color,
+                ),
+              );
+            },
+          );
+        }),
       ),
     );
   }
