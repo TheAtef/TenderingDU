@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tendering_du/app/core/services/api_service.dart';
 
@@ -34,6 +35,37 @@ class MyTendersController extends GetxController {
       tenders.assignAll(parsedTenders);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> deleteTender(int tenderId) async {
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+    final result = await _apiService.deleteTender(tenderId);
+    Get.back();
+    if (result['success'] == true) {
+      tenders.removeWhere((tender) => tender.id == tenderId);
+      Get.snackbar(
+        'Success',
+        result['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.shade600,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    } else {
+      Get.snackbar(
+        'Action Failed',
+        result['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
     }
   }
 

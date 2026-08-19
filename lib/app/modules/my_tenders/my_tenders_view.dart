@@ -215,6 +215,77 @@ class _TenderCard extends StatelessWidget {
 
   const _TenderCard({required this.tender});
 
+  void _showDeleteConfirmation(BuildContext context, MyTenderModel tender) {
+    final controller = Get.find<MyTendersController>();
+    final theme = ThemeController.to;
+
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: theme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.redAccent,
+              size: 28,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Delete Tender',
+              style: TextStyle(
+                color: theme.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to delete "${tender.title}"?\n\nThis action cannot be undone and will remove all associated bids.',
+          style: TextStyle(color: theme.textSecondary, height: 1.5),
+        ),
+        actionsPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: theme.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+            onPressed: () {
+              Get.back();
+              controller.deleteTender(tender.id);
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ThemeController.to;
@@ -328,6 +399,62 @@ class _TenderCard extends StatelessWidget {
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                   ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Theme(
+                                data: Theme.of(context).copyWith(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                ),
+                                child: PopupMenuButton<String>(
+                                  icon: Icon(
+                                    Icons.more_vert_rounded,
+                                    color: theme.textSecondary,
+                                    size: 22,
+                                  ),
+                                  color: theme.cardColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    side: BorderSide(color: theme.borderColor),
+                                  ),
+                                  offset: const Offset(0, 40),
+                                  onSelected: (value) {
+                                    if (value == 'delete') {
+                                      _showDeleteConfirmation(context, tender);
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.redAccent
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(
+                                              Icons.delete_outline,
+                                              color: Colors.redAccent,
+                                              size: 18,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          const Text(
+                                            'Delete Tender',
+                                            style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],

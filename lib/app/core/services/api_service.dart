@@ -11,7 +11,15 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 class ApiService {
-  final String baseUrl = "http://127.0.0.1:8000";
+  String get baseUrl {
+    if (kIsWeb) {
+      return "http://127.0.0.1:8000";
+    } else if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    } else {
+      return "http://127.0.0.1:8000";
+    }
+  }
 
   final storage = GetStorage();
 
@@ -199,6 +207,32 @@ class ApiService {
       return {"success": true, "data": body['message']};
     }
     return {"success": false, "message": body['error'] ?? "Service failed"};
+  }
+
+  Future<Map<String, dynamic>> deleteTender(int tenderId) async {
+    final url = Uri.parse('$baseUrl/tenders/$tenderId/');
+
+    var response = await http.delete(url, headers: _getHeaders());
+
+    if (response.statusCode == 401) {
+      if (await refreshToken()) {
+        response = await http.delete(url, headers: _getHeaders());
+      }
+    }
+
+    if (response.statusCode == 204) {
+      return {"success": true, "message": "Tender deleted successfully."};
+    } else {
+      try {
+        final body = jsonDecode(response.body);
+        return {
+          "success": false,
+          "message": body['error'] ?? "Failed to delete tender.",
+        };
+      } catch (_) {
+        return {"success": false, "message": "Failed to delete tender."};
+      }
+    }
   }
 
   Future<Map<String, dynamic>> verifyOtp({
