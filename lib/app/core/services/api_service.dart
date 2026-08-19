@@ -142,14 +142,14 @@ class ApiService {
 
   Future<void> _syncFcmTokenInBackground() async {
     try {
+      bool isEnabled = storage.read('push_notifications') ?? true;
+      if (!isEnabled) return;
+
       final fcmToken = await FirebaseMessaging.instance.getToken();
       if (fcmToken != null) {
-        print("Syncing FCM Token post-login: $fcmToken");
         await updateFcmToken(fcmToken);
       }
-    } catch (e) {
-      print("Error syncing FCM token post-login: $e");
-    }
+    } catch (e) {}
   }
 
   Future<Map<String, dynamic>> payTender({

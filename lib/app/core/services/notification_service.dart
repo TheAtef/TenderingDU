@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'api_service.dart';
 
 @pragma('vm:entry-point')
@@ -19,8 +20,17 @@ class NotificationService {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final ApiService _apiService = ApiService();
+  final GetStorage _storage = GetStorage();
+
+  bool _isListening = false;
 
   Future<void> initialize() async {
+    bool isEnabled = _storage.read('push_notifications') ?? true;
+    if (!isEnabled) {
+      print("Push notifications are disabled in settings. Skipping FCM init.");
+      return;
+    }
+
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
@@ -45,37 +55,51 @@ class NotificationService {
     });
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Received foreground message: ${message.messageId}');
-      print('Notification Title: ${message.notification?.title}');
-      print('Notification Body: ${message.notification?.body}');
-      print('Data payload: ${message.data}');
 
-      String title =
-          message.notification?.title ??
-          message.data['title'] ??
-          'New Notification';
-      String body =
-          message.notification?.body ??
-          message.data['body'] ??
-          message.data['message'] ??
-          'You have a new update';
+    if (!_isListening) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print('Received foreground message: ${message.messageId}');
+        print('Notification Title: ${message.notification?.title}');
+        print('Notification Body: ${message.notification?.body}');
+        print('Data payload: ${message.data}');
 
-      Get.snackbar(
-        title,
-        body,
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.blueAccent,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
-        margin: const EdgeInsets.all(12),
-        icon: const Icon(Icons.notifications_active, color: Colors.white),
-      );
-    });
+        String title =
+            message.notification?.title ??
+            message.data['title'] ??
+            'New Notification';
+        String body =
+            message.notification?.body ??
+            message.data['body'] ??
+            message.data['message'] ??
+            'You have a new update';
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleNotificationNavigation(message.data);
-    });
+        Get.snackbar(
+          title,
+          body,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.blueAccent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 5),
+          margin: const EdgeInsets.all(12),
+          icon: const Icon(Icons.notifications_active, color: Colors.white),
+        );
+      });
+
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        _handleNotificationNavigation(message.data);
+      });
+
+      _isListening = true;
+    }
+  }
+
+  Future<void> disableNotifications() async {
+    try {
+      await _firebaseMessaging.deleteToken();
+      print("Notifications disabled, FCM token deleted from device.");
+    } catch (e) {
+      print("Error deleting FCM token: $e");
+    }
   }
 
   Future<void> sendTokenToBackend(String token) async {
