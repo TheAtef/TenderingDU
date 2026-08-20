@@ -262,7 +262,9 @@ class TenderDetailsView extends GetView<TenderDetailsController> {
         ],
       ),
       bottomNavigationBar: Obx(() {
-        if (controller.isLoading.value || controller.isError.value) {
+        if (controller.isLoading.value ||
+            controller.isError.value ||
+            controller.tenderDetails.status == 'Closed') {
           return const SizedBox.shrink();
         }
 
