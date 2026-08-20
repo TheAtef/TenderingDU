@@ -10,7 +10,7 @@ class SettingsController extends GetxController {
   ThemeController get themeController => Get.find<ThemeController>();
   final storage = GetStorage();
 
-  late final RxBool pushNotifications;
+  final pushNotifications = true.obs;
 
   final emailNotifications = false.obs;
   final deadlineReminders = true.obs;
@@ -22,7 +22,7 @@ class SettingsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    pushNotifications = (storage.read('push_notifications') ?? true).obs;
+    pushNotifications.value = storage.read<bool>('push_notifications') ?? true;
   }
 
   Future<void> toggleTheme(bool value) async {
